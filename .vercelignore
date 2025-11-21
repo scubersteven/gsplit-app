@@ -1,0 +1,10 @@
+node_modules
+.git
+*.log
+*.pyc
+__pycache__
+.DS_Store
+uploads/
+debug_crops/
+debug_annotated/
+api/

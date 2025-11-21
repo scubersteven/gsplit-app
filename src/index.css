@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Guinness pint-inspired color palette */
+    --background: 0 0% 5%; /* Deep stout black */
+    --foreground: 32 35% 92%; /* Cream text */
+
+    --card: 0 0% 8%;
+    --card-foreground: 32 35% 92%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 32 35% 92%;
+
+    --primary: 32 35% 92%; /* Cream primary */
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 32 35% 92%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 32 20% 60%;
+
+    --accent: 43 95% 58%;
+    --accent-foreground: 0 0% 5%;
+
+    --cream: 32 35% 88%; /* Guinness head cream */
+    --cream-dark: 32 30% 78%; /* Darker cream for hover states */
+    --gold: 43 95% 58%;
+    --guinness-black: 0 0% 5%; /* Pure stout black */
+    
+    /* Header colors - the creamy head */
+    --header-bg: 32 35% 88%;
+    --header-fg: 0 0% 10%;
+    
+    /* Irish color accents */
+    --irish-green: 142 71% 45%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 43 100% 62%;
+
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--cream)) 0%, hsl(var(--background)) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 32 35% 92%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 32 35% 92%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 32 35% 92%;
+
+    --primary: 32 35% 92%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 32 35% 92%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 32 20% 60%;
+
+    --accent: 43 95% 58%;
+    --accent-foreground: 0 0% 5%;
+
+    --cream: 32 35% 88%;
+    --cream-dark: 32 30% 78%;
+    --gold: 43 95% 58%;
+    
+    --header-bg: 32 35% 88%;
+    --header-fg: 0 0% 10%;
+    
+    /* Irish color accents - dark mode */
+    --irish-green: 142 76% 36%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 32 40% 96%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 43 100% 62%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
