@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft, Share2, Camera } from "lucide-react";
 import { toast } from "sonner";
+import { generateShareImage, shareToInstagram } from "@/utils/shareImage";
 
 const getScoreLabel = (score: number) => {
   if (score >= 95) return "legendary split";
@@ -15,6 +17,7 @@ const GSplitResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { score, image, feedback } = location.state || { score: 0, image: null, feedback: "That's a pour" };
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   if (!image) {
     navigate("/split");
@@ -48,6 +51,29 @@ const GSplitResult = () => {
       } catch (error) {
         toast.error("Failed to copy link");
       }
+    }
+  };
+
+  const handleInstagramShare = async () => {
+    setIsGeneratingImage(true);
+
+    try {
+      // Generate shareable image
+      const imageBlob = await generateShareImage({
+        pintImage: image,
+        score: score,
+        feedback: feedback || "That's a pour",
+      });
+
+      // Share to Instagram (mobile) or download (desktop)
+      await shareToInstagram(imageBlob, score);
+
+      toast.success("Image ready to share!");
+    } catch (error) {
+      console.error("Error generating share image:", error);
+      toast.error("Failed to generate share image");
+    } finally {
+      setIsGeneratingImage(false);
     }
   };
 
@@ -124,9 +150,19 @@ const GSplitResult = () => {
             Rate Your Guinness
           </Button>
           <Button
-            onClick={handleShare}
+            onClick={handleInstagramShare}
             size="lg"
             variant="secondary"
+            disabled={isGeneratingImage}
+            className="w-full py-6 text-lg font-semibold hover:scale-[1.02] transition-transform gap-2"
+          >
+            <Camera className="w-5 h-5" />
+            {isGeneratingImage ? "Generating..." : "Share to Instagram"}
+          </Button>
+          <Button
+            onClick={handleShare}
+            size="lg"
+            variant="outline"
             className="w-full py-6 text-lg font-semibold hover:scale-[1.02] transition-transform gap-2"
           >
             <Share2 className="w-5 h-5" />
