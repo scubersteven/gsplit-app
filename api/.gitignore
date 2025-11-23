@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+uploads/
+debug_crops/
+debug_annotated/
+*.jpg
+*.png
