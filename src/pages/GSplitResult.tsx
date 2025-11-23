@@ -1,23 +1,48 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2, Camera } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { generateShareImage, shareToInstagram } from "@/utils/shareImage";
 
-const getScoreLabel = (score: number) => {
-  if (score >= 95) return "legendary split";
-  if (score >= 85) return "masterful pour";
-  if (score >= 75) return "quality split";
-  if (score >= 65) return "decent attempt";
-  return "practice makes perfect";
+/**
+ * Get score color based on thresholds
+ * 85%+ = green, 60-84% = amber, <60% = red
+ */
+const getScoreColor = (score: number): string => {
+  if (score >= 85) return "text-[#10B981]"; // precision green
+  if (score >= 60) return "text-[#f59e0b]"; // warm amber
+  return "text-[#ef4444]"; // deep red
+};
+
+/**
+ * Get split detection status color
+ */
+const getSplitColor = (detected: boolean): string => {
+  return detected ? "text-[#10B981]" : "text-[#ef4444]";
 };
 
 const GSplitResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { score, image, feedback } = location.state || { score: 0, image: null, feedback: "That's a pour" };
+  const { score, image, feedback, splitDetected } = location.state || {
+    score: 0,
+    image: null,
+    feedback: "That's a pour",
+    splitDetected: false
+  };
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
+  // Get user location from localStorage
+  const userLocationStr = localStorage.getItem('userLocation');
+  const userLocation = userLocationStr ? JSON.parse(userLocationStr) : null;
+
+  // MOCK DATA: Generate competitive context
+  // TODO: Replace with real database queries when backend is ready
+  const mockRank = Math.floor(Math.random() * 50) + 1; // Random 1-50
+  const mockPercentile = score >= 85 ? Math.floor(Math.random() * 15) + 1 : // Top 15%
+                         score >= 60 ? Math.floor(Math.random() * 20) + 15 : // 15-35%
+                         Math.floor(Math.random() * 50) + 50; // 50%+
 
   if (!image) {
     navigate("/split");
@@ -63,6 +88,7 @@ const GSplitResult = () => {
         pintImage: image,
         score: score,
         feedback: feedback || "That's a pour",
+        splitDetected: splitDetected ?? false,
       });
 
       // Share to Instagram (mobile) or download (desktop)
@@ -78,105 +104,114 @@ const GSplitResult = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* Back Button */}
+      <div className="px-4 pt-4">
         <Button
           variant="ghost"
           onClick={() => navigate("/")}
-          className="mb-8 gap-2 text-muted-foreground hover:text-foreground"
+          className="gap-2 text-[#9CA3AF] hover:text-[#F5F5F0]"
+          size="sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Button>
+      </div>
 
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
-            The Official G-Split Score
-          </h1>
+      {/* Section 1: Pint Photo (25% - 16:9 aspect ratio) */}
+      <div className="px-4 mt-4">
+        <div className="relative w-full max-w-md mx-auto rounded-lg overflow-hidden shadow-lg">
+          <img
+            src={image}
+            alt="Your pint split"
+            className="w-full aspect-video object-cover"
+          />
         </div>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          {/* Pint Image */}
-          <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-sm mx-auto md:mx-0">
-            <img
-              src={image}
-              alt="Your pint split"
-              className="w-full aspect-[3/4] object-cover"
-            />
+      {/* Section 2: Score Card (35% - ABOVE THE FOLD) */}
+      <div className="px-4 mt-4">
+        <div className="bg-[#1a1a1a] border-t-2 border-[#D4AF37] rounded-lg p-6">
+          {/* 🔍 SCORE Label */}
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="text-2xl">🔍</span>
+            <span className="text-sm font-semibold text-[#9CA3AF] uppercase tracking-wider">SCORE</span>
           </div>
 
-          {/* Score Card */}
-          <div className="space-y-6">
-            <div className="bg-card border border-border rounded-lg p-8">
-              <div className="text-sm text-muted-foreground mb-2 uppercase tracking-wider">
-                G-Split
-              </div>
-              <div className="text-7xl font-bold text-success mb-4">
-                {score}%
-              </div>
-              <p className="text-muted-foreground italic text-sm leading-relaxed">
-                "{feedback || 'No feedback available'}"
-              </p>
-            </div>
+          {/* Giant Score */}
+          <div className={`text-8xl font-black text-center mb-4 ${getScoreColor(score)}`}>
+            {score}%
+          </div>
 
-            <div className="bg-card border border-border rounded-lg p-8">
-              <div className="text-sm text-muted-foreground mb-4 uppercase tracking-wider">
-                Evaluation
-              </div>
-              <div className="text-2xl font-bold text-foreground mb-2">
-                {getScoreLabel(score)}
-              </div>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex justify-between">
-                  <span>Accuracy</span>
-                  <span className="text-foreground font-medium">{score}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Precision</span>
-                  <span className="text-foreground font-medium">{score >= 85 ? "High" : score >= 65 ? "Moderate" : "Developing"}</span>
-                </div>
-              </div>
-            </div>
+          {/* Split Status */}
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-xl">{splitDetected ? '✅' : '❌'}</span>
+            <span className={`text-lg font-semibold ${getSplitColor(splitDetected)}`}>
+              {splitDetected ? 'SPLIT DETECTED' : 'NO SPLIT'}
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Actions */}
-        <div className="flex flex-col gap-4">
-          <Button
-            onClick={() => navigate("/survey", { state: { splitScore: score, splitImage: image } })}
-            size="lg"
-            className="w-full py-6 text-lg font-semibold bg-primary text-primary-foreground hover:scale-[1.02] transition-transform"
-          >
-            Rate Your Guinness
-          </Button>
-          <Button
-            onClick={handleInstagramShare}
-            size="lg"
-            variant="secondary"
-            disabled={isGeneratingImage}
-            className="w-full py-6 text-lg font-semibold hover:scale-[1.02] transition-transform gap-2"
-          >
-            <Camera className="w-5 h-5" />
-            {isGeneratingImage ? "Generating..." : "Share to Instagram"}
-          </Button>
-          <Button
-            onClick={handleShare}
-            size="lg"
-            variant="outline"
-            className="w-full py-6 text-lg font-semibold hover:scale-[1.02] transition-transform gap-2"
-          >
-            <Share2 className="w-5 h-5" />
-            Share My Score
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate("/split")}
-            size="lg"
-            className="w-full py-6 text-lg font-semibold border-2 hover:scale-[1.02] transition-transform"
-          >
-            Attempt Another Split
-          </Button>
+      {/* Section 3: Details Card (20%) */}
+      <div className="px-4 mt-4">
+        <div className="bg-[#1a1a1a] border-t-2 border-[#D4AF37] rounded-lg p-5 space-y-3">
+          {/* Feedback */}
+          <div className="flex items-start gap-2">
+            <span className="text-lg">💬</span>
+            <p className="text-lg italic text-[#F5F5F0] leading-relaxed">
+              "{feedback || 'No feedback available'}"
+            </p>
+          </div>
+
+          {/* Location (if user shared location) */}
+          {userLocation && (
+            <div className="flex items-center gap-2">
+              <span className="text-xl">📍</span>
+              <span className="text-lg text-[#E8E8DD]">Your Local</span>
+            </div>
+          )}
+
+          {/* Competitive Context (MOCK DATA) */}
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <span className="text-sm font-semibold text-[#D4AF37]">#{mockRank} today</span>
+            <span className="text-[#666666]">|</span>
+            <span className="text-sm font-medium text-[#9CA3AF]">Top {mockPercentile}%</span>
+          </div>
         </div>
+      </div>
+
+      {/* Section 4: Action Buttons (20%) */}
+      <div className="px-4 mt-4 pb-8 space-y-3">
+        {/* Share to Instagram - Primary (Green) */}
+        <Button
+          onClick={handleInstagramShare}
+          disabled={isGeneratingImage}
+          size="lg"
+          className="w-full py-6 text-lg font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] transition-transform hover:scale-[1.02]"
+        >
+          {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
+        </Button>
+
+        {/* Challenge Friend - Secondary (Gold Border) */}
+        <Button
+          onClick={handleShare}
+          size="lg"
+          variant="outline"
+          className="w-full py-6 text-lg font-semibold border-2 border-[#D4AF37] text-[#F5F5F0] hover:bg-[#D4AF37]/10 transition-transform hover:scale-[1.02]"
+        >
+          Challenge Friend ⚔️
+        </Button>
+
+        {/* Try Again - Ghost */}
+        <Button
+          onClick={() => navigate("/split")}
+          size="lg"
+          variant="ghost"
+          className="w-full py-6 text-lg font-semibold text-[#E8E8DD] hover:bg-[#1a1a1a] transition-transform hover:scale-[1.02]"
+        >
+          Try Again 🔄
+        </Button>
       </div>
     </div>
   );
