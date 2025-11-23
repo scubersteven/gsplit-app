@@ -1,6 +1,6 @@
 /**
  * Generate shareable Instagram Story image for GSplit scores
- * Follows gsplit-brand-voice: Direct, clean, premium dark theme
+ * Follows gsplit-design-guide: Premium Irish pub aesthetic
  */
 
 interface ShareImageOptions {
@@ -12,12 +12,21 @@ interface ShareImageOptions {
 
 /**
  * Get score color based on thresholds
- * 80%+ = green, 60-80% = amber, <60% = red
+ * 85%+ = green, 60-84% = amber, <60% = red
  */
 const getScoreColor = (score: number): string => {
-  if (score >= 80) return '#10B981'; // precision green
-  if (score >= 60) return '#f59e0b'; // amber
-  return '#ef4444'; // red
+  if (score >= 85) return '#10B981'; // precision green
+  if (score >= 60) return '#f59e0b'; // warm amber
+  return '#ef4444'; // deep red
+};
+
+/**
+ * Get score glow color (30% opacity for shadow effect)
+ */
+const getScoreGlow = (score: number): string => {
+  if (score >= 85) return 'rgba(16, 185, 129, 0.3)'; // green glow
+  if (score >= 60) return 'rgba(245, 158, 11, 0.3)'; // amber glow
+  return 'rgba(239, 68, 68, 0.3)'; // red glow
 };
 
 /**
@@ -47,70 +56,121 @@ export const generateShareImage = async (
 
     img.onload = () => {
       try {
-        // Fill background with near-black
-        ctx.fillStyle = '#0A0A0A';
+        // Fill background with gradient (near-black to rich-black)
+        const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        bgGradient.addColorStop(0, '#0A0A0A'); // near-black
+        bgGradient.addColorStop(1, '#1a1a1a'); // rich-black
+        ctx.fillStyle = bgGradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate image dimensions (top 60% of canvas)
-        const imageHeight = canvas.height * 0.6;
-        const imageWidth = canvas.width;
+        // Calculate image area (top 55% with 20px padding)
+        const imagePadding = 20;
+        const imageAreaHeight = canvas.height * 0.55;
+        const imageWidth = canvas.width - (imagePadding * 2);
+        const imageHeight = imageAreaHeight - (imagePadding * 2);
+
+        // Draw pint image container with gold border and glow
+        const imageX = imagePadding;
+        const imageY = imagePadding;
+        const borderRadius = 16;
+
+        // Save context for clipping
+        ctx.save();
+
+        // Create rounded rectangle clip path for image
+        ctx.beginPath();
+        ctx.moveTo(imageX + borderRadius, imageY);
+        ctx.lineTo(imageX + imageWidth - borderRadius, imageY);
+        ctx.quadraticCurveTo(imageX + imageWidth, imageY, imageX + imageWidth, imageY + borderRadius);
+        ctx.lineTo(imageX + imageWidth, imageY + imageHeight - borderRadius);
+        ctx.quadraticCurveTo(imageX + imageWidth, imageY + imageHeight, imageX + imageWidth - borderRadius, imageY + imageHeight);
+        ctx.lineTo(imageX + borderRadius, imageY + imageHeight);
+        ctx.quadraticCurveTo(imageX, imageY + imageHeight, imageX, imageY + imageHeight - borderRadius);
+        ctx.lineTo(imageX, imageY + borderRadius);
+        ctx.quadraticCurveTo(imageX, imageY, imageX + borderRadius, imageY);
+        ctx.closePath();
+        ctx.clip();
 
         // Draw pint image (cover fit)
         const imgAspect = img.width / img.height;
-        const canvasAspect = imageWidth / imageHeight;
+        const containerAspect = imageWidth / imageHeight;
 
         let drawWidth, drawHeight, offsetX, offsetY;
 
-        if (imgAspect > canvasAspect) {
+        if (imgAspect > containerAspect) {
           // Image is wider - fit to height
           drawHeight = imageHeight;
           drawWidth = drawHeight * imgAspect;
-          offsetX = -(drawWidth - imageWidth) / 2;
-          offsetY = 0;
+          offsetX = imageX - (drawWidth - imageWidth) / 2;
+          offsetY = imageY;
         } else {
           // Image is taller - fit to width
           drawWidth = imageWidth;
           drawHeight = drawWidth / imgAspect;
-          offsetX = 0;
-          offsetY = -(drawHeight - imageHeight) / 2;
+          offsetX = imageX;
+          offsetY = imageY - (drawHeight - imageHeight) / 2;
         }
 
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
-        // Dark overlay gradient (bottom 40%)
-        const overlayY = imageHeight;
-        const overlayHeight = canvas.height - imageHeight;
+        // Restore context
+        ctx.restore();
 
-        const gradient = ctx.createLinearGradient(0, overlayY, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(10, 10, 10, 0.95)');
-        gradient.addColorStop(1, 'rgba(10, 10, 10, 1)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, overlayY, canvas.width, overlayHeight);
+        // Draw gold border with glow
+        ctx.save();
+        ctx.shadowColor = 'rgba(212, 175, 55, 0.4)'; // satin-gold glow
+        ctx.shadowBlur = 20;
+        ctx.strokeStyle = '#D4AF37'; // satin-gold
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(imageX + borderRadius, imageY);
+        ctx.lineTo(imageX + imageWidth - borderRadius, imageY);
+        ctx.quadraticCurveTo(imageX + imageWidth, imageY, imageX + imageWidth, imageY + borderRadius);
+        ctx.lineTo(imageX + imageWidth, imageY + imageHeight - borderRadius);
+        ctx.quadraticCurveTo(imageX + imageWidth, imageY + imageHeight, imageX + imageWidth - borderRadius, imageY + imageHeight);
+        ctx.lineTo(imageX + borderRadius, imageY + imageHeight);
+        ctx.quadraticCurveTo(imageX, imageY + imageHeight, imageX, imageY + imageHeight - borderRadius);
+        ctx.lineTo(imageX, imageY + borderRadius);
+        ctx.quadraticCurveTo(imageX, imageY, imageX + borderRadius, imageY);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+
+        // Calculate overlay starting position (bottom 45%)
+        const overlayY = imageAreaHeight;
 
         // Text setup
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // "GSPLIT" branding (warm white, bold)
-        ctx.fillStyle = '#F5F5F0';
-        ctx.font = 'bold 48px system-ui, -apple-system, sans-serif';
-        ctx.fillText('GSPLIT', canvas.width / 2, overlayY + 80);
+        // "GSPLIT" branding (satin gold, bold, letter-spaced)
+        ctx.fillStyle = '#D4AF37'; // satin-gold
+        ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
+        ctx.letterSpacing = '4px';
+        ctx.fillText('GSPLIT', canvas.width / 2, overlayY + 100);
+        ctx.letterSpacing = '0px'; // Reset
 
-        // Score (large, color-coded)
+        // Score (HUGE, color-coded with glow)
         const scoreColor = getScoreColor(score);
+        const scoreGlow = getScoreGlow(score);
+
+        ctx.save();
+        ctx.shadowColor = scoreGlow;
+        ctx.shadowBlur = 30;
         ctx.fillStyle = scoreColor;
-        ctx.font = 'bold 96px system-ui, -apple-system, sans-serif';
-        ctx.fillText(`${score}%`, canvas.width / 2, overlayY + 200);
+        ctx.font = 'bold 120px system-ui, -apple-system, sans-serif';
+        ctx.fillText(`${score}%`, canvas.width / 2, overlayY + 240);
+        ctx.restore();
 
         // Feedback quote (warm white, italic, wrapped)
-        ctx.fillStyle = '#F5F5F0';
-        ctx.font = 'italic 32px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = '#F5F5F0'; // warm-white
+        ctx.font = 'italic 36px system-ui, -apple-system, sans-serif';
 
         // Wrap feedback text if too long (max 2 lines)
         const maxWidth = canvas.width - 120;
         const words = feedback.split(' ');
         let line = '';
-        let y = overlayY + 320;
+        let y = overlayY + 380;
         let lineCount = 0;
 
         for (let i = 0; i < words.length && lineCount < 2; i++) {
@@ -120,7 +180,7 @@ export const generateShareImage = async (
           if (metrics.width > maxWidth && i > 0) {
             ctx.fillText(`"${line.trim()}"`, canvas.width / 2, y);
             line = words[i] + ' ';
-            y += 45;
+            y += 50;
             lineCount++;
           } else {
             line = testLine;
@@ -133,15 +193,24 @@ export const generateShareImage = async (
 
         // Pub name if provided (with location pin)
         if (pubName) {
-          ctx.fillStyle = '#F5F5F0';
-          ctx.font = '28px system-ui, -apple-system, sans-serif';
-          ctx.fillText(`📍 ${pubName}`, canvas.width / 2, overlayY + 450);
+          ctx.fillStyle = '#E8E8DD'; // soft-cream
+          ctx.font = '32px system-ui, -apple-system, sans-serif';
+          ctx.fillText(`📍 ${pubName}`, canvas.width / 2, overlayY + 540);
         }
 
-        // Footer "gsplit.app" (warm white, small, bottom)
-        ctx.fillStyle = '#F5F5F0';
-        ctx.font = '24px system-ui, -apple-system, sans-serif';
-        ctx.fillText('gsplit.app', canvas.width / 2, canvas.height - 60);
+        // Gold divider line above footer
+        const dividerY = canvas.height - 120;
+        ctx.strokeStyle = '#D4AF37'; // satin-gold
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 - 150, dividerY);
+        ctx.lineTo(canvas.width / 2 + 150, dividerY);
+        ctx.stroke();
+
+        // Footer "gsplit.app" (muted grey, small, bottom)
+        ctx.fillStyle = '#9CA3AF'; // muted-grey
+        ctx.font = '22px system-ui, -apple-system, sans-serif';
+        ctx.fillText('gsplit.app', canvas.width / 2, canvas.height - 70);
 
         // Convert canvas to blob
         canvas.toBlob((blob) => {
