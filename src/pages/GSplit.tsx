@@ -120,14 +120,14 @@ const GSplit = () => {
       }
 
       // Navigate to results with real score
-      navigate("/split-result", { 
-        state: { 
+      navigate("/split-result-v2", {
+        state: {
           score: result.score,
           image: selectedImage,
           distance: result.distance_from_g_line_mm,
           feedback: result.feedback,
           splitDetected: result.g_line_detected
-        } 
+        }
       });
 
     } catch (error) {

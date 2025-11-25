@@ -1,33 +1,23 @@
 /**
  * Generate shareable Instagram Story image for GSplit scores
- * Clean, data-focused design with emoji labels
+ * Follows gsplit-brand-voice: Direct, clean, premium dark theme
  */
 
 interface ShareImageOptions {
   pintImage: string; // Data URL of pint photo
   score: number;
   feedback: string;
-  splitDetected: boolean;
   pubName?: string;
 }
 
 /**
  * Get score color based on thresholds
- * 85%+ = green, 60-84% = amber, <60% = red
+ * 80%+ = green, 60-80% = amber, <60% = red
  */
 const getScoreColor = (score: number): string => {
-  if (score >= 85) return '#10B981'; // precision green
-  if (score >= 60) return '#f59e0b'; // warm amber
-  return '#ef4444'; // deep red
-};
-
-/**
- * Get score glow color (30% opacity for shadow effect)
- */
-const getScoreGlow = (score: number): string => {
-  if (score >= 85) return 'rgba(16, 185, 129, 0.3)'; // green glow
-  if (score >= 60) return 'rgba(245, 158, 11, 0.3)'; // amber glow
-  return 'rgba(239, 68, 68, 0.3)'; // red glow
+  if (score >= 80) return '#10B981'; // precision green
+  if (score >= 60) return '#f59e0b'; // amber
+  return '#ef4444'; // red
 };
 
 /**
@@ -37,7 +27,7 @@ const getScoreGlow = (score: number): string => {
 export const generateShareImage = async (
   options: ShareImageOptions
 ): Promise<Blob> => {
-  const { pintImage, score, feedback, splitDetected, pubName } = options;
+  const { pintImage, score, feedback, pubName } = options;
 
   return new Promise((resolve, reject) => {
     // Create canvas (Instagram Story dimensions: 1080x1920)
@@ -57,162 +47,101 @@ export const generateShareImage = async (
 
     img.onload = () => {
       try {
-        // Fill background with pure black
-        ctx.fillStyle = '#000000';
+        // Fill background with near-black
+        ctx.fillStyle = '#0A0A0A';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate pint photo area (top 60% = 1152px)
-        const photoAreaHeight = canvas.height * 0.6; // 1152px
-        const photoPadding = 16;
-        const photoWidth = canvas.width - (photoPadding * 2);
-        const photoHeight = photoAreaHeight - (photoPadding * 2);
-        const photoX = photoPadding;
-        const photoY = photoPadding;
+        // Calculate image dimensions (top 60% of canvas)
+        const imageHeight = canvas.height * 0.6;
+        const imageWidth = canvas.width;
 
-        // Draw pint image (cover fit, centered)
+        // Draw pint image (cover fit)
         const imgAspect = img.width / img.height;
-        const containerAspect = photoWidth / photoHeight;
+        const canvasAspect = imageWidth / imageHeight;
 
         let drawWidth, drawHeight, offsetX, offsetY;
 
-        if (imgAspect > containerAspect) {
+        if (imgAspect > canvasAspect) {
           // Image is wider - fit to height
-          drawHeight = photoHeight;
+          drawHeight = imageHeight;
           drawWidth = drawHeight * imgAspect;
-          offsetX = photoX - (drawWidth - photoWidth) / 2;
-          offsetY = photoY;
+          offsetX = -(drawWidth - imageWidth) / 2;
+          offsetY = 0;
         } else {
           // Image is taller - fit to width
-          drawWidth = photoWidth;
+          drawWidth = imageWidth;
           drawHeight = drawWidth / imgAspect;
-          offsetX = photoX;
-          offsetY = photoY - (drawHeight - photoHeight) / 2;
+          offsetX = 0;
+          offsetY = -(drawHeight - imageHeight) / 2;
         }
 
-        // Clip to photo area
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(photoX, photoY, photoWidth, photoHeight);
-        ctx.clip();
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-        ctx.restore();
 
-        // Draw gold frame (2px border)
-        ctx.strokeStyle = '#D4AF37'; // satin-gold
-        ctx.lineWidth = 2;
-        ctx.strokeRect(photoX, photoY, photoWidth, photoHeight);
+        // Dark overlay gradient (bottom 40%)
+        const overlayY = imageHeight;
+        const overlayHeight = canvas.height - imageHeight;
 
-        // Calculate score announcement area (bottom 40% = 768px)
-        const scoreAreaY = photoAreaHeight;
-        const scoreAreaHeight = canvas.height - photoAreaHeight;
+        const gradient = ctx.createLinearGradient(0, overlayY, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(10, 10, 10, 0.95)');
+        gradient.addColorStop(1, 'rgba(10, 10, 10, 1)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, overlayY, canvas.width, overlayHeight);
 
-        // Text setup - centered for all content
+        // Text setup
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        const centerX = canvas.width / 2;
-        let currentY = scoreAreaY + 100;
+        // "GSPLIT" branding (warm white, bold)
+        ctx.fillStyle = '#F5F5F0';
+        ctx.font = 'bold 48px system-ui, -apple-system, sans-serif';
+        ctx.fillText('GSPLIT', canvas.width / 2, overlayY + 80);
 
-        // 1. GIANT SCORE with glow
+        // Score (large, color-coded)
         const scoreColor = getScoreColor(score);
-        const scoreGlow = getScoreGlow(score);
-
-        ctx.save();
-        ctx.shadowColor = scoreGlow;
-        ctx.shadowBlur = 40;
         ctx.fillStyle = scoreColor;
-        ctx.font = '900 120px -apple-system, system-ui, sans-serif';
-        ctx.letterSpacing = '-2px';
-        ctx.fillText(`${score}%`, centerX, currentY);
-        ctx.restore();
+        ctx.font = 'bold 96px system-ui, -apple-system, sans-serif';
+        ctx.fillText(`${score}%`, canvas.width / 2, overlayY + 200);
 
-        currentY += 100;
+        // Feedback quote (warm white, italic, wrapped)
+        ctx.fillStyle = '#F5F5F0';
+        ctx.font = 'italic 32px system-ui, -apple-system, sans-serif';
 
-        // 2. FEEDBACK (directly under score)
-        ctx.fillStyle = '#F5F5F0'; // warm-white
-        ctx.font = 'italic 28px -apple-system, system-ui, sans-serif';
-        ctx.letterSpacing = '0px';
-
-        // Wrap feedback if needed (max 2 lines)
-        const feedbackText = `"${feedback}"`;
-        const maxFeedbackWidth = canvas.width - 100;
-        const words = feedbackText.split(' ');
+        // Wrap feedback text if too long (max 2 lines)
+        const maxWidth = canvas.width - 120;
+        const words = feedback.split(' ');
         let line = '';
-        const feedbackLines: string[] = [];
+        let y = overlayY + 320;
+        let lineCount = 0;
 
-        for (let i = 0; i < words.length; i++) {
+        for (let i = 0; i < words.length && lineCount < 2; i++) {
           const testLine = line + words[i] + ' ';
           const metrics = ctx.measureText(testLine);
 
-          if (metrics.width > maxFeedbackWidth && i > 0) {
-            feedbackLines.push(line.trim());
+          if (metrics.width > maxWidth && i > 0) {
+            ctx.fillText(`"${line.trim()}"`, canvas.width / 2, y);
             line = words[i] + ' ';
+            y += 45;
+            lineCount++;
           } else {
             line = testLine;
           }
         }
-        if (line.trim()) feedbackLines.push(line.trim());
 
-        // Draw feedback lines (max 2)
-        const feedbackStartY = currentY;
-        for (let i = 0; i < Math.min(feedbackLines.length, 2); i++) {
-          ctx.fillText(feedbackLines[i], centerX, feedbackStartY + (i * 36));
+        if (lineCount < 2 && line.trim()) {
+          ctx.fillText(`"${line.trim()}"`, canvas.width / 2, y);
         }
 
-        currentY += feedbackLines.length > 1 ? 80 : 50;
-
-        // 3. GOLD DIVIDER LINE (60% width)
-        const dividerWidth = canvas.width * 0.6;
-        ctx.strokeStyle = '#D4AF37'; // satin-gold
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(centerX - dividerWidth / 2, currentY);
-        ctx.lineTo(centerX + dividerWidth / 2, currentY);
-        ctx.stroke();
-
-        currentY += 40;
-
-        // 4. COMPACT DATA ROWS (16px vertical gaps)
-
-        // Row 1: 🔍 86.9%
-        ctx.font = '24px -apple-system, system-ui, sans-serif';
-        ctx.fillStyle = '#F5F5F0';
-        const emoji1Width = ctx.measureText('🔍 ').width;
-        ctx.fillText('🔍', centerX - 60, currentY);
-
-        ctx.font = '600 32px -apple-system, system-ui, sans-serif';
-        ctx.fillStyle = '#F5F5F0';
-        ctx.fillText(`${score}%`, centerX + 10, currentY);
-
-        currentY += 50;
-
-        // Row 2: ✅ Split detected / ❌ No split detected
-        ctx.font = '24px -apple-system, system-ui, sans-serif';
-        ctx.fillText(splitDetected ? '✅' : '❌', centerX - 80, currentY);
-
-        ctx.font = '600 20px -apple-system, system-ui, sans-serif';
-        ctx.fillStyle = splitDetected ? '#10B981' : '#ef4444'; // green or red
-        ctx.fillText(splitDetected ? 'Split detected' : 'No split detected', centerX + 20, currentY);
-
-        currentY += 50;
-
-        // Row 3 (optional): 📍 Temple Bar
+        // Pub name if provided (with location pin)
         if (pubName) {
-          ctx.font = '20px -apple-system, system-ui, sans-serif';
           ctx.fillStyle = '#F5F5F0';
-          ctx.fillText('📍', centerX - 60, currentY);
-
-          ctx.font = '600 20px -apple-system, system-ui, sans-serif';
-          ctx.fillStyle = '#E8E8DD'; // soft-cream
-          ctx.fillText(pubName, centerX + 10, currentY);
-
-          currentY += 50;
+          ctx.font = '28px system-ui, -apple-system, sans-serif';
+          ctx.fillText(`📍 ${pubName}`, canvas.width / 2, overlayY + 450);
         }
 
-        // 5. FOOTER: gsplit.app
-        ctx.font = '16px -apple-system, system-ui, sans-serif';
-        ctx.fillStyle = '#666666';
-        ctx.fillText('gsplit.app', centerX, canvas.height - 40);
+        // Footer "gsplit.app" (warm white, small, bottom)
+        ctx.fillStyle = '#F5F5F0';
+        ctx.font = '24px system-ui, -apple-system, sans-serif';
+        ctx.fillText('gsplit.app', canvas.width / 2, canvas.height - 60);
 
         // Convert canvas to blob
         canvas.toBlob((blob) => {

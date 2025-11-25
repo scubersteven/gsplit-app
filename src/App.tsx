@@ -6,6 +6,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import GSplit from './pages/GSplit';
 import GSplitResult from './pages/GSplitResult';
+import GSplitResultV2 from './pages/GSplitResultV2';
 import PintSurvey from './pages/PintSurvey';
 import Results from './pages/Results';
 import PintLog from './pages/PintLog';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/split" element={<GSplit />} />
           <Route path="/split-result" element={<GSplitResult />} />
+          <Route path="/split-result-v2" element={<GSplitResultV2 />} />
           <Route path="/survey" element={<PintSurvey />} />
           <Route path="/results" element={<Results />} />
           <Route path="/log" element={<PintLog />} />
