@@ -1,5 +1,4 @@
-import perfectPint from "@/assets/perfect-pint.jpg";
-import logo from "@/assets/mylogo-2.png";
+import logo from "@/assets/g-split-logo.png";
 
 interface ShareableResultProps {
   score: number;
@@ -9,7 +8,7 @@ interface ShareableResultProps {
   ranking?: string;
   mode?: 'share' | 'challenge';
   challengeTo?: string;
-  pintImage?: string;
+  pintImage: string; // Required - always passed from shareImageV2
 }
 
 const ShareableResult = ({
@@ -70,7 +69,7 @@ const ShareableResult = ({
         {/* Pint Photo Container */}
         <div className="w-full max-w-[280px] aspect-[3/4] rounded-lg overflow-hidden">
           <img
-            src={pintImage || perfectPint}
+            src={pintImage}
             alt="Pint analysis"
             className="w-full h-full object-cover"
           />
