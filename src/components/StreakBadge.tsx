@@ -12,12 +12,11 @@ const StreakBadge = () => {
   if (streak === 0) return null;
 
   return (
-    <div 
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/30 animate-fade-in"
-      style={{ 
-        animationDelay: '0.5s', 
-        animationFillMode: 'both',
-        boxShadow: '0 0 20px rgba(251, 146, 60, 0.2)'
+    <div
+      className="flex items-center gap-1.5 animate-fade-in"
+      style={{
+        animationDelay: '0.5s',
+        animationFillMode: 'both'
       }}
     >
       <span className="text-lg animate-pulse">🔥</span>

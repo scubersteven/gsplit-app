@@ -10,18 +10,15 @@ const TierBadge = () => {
   }, []);
 
   return (
-    <div 
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border animate-fade-in"
-      style={{ 
-        backgroundColor: `${tier.color}15`,
-        borderColor: `${tier.color}40`,
-        animationDelay: '0.6s', 
-        animationFillMode: 'both',
-        boxShadow: `0 0 20px ${tier.color}30`
+    <div
+      className="flex items-center gap-1.5 animate-fade-in"
+      style={{
+        animationDelay: '0.6s',
+        animationFillMode: 'both'
       }}
     >
       <span className="text-lg">{tier.icon}</span>
-      <span 
+      <span
         className="text-sm font-bold"
         style={{ color: tier.color }}
       >

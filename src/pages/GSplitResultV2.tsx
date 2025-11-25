@@ -104,11 +104,11 @@ const GSplitResultV2 = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1C1410]">
-      
+    <div className="min-h-screen bg-[#1C1410] pt-4 md:pt-0">
+
       {/* Foam Header - "The Verdict" */}
-      <div className="w-full mb-6 animate-fade-in relative overflow-visible">
-        <div className="bg-[#F5E6C8] pt-6 pb-6 md:pt-8 md:pb-8 flex flex-col justify-center items-center gap-2">
+      <div className="w-full mb-0 animate-fade-in relative overflow-visible">
+        <div className="bg-[#F5E6C8] pt-4 pb-4 md:pt-6 md:pb-6 flex flex-col justify-center items-center gap-2">
           <h1 className="text-[#1C1410] text-3xl md:text-4xl font-bold tracking-wide">
             The Verdict
           </h1>
@@ -118,20 +118,6 @@ const GSplitResultV2 = () => {
             </p>
           )}
         </div>
-        {/* Wavy foam line */}
-        <svg 
-          className="absolute left-0 right-0 w-full" 
-          style={{ bottom: '-20px' }}
-          height="25" 
-          viewBox="0 0 1200 25" 
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path 
-            d="M0,12 Q100,9 200,13 Q300,10 400,14 Q500,11 600,13 Q700,10 800,14 Q900,11 1000,13 Q1100,9 1200,12 L1200,0 L0,0 Z" 
-            fill="#F5E6C8"
-          />
-        </svg>
       </div>
 
       {/* Responsive Container */}
@@ -153,23 +139,23 @@ const GSplitResultV2 = () => {
 
           {/* Right - Stats Box */}
           <div className="w-full md:w-1/2 flex">
-            <div 
-              className="border-2 border-[#D4AF37] rounded-lg p-4 md:p-5 animate-scale-in w-full flex flex-col justify-center relative"
-              style={{ 
-                animationDelay: '0.2s', 
+            <div
+              className="border-2 border-[#D4AF37] rounded-lg p-5 md:p-6 animate-scale-in w-full flex flex-col justify-center relative"
+              style={{
+                animationDelay: '0.2s',
                 animationFillMode: 'both',
                 background: 'linear-gradient(135deg, #2A2A2A 0%, #242220 100%)',
-                boxShadow: '0 6px 12px rgba(44, 24, 16, 0.5), 0 2px 4px rgba(44, 24, 16, 0.3), 0 0 40px rgba(212, 175, 55, 0.2)'
+                boxShadow: '0 6px 12px rgba(44, 24, 16, 0.5), 0 2px 4px rgba(44, 24, 16, 0.3), 0 0 20px rgba(212, 175, 55, 0.15)'
               }}
             >
           
               {/* Top badges row */}
-              <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+              <div className="absolute top-2 md:top-3 left-3 right-3 flex items-center justify-between gap-2">
                 <StreakBadge />
                 <TierBadge />
               </div>
 
-              <div className="space-y-4 flex flex-col items-center mt-8">
+              <div className="space-y-5 md:space-y-4 flex flex-col items-center mt-12 md:mt-10">
             
                 {/* Score with countup animation */}
                 <div className="animate-score-pop text-center" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
@@ -185,26 +171,26 @@ const GSplitResultV2 = () => {
                 </div>
             
                 {/* Left-aligned stats centered on canvas */}
-                <div className="space-y-2 text-left pt-2 w-full max-w-[240px]">
+                <div className="space-y-2 text-left pt-4 w-full max-w-[240px]">
                   {/* Ranking */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
                     <span className="text-[#D4AF37] text-base md:text-lg font-bold">
-                      Top {mockPercentile}% this week
+                      Rank: Top {mockPercentile}% this week
                     </span>
                   </div>
-              
+
                   {/* Split Status */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
                     <span className="text-[#FFF8E7] text-sm md:text-base font-medium">
-                      {splitDetected ? 'Split detected ✓' : 'No split detected'}
+                      Split detected: {splitDetected ? '✅' : '❌'}
                     </span>
                   </div>
-              
+
                   {/* Location */}
                   {userLocation && (
                     <div className="animate-fade-in" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
                       <span className="text-[#FFF8E7] text-sm md:text-base font-medium">
-                        📍 Your Local
+                        Location 📍: Your Local
                       </span>
                     </div>
                   )}
@@ -216,33 +202,35 @@ const GSplitResultV2 = () => {
 
         {/* Bottom Row - Action Buttons */}
         <div className="space-y-3 animate-fade-in mt-4 md:mt-6" style={{ animationDelay: '1.4s', animationFillMode: 'both' }}>
-          
-          {/* Primary Button - Share to Instagram */}
-          <Button 
-            onClick={handleInstagramShare}
-            disabled={isGeneratingImage}
-            className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#FFF8E7] hover:bg-[#FFF8E7]/90 text-[#1C1410] rounded-lg transition-all duration-300 hover:scale-[1.02]"
-            style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
-          >
-            {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
-          </Button>
-          
-          {/* Secondary Buttons */}
-          <div className="flex gap-3">
-            <Button 
-              onClick={handleShare}
-              variant="outline"
-              className="flex-1 h-11 md:h-12 text-sm md:text-base font-medium border-[#D4AF37]/40 text-[#FFF8E7] hover:bg-[#D4AF37]/10 rounded-lg transition-all duration-300"
+
+          {/* Button 1 - Share to Instagram */}
+          <div className="border-2 border-[#D4AF37]/40 rounded-lg p-1 bg-gradient-to-r from-[#2A2A2A] to-[#242220]">
+            <Button
+              onClick={handleInstagramShare}
+              disabled={isGeneratingImage}
+              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#FFF8E7] hover:bg-[#FFF8E7]/90 text-[#1C1410] rounded-md transition-all duration-300"
             >
-              Challenge Friend ⚔️
+              {isGeneratingImage ? "Generating..." : "1. Share to Instagram 📸"}
             </Button>
-            
-            <Button 
-              onClick={() => navigate("/split")}
-              variant="outline"
-              className="flex-1 h-11 md:h-12 text-sm md:text-base font-medium border-[#D4AF37]/40 text-[#FFF8E7] hover:bg-[#D4AF37]/10 rounded-lg transition-all duration-300"
+          </div>
+
+          {/* Button 2 - Challenge Friend */}
+          <div className="border-2 border-[#D4AF37]/40 rounded-lg p-1 bg-gradient-to-r from-[#2A2A2A] to-[#242220]">
+            <Button
+              onClick={handleShare}
+              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#FFF8E7] rounded-md transition-all duration-300"
             >
-              Try Again 🔄
+              2. Challenge Friend ⚔️
+            </Button>
+          </div>
+
+          {/* Button 3 - Try Again */}
+          <div className="border-2 border-[#D4AF37]/40 rounded-lg p-1 bg-gradient-to-r from-[#2A2A2A] to-[#242220]">
+            <Button
+              onClick={() => navigate("/split")}
+              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#FFF8E7] rounded-md transition-all duration-300"
+            >
+              3. Try Again 🔄
             </Button>
           </div>
         </div>
