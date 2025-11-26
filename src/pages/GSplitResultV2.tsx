@@ -103,16 +103,16 @@ const GSplitResultV2 = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1C1410] pt-4 md:pt-0">
+    <div className="min-h-screen bg-[#1C1410]">
 
       {/* Foam Header - "The Verdict" */}
-      <div className="w-full mb-0 animate-fade-in relative overflow-visible">
-        <div className="bg-[#fdecd0] pt-4 pb-4 md:pt-6 md:pb-6 flex flex-col justify-center items-center gap-2">
-          <h1 className="text-[#1C1410] text-3xl md:text-4xl font-bold tracking-wide">
+      <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
+        <div className="bg-[#fdecd0] pt-5 pb-2 md:pt-8 md:pb-6 flex flex-col justify-center items-center gap-1 md:gap-2">
+          <h1 className="text-[#1C1410] text-2xl md:text-4xl font-bold tracking-wide">
             The Verdict
           </h1>
           {feedback && (
-            <p className="text-[#1C1410]/70 text-base md:text-lg italic font-medium">
+            <p className="text-[#1C1410]/70 text-sm md:text-lg italic font-medium text-center">
               "{feedback}"
             </p>
           )}
@@ -120,14 +120,14 @@ const GSplitResultV2 = () => {
       </div>
 
       {/* Responsive Container */}
-      <div className="mx-auto max-w-[320px] md:max-w-[900px] px-4 flex flex-col gap-6 md:gap-8 pb-12 md:pb-16">
+      <div className="mx-auto max-w-[320px] md:max-w-[900px] px-4 flex flex-col gap-4 md:gap-8 pb-8 md:pb-16">
         
         {/* Top Row - Pint Photo + Stats Box */}
-        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           
           {/* Left - Pint Photo */}
           <div className="w-full md:w-1/2">
-            <div className="w-full aspect-[3/5] md:aspect-[4/5] rounded-lg overflow-hidden animate-fade-in shadow-lg">
+            <div className="w-full aspect-[9/16] md:aspect-[4/5] rounded-lg overflow-hidden animate-fade-in shadow-lg">
               <img 
                 src={image}
                 alt="Your pint analysis"
@@ -139,7 +139,7 @@ const GSplitResultV2 = () => {
           {/* Right - Stats Box */}
           <div className="w-full md:w-1/2 flex">
             <div
-              className="border-2 border-[#D4AF37] rounded-lg p-5 md:p-6 animate-scale-in w-full flex flex-col justify-center relative"
+              className="border-2 border-[#D4AF37] rounded-lg p-3 md:p-6 animate-scale-in w-full flex flex-col justify-center relative"
               style={{
                 animationDelay: '0.2s',
                 animationFillMode: 'both',
@@ -149,17 +149,17 @@ const GSplitResultV2 = () => {
             >
           
               {/* Top badges row */}
-              <div className="absolute top-2 md:top-3 left-3 right-3 flex items-center justify-between gap-2">
+              <div className="absolute top-1 md:top-3 left-2 md:left-3 right-2 md:right-3 flex items-center justify-between gap-1 md:gap-2">
                 <StreakBadge />
                 <TierBadge />
               </div>
 
-              <div className="space-y-5 md:space-y-4 flex flex-col items-center mt-12 md:mt-10">
-            
+              <div className="space-y-3 md:space-y-4 flex flex-col items-center mt-10 md:mt-10">
+
                 {/* Score with countup animation */}
                 <div className="animate-score-pop text-center" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
-                  <div 
-                    className="text-[60px] md:text-[80px] font-black leading-none"
+                  <div
+                    className="text-5xl md:text-[80px] font-black leading-none"
                     style={{ 
                       color: getScoreColor(score),
                       textShadow: '0 4px 12px rgba(44, 24, 16, 0.4)'
@@ -170,17 +170,17 @@ const GSplitResultV2 = () => {
                 </div>
             
                 {/* Left-aligned stats centered on canvas */}
-                <div className="space-y-2 text-left pt-4 w-full max-w-[240px]">
+                <div className="space-y-1 text-left pt-2 w-full max-w-[240px]">
                   {/* Ranking */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
-                    <span className="text-[#D4AF37] text-base md:text-lg font-bold">
+                    <span className="text-[#D4AF37] text-xs md:text-lg font-bold">
                       Rank: Top {mockPercentile}% this week
                     </span>
                   </div>
 
                   {/* Split Status */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
-                    <span className="text-[#FFF8E7] text-sm md:text-base font-medium">
+                    <span className="text-[#FFF8E7] text-xs md:text-base font-medium">
                       Split detected: {splitDetected ? '✅' : '❌'}
                     </span>
                   </div>
@@ -188,7 +188,7 @@ const GSplitResultV2 = () => {
                   {/* Location */}
                   {userPubName && (
                     <div className="animate-fade-in" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
-                      <span className="text-[#FFF8E7] text-sm md:text-base font-medium">
+                      <span className="text-[#FFF8E7] text-xs md:text-base font-medium">
                         Location 📍: {userPubName}
                       </span>
                     </div>
@@ -200,38 +200,32 @@ const GSplitResultV2 = () => {
         </div>
 
         {/* Bottom Row - Action Buttons */}
-        <div className="space-y-3 animate-fade-in mt-4 md:mt-6" style={{ animationDelay: '1.4s', animationFillMode: 'both' }}>
+        <div className="flex flex-col items-center space-y-2 animate-fade-in mt-2 md:mt-6" style={{ animationDelay: '1.4s', animationFillMode: 'both' }}>
 
           {/* Button 1 - Share to Instagram */}
-          <div className="border-2 border-[#D4AF37] rounded-lg p-1">
-            <Button
-              onClick={handleInstagramShare}
-              disabled={isGeneratingImage}
-              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#FFF8E7] hover:bg-[#FFF8E7]/90 text-[#1C1410] rounded-md transition-all duration-300"
-            >
-              {isGeneratingImage ? "Generating..." : "1. Share to Instagram 📸"}
-            </Button>
-          </div>
+          <Button
+            onClick={handleInstagramShare}
+            disabled={isGeneratingImage}
+            className="w-full h-10 md:h-14 text-xs md:text-base font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+          >
+            {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
+          </Button>
 
           {/* Button 2 - Challenge Friend */}
-          <div className="border-2 border-[#D4AF37] rounded-lg p-1">
-            <Button
-              onClick={handleShare}
-              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-[#1C1410] rounded-md transition-all duration-300"
-            >
-              2. Challenge Friend ⚔️
-            </Button>
-          </div>
+          <Button
+            onClick={handleShare}
+            className="w-full h-10 md:h-14 text-xs md:text-base font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+          >
+            Challenge Friend ⚔️
+          </Button>
 
           {/* Button 3 - Try Again */}
-          <div className="border-2 border-[#D4AF37] rounded-lg p-1">
-            <Button
-              onClick={() => navigate("/split")}
-              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#FFF8E7] hover:bg-[#FFF8E7]/90 text-[#1C1410] rounded-md transition-all duration-300"
-            >
-              3. Try Again 🔄
-            </Button>
-          </div>
+          <Button
+            onClick={() => navigate("/split")}
+            className="w-full h-10 md:h-14 text-xs md:text-base font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+          >
+            Try Again 🔄
+          </Button>
         </div>
       </div>
     </div>
