@@ -154,12 +154,12 @@ const GSplitResultV2 = () => {
                 <TierBadge />
               </div>
 
-              <div className="space-y-3 md:space-y-4 flex flex-col items-center mt-10 md:mt-10">
+              <div className="space-y-4 md:space-y-4 flex flex-col items-center mt-10 md:mt-10">
 
                 {/* Score with countup animation */}
                 <div className="animate-score-pop text-center" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
                   <div
-                    className="text-5xl md:text-[80px] font-body font-black leading-none"
+                    className="text-6xl md:text-[80px] font-body font-black leading-none"
                     style={{
                       color: getScoreColor(score),
                       letterSpacing: '-0.02em',
@@ -170,18 +170,18 @@ const GSplitResultV2 = () => {
                   </div>
                 </div>
             
-                {/* Left-aligned stats centered on canvas */}
-                <div className="space-y-1 text-left pt-2 w-full max-w-[240px]">
+                {/* Centered stats */}
+                <div className="space-y-1.5 text-center pt-2 w-full">
                   {/* Ranking */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
-                    <span className="text-[#D4AF37] text-xs md:text-lg font-body font-semibold">
+                    <span className="text-[#D4AF37] text-sm md:text-lg font-body font-semibold">
                       Rank: Top {mockPercentile}% this week
                     </span>
                   </div>
 
                   {/* Split Status */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
-                    <span className="text-[#FFF8E7] text-xs md:text-base font-body font-semibold">
+                    <span className="text-[#FFF8E7] text-sm md:text-base font-body font-semibold">
                       Split detected: {splitDetected ? '✅' : '❌'}
                     </span>
                   </div>
@@ -189,7 +189,7 @@ const GSplitResultV2 = () => {
                   {/* Location */}
                   {userPubName && (
                     <div className="animate-fade-in" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
-                      <span className="text-[#FFF8E7] text-xs md:text-base font-body font-semibold">
+                      <span className="text-[#FFF8E7] text-sm md:text-base font-body font-semibold">
                         Location 📍: {userPubName}
                       </span>
                     </div>
