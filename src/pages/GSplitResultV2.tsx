@@ -13,7 +13,7 @@ import { addPoints } from "@/lib/gamification";
  * Get score color (MATCHES ShareableResult colors)
  */
 const getScoreColor = (score: number): string => {
-  if (score >= 80) return "#5D9B5D"; // Softer green (MATCHED)
+  if (score >= 80) return "#36B37E"; // Irish green - vibrant! (MATCHED)
   if (score >= 60) return "#E8A849"; // Softer amber (MATCHED)
   return "#C45C4B"; // Softer red (MATCHED)
 };
@@ -108,7 +108,7 @@ const GSplitResultV2 = () => {
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
         <div className="bg-[#fdecd0] pt-5 pb-2 md:pt-8 md:pb-6 flex flex-col justify-center items-center gap-1 md:gap-2">
-          <h1 className="text-[#1C1410] text-2xl md:text-4xl font-display font-bold tracking-wide">
+          <h1 className="text-[#1C1410] text-4xl md:text-5xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
           {feedback && (
@@ -120,7 +120,7 @@ const GSplitResultV2 = () => {
       </div>
 
       {/* Responsive Container */}
-      <div className="mx-auto max-w-[320px] md:max-w-[900px] px-4 flex flex-col gap-4 md:gap-8 pb-8 md:pb-16 mt-4 md:mt-6">
+      <div className="mx-auto max-w-[360px] md:max-w-[900px] px-4 flex flex-col gap-4 md:gap-8 pb-8 md:pb-16 mt-4 md:mt-6">
         
         {/* Top Row - Pint Photo + Stats Box */}
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
@@ -226,6 +226,14 @@ const GSplitResultV2 = () => {
             className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >
             Try Again 🔄
+          </Button>
+
+          {/* Button 4 - Rate this Pint */}
+          <Button
+            onClick={() => navigate("/survey")}
+            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+          >
+            Rate this Pint ⭐
           </Button>
         </div>
       </div>

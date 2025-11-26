@@ -23,7 +23,7 @@ const ShareableResult = ({
 }: ShareableResultProps) => {
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "#5D9B5D"; // Softer green
+    if (score >= 80) return "#36B37E"; // Irish green - vibrant!
     if (score >= 60) return "#E8A849"; // Softer amber
     return "#C45C4B"; // Softer red
   };
@@ -34,7 +34,7 @@ const ShareableResult = ({
       {/* Foam Header with Title */}
       <div className="w-full relative overflow-visible z-20">
         <div className="bg-[#F5E6C8] pt-6 pb-6 flex justify-center items-center">
-          <h1 className="text-[#1C1410] text-2xl font-display font-bold tracking-wide">
+          <h1 className="text-[#1C1410] text-[32px] font-display font-bold tracking-wide">
             The Verdict
           </h1>
         </div>
