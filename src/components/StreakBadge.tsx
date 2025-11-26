@@ -20,7 +20,7 @@ const StreakBadge = () => {
       }}
     >
       <span className="text-lg animate-pulse">🔥</span>
-      <span className="text-orange-400 text-sm font-bold">
+      <span className="text-orange-400 text-sm font-ui font-semibold">
         {streak} {streak === 1 ? 'day' : 'days'}
       </span>
     </div>

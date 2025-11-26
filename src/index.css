@@ -8,6 +8,30 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Font Families */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+    --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+    /* Font Weights */
+    --weight-regular: 400;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* Font Sizes */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+    --text-2xl: 24px;
+    --text-3xl: 32px;
+    --text-4xl: 36px;
+    --text-5xl: 48px;
+    --text-6xl: 60px;
+    --text-7xl: 80px;
+    --text-8xl: 96px;
+
     /* Guinness pint-inspired color palette */
     --background: 0 0% 5%; /* Deep stout black */
     --foreground: 32 35% 92%; /* Cream text */
@@ -135,6 +159,6 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
   }
 }

@@ -108,11 +108,11 @@ const GSplitResultV2 = () => {
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
         <div className="bg-[#fdecd0] pt-5 pb-2 md:pt-8 md:pb-6 flex flex-col justify-center items-center gap-1 md:gap-2">
-          <h1 className="text-[#1C1410] text-2xl md:text-4xl font-bold tracking-wide">
+          <h1 className="text-[#1C1410] text-2xl md:text-4xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
           {feedback && (
-            <p className="text-[#1C1410]/70 text-sm md:text-lg italic font-medium text-center">
+            <p className="text-[#1C1410]/70 text-sm md:text-lg font-body italic font-normal text-center">
               "{feedback}"
             </p>
           )}
@@ -159,9 +159,10 @@ const GSplitResultV2 = () => {
                 {/* Score with countup animation */}
                 <div className="animate-score-pop text-center" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
                   <div
-                    className="text-5xl md:text-[80px] font-black leading-none"
-                    style={{ 
+                    className="text-5xl md:text-[80px] font-body font-black leading-none"
+                    style={{
                       color: getScoreColor(score),
+                      letterSpacing: '-0.02em',
                       textShadow: '0 4px 12px rgba(44, 24, 16, 0.4)'
                     }}
                   >
@@ -173,14 +174,14 @@ const GSplitResultV2 = () => {
                 <div className="space-y-1 text-left pt-2 w-full max-w-[240px]">
                   {/* Ranking */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
-                    <span className="text-[#D4AF37] text-xs md:text-lg font-bold">
+                    <span className="text-[#D4AF37] text-xs md:text-lg font-body font-semibold">
                       Rank: Top {mockPercentile}% this week
                     </span>
                   </div>
 
                   {/* Split Status */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
-                    <span className="text-[#FFF8E7] text-xs md:text-base font-medium">
+                    <span className="text-[#FFF8E7] text-xs md:text-base font-body font-semibold">
                       Split detected: {splitDetected ? '✅' : '❌'}
                     </span>
                   </div>
@@ -188,7 +189,7 @@ const GSplitResultV2 = () => {
                   {/* Location */}
                   {userPubName && (
                     <div className="animate-fade-in" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
-                      <span className="text-[#FFF8E7] text-xs md:text-base font-medium">
+                      <span className="text-[#FFF8E7] text-xs md:text-base font-body font-semibold">
                         Location 📍: {userPubName}
                       </span>
                     </div>
@@ -206,7 +207,7 @@ const GSplitResultV2 = () => {
           <Button
             onClick={handleInstagramShare}
             disabled={isGeneratingImage}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >
             {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
           </Button>
@@ -214,7 +215,7 @@ const GSplitResultV2 = () => {
           {/* Button 2 - Challenge Friend */}
           <Button
             onClick={handleShare}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >
             Challenge Friend ⚔️
           </Button>
@@ -222,7 +223,7 @@ const GSplitResultV2 = () => {
           {/* Button 3 - Try Again */}
           <Button
             onClick={() => navigate("/split")}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >
             Try Again 🔄
           </Button>

@@ -34,7 +34,7 @@ const ShareableResult = ({
       {/* Foam Header with Title */}
       <div className="w-full relative overflow-visible z-20">
         <div className="bg-[#F5E6C8] pt-6 pb-6 flex justify-center items-center">
-          <h1 className="text-[#1C1410] text-2xl font-playfair font-bold tracking-wide">
+          <h1 className="text-[#1C1410] text-2xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
         </div>
@@ -86,13 +86,14 @@ const ShareableResult = ({
 
               {/* Score - Full Width */}
               <div className="text-center">
-                <div className="text-[#FFF8E7] text-xs font-semibold mb-0.5">
+                <div className="text-[#FFF8E7] text-xs font-body font-semibold mb-0.5">
                   🔍 Score
                 </div>
                 <div
-                  className="text-[36px] font-black leading-none"
+                  className="text-[36px] font-body font-bold leading-none"
                   style={{
                     color: getScoreColor(score),
+                    letterSpacing: '-0.02em',
                     textShadow: '0 4px 12px rgba(44, 24, 16, 0.4)'
                   }}
                 >
@@ -104,26 +105,26 @@ const ShareableResult = ({
               <div className="space-y-1.5 text-left pt-1 w-full max-w-[200px]">
                 {/* Ranking */}
                 {ranking && (
-                  <div className="text-[#D4AF37] text-sm font-bold">
+                  <div className="text-[#D4AF37] text-sm font-body font-semibold">
                     {ranking}
                   </div>
                 )}
 
                 {/* Split Status */}
-                <div className="text-[#FFF8E7] text-xs">
+                <div className="text-[#FFF8E7] text-xs font-body">
                   Split: {splitDetected ? '✅ Detected' : '❌ Not detected'}
                 </div>
 
                 {/* Location */}
                 {location && (
-                  <div className="text-[#FFF8E7] text-xs">
+                  <div className="text-[#FFF8E7] text-xs font-body">
                     📍 Location: {location}
                   </div>
                 )}
 
                 {/* Comment */}
                 {comment && (
-                  <div className="text-[#FFF8E7] text-xs italic">
+                  <div className="text-[#FFF8E7] text-xs font-body italic font-normal">
                     💬 "{comment}"
                   </div>
                 )}
@@ -131,7 +132,7 @@ const ShareableResult = ({
 
               {/* Challenge Mode Callout */}
               {mode === 'challenge' && (
-                <div className="text-[#FFF8E7] text-xs font-semibold tracking-wider text-center pt-1">
+                <div className="text-[#FFF8E7] text-xs font-ui font-semibold tracking-wider text-center pt-1">
                   CAN YOU BEAT THIS?
                 </div>
               )}

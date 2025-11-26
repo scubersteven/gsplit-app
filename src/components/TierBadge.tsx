@@ -19,7 +19,7 @@ const TierBadge = () => {
     >
       <span className="text-lg">{tier.icon}</span>
       <span
-        className="text-sm font-bold"
+        className="text-sm font-ui font-semibold"
         style={{ color: tier.color }}
       >
         {tier.name}
