@@ -120,7 +120,7 @@ const GSplitResultV2 = () => {
       </div>
 
       {/* Responsive Container */}
-      <div className="mx-auto max-w-[320px] md:max-w-[900px] px-4 flex flex-col gap-4 md:gap-8 pb-8 md:pb-16">
+      <div className="mx-auto max-w-[320px] md:max-w-[900px] px-4 flex flex-col gap-4 md:gap-8 pb-8 md:pb-16 mt-4 md:mt-6">
         
         {/* Top Row - Pint Photo + Stats Box */}
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
