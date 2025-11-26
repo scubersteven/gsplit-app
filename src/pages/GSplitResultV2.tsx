@@ -32,7 +32,14 @@ const GSplitResultV2 = () => {
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
 
   // Get user pub name from localStorage
-  const userPubName = localStorage.getItem('userPubName');
+  const userPubName = (() => {
+    try {
+      return localStorage.getItem('userPubName');
+    } catch (error) {
+      console.error('Failed to get user pub name:', error);
+      return null;
+    }
+  })();
 
   // MOCK DATA: Generate competitive context
   const mockRank = Math.floor(Math.random() * 50) + 1;
@@ -42,49 +49,60 @@ const GSplitResultV2 = () => {
 
   useEffect(() => {
     if (score > 0) {
-      // Add points for gamification
-      addPoints(score);
+      try {
+        // Add points for gamification
+        addPoints(score);
 
-      // Save basic pint log immediately
-      const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
+        // Save basic pint log immediately
+        const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
 
-      // Generate unique ID for this pint
-      const pintId = Date.now();
+        // Generate unique ID for this pint
+        const pintId = Date.now();
 
-      const newEntry = {
-        id: pintId,
-        date: new Date().toISOString(),
-        splitScore: score,
-        splitImage: image,
-        splitDetected: splitDetected ?? false,
-        feedback: feedback || "That's a pour",
-        location: userPubName || undefined,
-        ranking: `Top ${mockPercentile}% this week`,
-        // Survey data (null until completed)
-        overallRating: null,
-        price: null,
-        taste: null,
-        temperature: null,
-        creaminess: null,
-        headSize: null,
-        twoPart: null,
-        settled: null,
-        tilted: null,
-        authentic: null
-      };
+        const newEntry = {
+          id: pintId,
+          date: new Date().toISOString(),
+          splitScore: score,
+          splitImage: image,
+          splitDetected: splitDetected ?? false,
+          feedback: feedback || "That's a pour",
+          location: userPubName || undefined,
+          ranking: `Top ${mockPercentile}% this week`,
+          // Survey data (null until completed)
+          overallRating: null,
+          price: null,
+          taste: null,
+          temperature: null,
+          creaminess: null,
+          headSize: null,
+          twoPart: null,
+          settled: null,
+          tilted: null,
+          authentic: null
+        };
 
-      localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
+        localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
 
-      // Store pintId for survey flow (BEFORE toast)
-      sessionStorage.setItem("currentPintId", pintId.toString());
+        // Store pintId for survey flow (BEFORE toast)
+        sessionStorage.setItem("currentPintId", pintId.toString());
 
-      // Show success toast AFTER score animation completes
-      setTimeout(() => {
-        toast.success("🍺 Pint saved to your log!", {
-          description: "View all your pints in the Log tab",
-          duration: 3000,
-        });
-      }, 2500); // Delay 2500ms so score animation finishes first
+        // Show success toast AFTER score animation completes
+        setTimeout(() => {
+          toast.success("🍺 Pint saved to your log!", {
+            description: "View all your pints in the Log tab",
+            duration: 3000,
+          });
+        }, 2500); // Delay 2500ms so score animation finishes first
+      } catch (error) {
+        console.error("Failed to save pint log:", error);
+        // Still show a toast so user knows something happened
+        setTimeout(() => {
+          toast.error("Could not save to log (storage unavailable)", {
+            description: "Your score is still displayed below",
+            duration: 3000,
+          });
+        }, 2500);
+      }
     }
   }, [score, image, splitDetected, feedback, userPubName, mockPercentile]);
 
@@ -272,14 +290,19 @@ const GSplitResultV2 = () => {
           {/* Button 4 - Rate this Pint */}
           <Button
             onClick={() => {
-              const pintId = sessionStorage.getItem("currentPintId");
-              navigate("/survey", {
-                state: {
-                  pintLogId: pintId ? parseInt(pintId) : null,
-                  splitScore: score,
-                  splitImage: image
-                }
-              });
+              try {
+                const pintId = sessionStorage.getItem("currentPintId");
+                navigate("/survey", {
+                  state: {
+                    pintLogId: pintId ? parseInt(pintId) : null,
+                    splitScore: score,
+                    splitImage: image
+                  }
+                });
+              } catch (error) {
+                console.error("Failed to navigate to survey:", error);
+                toast.error("Failed to load survey");
+              }
             }}
             className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >

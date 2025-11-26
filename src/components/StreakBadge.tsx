@@ -5,8 +5,13 @@ const StreakBadge = () => {
   const [streak, setStreak] = useState(0);
 
   useEffect(() => {
-    const currentStreak = updateStreak();
-    setStreak(currentStreak);
+    try {
+      const currentStreak = updateStreak();
+      setStreak(currentStreak);
+    } catch (error) {
+      console.error('Failed to update streak badge:', error);
+      setStreak(0);
+    }
   }, []);
 
   if (streak === 0) return null;

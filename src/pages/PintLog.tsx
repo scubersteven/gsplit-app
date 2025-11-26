@@ -18,8 +18,13 @@ const PintLog = () => {
   const [pintLog, setPintLog] = useState<PintEntry[]>([]);
 
   useEffect(() => {
-    const log = JSON.parse(localStorage.getItem("pintLog") || "[]");
-    setPintLog(log);
+    try {
+      const log = JSON.parse(localStorage.getItem("pintLog") || "[]");
+      setPintLog(log);
+    } catch (error) {
+      console.error("Failed to load pint log:", error);
+      setPintLog([]);
+    }
   }, []);
 
   const averageSplit = pintLog.filter(p => p.splitScore).reduce((acc, p) => acc + (p.splitScore || 0), 0) / (pintLog.filter(p => p.splitScore).length || 1);

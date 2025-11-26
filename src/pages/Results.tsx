@@ -22,55 +22,60 @@ const Results = () => {
   }
 
   const handleSaveToLog = () => {
-    const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
-    const pintLogId = location.state?.pintLogId;
+    try {
+      const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
+      const pintLogId = location.state?.pintLogId;
 
-    if (pintLogId) {
-      // Update existing pint log entry
-      const updatedLog = existingLog.map((entry: any) =>
-        entry.id === pintLogId
-          ? {
-              ...entry,
-              overallRating,
-              location: surveyData.location,
-              price: surveyData.price,
-              taste: surveyData.taste,
-              temperature: surveyData.temperature,
-              creaminess: surveyData.creaminess,
-              headSize: surveyData.headSize,
-              twoPart: surveyData.twoPart,
-              settled: surveyData.settled,
-              tilted: surveyData.tilted,
-              authentic: surveyData.authentic
-            }
-          : entry
-      );
-      localStorage.setItem("pintLog", JSON.stringify(updatedLog));
-      toast.success("Pint rating updated!");
-    } else {
-      // Legacy flow: Create new entry (if coming from old route)
-      const newEntry = {
-        id: Date.now(),
-        date: new Date().toISOString(),
-        splitScore,
-        splitImage,
-        overallRating,
-        location: surveyData.location,
-        price: surveyData.price,
-        taste: surveyData.taste,
-        temperature: surveyData.temperature,
-        creaminess: surveyData.creaminess,
-        headSize: surveyData.headSize,
-        twoPart: surveyData.twoPart,
-        settled: surveyData.settled,
-        tilted: surveyData.tilted,
-        authentic: surveyData.authentic
-      };
-      localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
-      toast.success("Saved to pint log");
+      if (pintLogId) {
+        // Update existing pint log entry
+        const updatedLog = existingLog.map((entry: any) =>
+          entry.id === pintLogId
+            ? {
+                ...entry,
+                overallRating,
+                location: surveyData.location,
+                price: surveyData.price,
+                taste: surveyData.taste,
+                temperature: surveyData.temperature,
+                creaminess: surveyData.creaminess,
+                headSize: surveyData.headSize,
+                twoPart: surveyData.twoPart,
+                settled: surveyData.settled,
+                tilted: surveyData.tilted,
+                authentic: surveyData.authentic
+              }
+            : entry
+        );
+        localStorage.setItem("pintLog", JSON.stringify(updatedLog));
+        toast.success("Pint rating updated!");
+      } else {
+        // Legacy flow: Create new entry (if coming from old route)
+        const newEntry = {
+          id: Date.now(),
+          date: new Date().toISOString(),
+          splitScore,
+          splitImage,
+          overallRating,
+          location: surveyData.location,
+          price: surveyData.price,
+          taste: surveyData.taste,
+          temperature: surveyData.temperature,
+          creaminess: surveyData.creaminess,
+          headSize: surveyData.headSize,
+          twoPart: surveyData.twoPart,
+          settled: surveyData.settled,
+          tilted: surveyData.tilted,
+          authentic: surveyData.authentic
+        };
+        localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
+        toast.success("Saved to pint log");
+      }
+
+      setTimeout(() => navigate("/log"), 1000);
+    } catch (error) {
+      console.error("Failed to save pint log:", error);
+      toast.error("Failed to save pint (storage unavailable)");
     }
-
-    setTimeout(() => navigate("/log"), 1000);
   };
 
   return (

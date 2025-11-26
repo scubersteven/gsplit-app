@@ -1,12 +1,23 @@
 import { useEffect, useState } from 'react';
-import { getTierFromPoints, getTotalPoints } from '@/lib/gamification';
+import { getTierFromPoints, getTotalPoints, TIERS } from '@/lib/gamification';
 
 const TierBadge = () => {
-  const [tier, setTier] = useState(() => getTierFromPoints(getTotalPoints()));
+  const [tier, setTier] = useState(() => {
+    try {
+      return getTierFromPoints(getTotalPoints());
+    } catch (error) {
+      console.error('Failed to initialize tier:', error);
+      return TIERS[0]; // Default to Rookie
+    }
+  });
 
   useEffect(() => {
-    const points = getTotalPoints();
-    setTier(getTierFromPoints(points));
+    try {
+      const points = getTotalPoints();
+      setTier(getTierFromPoints(points));
+    } catch (error) {
+      console.error('Failed to update tier:', error);
+    }
   }, []);
 
   return (
