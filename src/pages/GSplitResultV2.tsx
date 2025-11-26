@@ -31,9 +31,8 @@ const GSplitResultV2 = () => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
 
-  // Get user location from localStorage
-  const userLocationStr = localStorage.getItem('userLocation');
-  const userLocation = userLocationStr ? JSON.parse(userLocationStr) : null;
+  // Get user pub name from localStorage
+  const userPubName = localStorage.getItem('userPubName');
 
   // MOCK DATA: Generate competitive context
   const mockRank = Math.floor(Math.random() * 50) + 1;
@@ -88,7 +87,7 @@ const GSplitResultV2 = () => {
         score: score,
         splitDetected: splitDetected ?? false,
         feedback: feedback || "That's a pour",
-        location: userLocation ? "Your Local" : undefined,
+        location: userPubName || undefined,
         ranking: `Top ${mockPercentile}% this week`,
         pintImage: image // User's actual pint photo
       });
@@ -108,7 +107,7 @@ const GSplitResultV2 = () => {
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-visible">
-        <div className="bg-[#F5E6C8] pt-4 pb-4 md:pt-6 md:pb-6 flex flex-col justify-center items-center gap-2">
+        <div className="bg-[#fdecd0] pt-4 pb-4 md:pt-6 md:pb-6 flex flex-col justify-center items-center gap-2">
           <h1 className="text-[#1C1410] text-3xl md:text-4xl font-bold tracking-wide">
             The Verdict
           </h1>
@@ -187,10 +186,10 @@ const GSplitResultV2 = () => {
                   </div>
 
                   {/* Location */}
-                  {userLocation && (
+                  {userPubName && (
                     <div className="animate-fade-in" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
                       <span className="text-[#FFF8E7] text-sm md:text-base font-medium">
-                        Location 📍: Your Local
+                        Location 📍: {userPubName}
                       </span>
                     </div>
                   )}
@@ -204,7 +203,7 @@ const GSplitResultV2 = () => {
         <div className="space-y-3 animate-fade-in mt-4 md:mt-6" style={{ animationDelay: '1.4s', animationFillMode: 'both' }}>
 
           {/* Button 1 - Share to Instagram */}
-          <div className="border-2 border-[#D4AF37]/40 rounded-lg p-1 bg-gradient-to-r from-[#2A2A2A] to-[#242220]">
+          <div className="border-2 border-[#D4AF37] rounded-lg p-1">
             <Button
               onClick={handleInstagramShare}
               disabled={isGeneratingImage}
@@ -215,20 +214,20 @@ const GSplitResultV2 = () => {
           </div>
 
           {/* Button 2 - Challenge Friend */}
-          <div className="border-2 border-[#D4AF37]/40 rounded-lg p-1 bg-gradient-to-r from-[#2A2A2A] to-[#242220]">
+          <div className="border-2 border-[#D4AF37] rounded-lg p-1">
             <Button
               onClick={handleShare}
-              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#FFF8E7] rounded-md transition-all duration-300"
+              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-[#1C1410] rounded-md transition-all duration-300"
             >
               2. Challenge Friend ⚔️
             </Button>
           </div>
 
           {/* Button 3 - Try Again */}
-          <div className="border-2 border-[#D4AF37]/40 rounded-lg p-1 bg-gradient-to-r from-[#2A2A2A] to-[#242220]">
+          <div className="border-2 border-[#D4AF37] rounded-lg p-1">
             <Button
               onClick={() => navigate("/split")}
-              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#FFF8E7] rounded-md transition-all duration-300"
+              className="w-full h-12 md:h-14 text-sm md:text-base font-semibold bg-[#FFF8E7] hover:bg-[#FFF8E7]/90 text-[#1C1410] rounded-md transition-all duration-300"
             >
               3. Try Again 🔄
             </Button>

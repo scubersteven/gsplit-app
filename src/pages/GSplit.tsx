@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Camera, Upload, ArrowLeft, Video, MapPin } from "lucide-react";
 import { toast } from "sonner";
@@ -13,7 +14,7 @@ const GSplit = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [locationData, setLocationData] = useState<{lat: number, lng: number} | null>(null);
+  const [pubName, setPubName] = useState("");
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,31 +55,14 @@ const GSplit = () => {
     }
   }, []);
 
-  const handleAllowLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const coords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setLocationData(coords);
-          localStorage.setItem('userLocation', JSON.stringify(coords));
-          sessionStorage.setItem('locationModalSeen', 'true');
-          toast.success("Location saved successfully!");
-          setShowLocationModal(false);
-        },
-        (error) => {
-          console.error('Location error:', error);
-          toast.error("Couldn't get location. You can skip for now.");
-          sessionStorage.setItem('locationModalSeen', 'true');
-          setShowLocationModal(false);
-        }
-      );
-    } else {
-      toast.error("Geolocation not supported by browser");
+  const handleSavePub = () => {
+    if (pubName.trim()) {
+      localStorage.setItem('userPubName', pubName.trim());
       sessionStorage.setItem('locationModalSeen', 'true');
+      toast.success(`Saved: ${pubName.trim()}`);
       setShowLocationModal(false);
+    } else {
+      toast.error("Please enter your pub's name");
     }
   };
 
@@ -281,20 +265,31 @@ const GSplit = () => {
         />
       )}
 
-      {/* Location Permission Modal */}
+      {/* Location Modal */}
       <Dialog open={showLocationModal} onOpenChange={setShowLocationModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <MapPin className="w-5 h-5 text-success" />
-              Find Your Pub
+              What's Your Pub?
             </DialogTitle>
             <DialogDescription className="text-base pt-2">
               📍 See who's beating you at your local
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-4">
+          <div className="py-4">
+            <Input
+              placeholder="e.g., Temple Bar, O'Donoghue's"
+              value={pubName}
+              onChange={(e) => setPubName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSavePub()}
+              className="w-full"
+              autoFocus
+            />
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2">
             <Button
               variant="ghost"
               onClick={handleSkipLocation}
@@ -303,10 +298,10 @@ const GSplit = () => {
               Skip
             </Button>
             <Button
-              onClick={handleAllowLocation}
+              onClick={handleSavePub}
               className="w-full sm:w-auto bg-success hover:bg-success/90 text-white order-1 sm:order-2"
             >
-              Find My Pub
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
