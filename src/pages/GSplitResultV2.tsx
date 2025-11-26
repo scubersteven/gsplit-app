@@ -41,11 +41,52 @@ const GSplitResultV2 = () => {
                          Math.floor(Math.random() * 50) + 50;
 
   useEffect(() => {
-    // Add points when component mounts (gamification)
     if (score > 0) {
+      // Add points for gamification
       addPoints(score);
+
+      // Save basic pint log immediately
+      const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
+
+      // Generate unique ID for this pint
+      const pintId = Date.now();
+
+      const newEntry = {
+        id: pintId,
+        date: new Date().toISOString(),
+        splitScore: score,
+        splitImage: image,
+        splitDetected: splitDetected ?? false,
+        feedback: feedback || "That's a pour",
+        location: userPubName || undefined,
+        ranking: `Top ${mockPercentile}% this week`,
+        // Survey data (null until completed)
+        overallRating: null,
+        price: null,
+        taste: null,
+        temperature: null,
+        creaminess: null,
+        headSize: null,
+        twoPart: null,
+        settled: null,
+        tilted: null,
+        authentic: null
+      };
+
+      localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
+
+      // Store pintId for survey flow (BEFORE toast)
+      sessionStorage.setItem("currentPintId", pintId.toString());
+
+      // Show success toast AFTER score animation completes
+      setTimeout(() => {
+        toast.success("🍺 Pint saved to your log!", {
+          description: "View all your pints in the Log tab",
+          duration: 3000,
+        });
+      }, 2500); // Delay 2500ms so score animation finishes first
     }
-  }, [score]);
+  }, [score, image, splitDetected, feedback, userPubName, mockPercentile]);
 
   if (!image) {
     navigate("/split");
@@ -230,7 +271,16 @@ const GSplitResultV2 = () => {
 
           {/* Button 4 - Rate this Pint */}
           <Button
-            onClick={() => navigate("/survey")}
+            onClick={() => {
+              const pintId = sessionStorage.getItem("currentPintId");
+              navigate("/survey", {
+                state: {
+                  pintLogId: pintId ? parseInt(pintId) : null,
+                  splitScore: score,
+                  splitImage: image
+                }
+              });
+            }}
             className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >
             Rate this Pint ⭐

@@ -25,7 +25,7 @@ interface SurveyData {
 const PintSurvey = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { splitScore, splitImage } = location.state || {};
+  const { splitScore, splitImage, pintLogId } = location.state || {};
 
   const [surveyData, setSurveyData] = useState<SurveyData>({
     taste: 3,
@@ -59,6 +59,7 @@ const PintSurvey = () => {
         splitImage,
         surveyData,
         overallRating,
+        pintLogId,
       },
     });
   };

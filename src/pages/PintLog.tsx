@@ -130,6 +130,30 @@ const PintLog = () => {
                       )}
                     </div>
 
+                    {/* Survey Status - Show if incomplete */}
+                    {!entry.overallRating && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Complete your rating to unlock detailed stats
+                        </p>
+                        <Button
+                          onClick={() =>
+                            navigate("/survey", {
+                              state: {
+                                pintLogId: entry.id,
+                                splitScore: entry.splitScore,
+                                splitImage: entry.splitImage
+                              }
+                            })
+                          }
+                          size="sm"
+                          className="w-full"
+                        >
+                          Complete Rating ⭐
+                        </Button>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-4">
                       {entry.splitScore && (
                         <div>
