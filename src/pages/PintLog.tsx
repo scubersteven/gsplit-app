@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, TrendingUp, Award, Calendar } from "lucide-react";
+import { getStorageSize } from "@/utils/imageCompression";
 
 interface PintEntry {
   id: number;
@@ -27,6 +28,11 @@ const PintLog = () => {
     }
   }, []);
 
+  // Storage tracking
+  const storageUsed = pintLog.length;
+  const storageLimit = 30;
+  const storageSizeMB = getStorageSize();
+
   const averageSplit = pintLog.filter(p => p.splitScore).reduce((acc, p) => acc + (p.splitScore || 0), 0) / (pintLog.filter(p => p.splitScore).length || 1);
   const bestSplit = Math.max(...pintLog.map(p => p.splitScore || 0), 0);
   const averageRating = pintLog.reduce((acc, p) => acc + p.overallRating, 0) / (pintLog.length || 1);
@@ -50,6 +56,37 @@ const PintLog = () => {
           <p className="text-base text-muted-foreground">
             your guinness journey
           </p>
+        </div>
+
+        {/* Storage Indicator */}
+        <div className="mb-6 bg-card border border-border rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-muted-foreground">
+              Pints stored: <span className="text-foreground font-semibold">{storageUsed}/{storageLimit}</span>
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {storageSizeMB.toFixed(1)} MB used
+            </span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-300 ${
+                storageUsed >= 28 ? 'bg-amber-500' :
+                storageUsed >= 20 ? 'bg-blue-500' :
+                'bg-green-500'
+              }`}
+              style={{ width: `${(storageUsed / storageLimit) * 100}%` }}
+            />
+          </div>
+
+          {/* Warning when near limit */}
+          {storageUsed >= 28 && (
+            <p className="text-xs text-amber-500 mt-2">
+              ⚠️ Almost full! Oldest pints will be auto-deleted when you reach {storageLimit}.
+            </p>
+          )}
         </div>
 
         {/* Stats Overview */}

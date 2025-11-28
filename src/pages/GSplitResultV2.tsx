@@ -8,6 +8,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import StreakBadge from "@/components/StreakBadge";
 import TierBadge from "@/components/TierBadge";
 import { addPoints } from "@/lib/gamification";
+import { compressImage } from "@/utils/imageCompression";
 
 /**
  * Get score color (MATCHES ShareableResult colors)
@@ -48,74 +49,102 @@ const GSplitResultV2 = () => {
                          Math.floor(Math.random() * 50) + 50;
 
   useEffect(() => {
-    console.log("🔍 [DEBUG] useEffect triggered!", { score, image, splitDetected, feedback, userPubName, mockPercentile });
+    // IIFE for async operations inside useEffect
+    (async () => {
+      console.log("🔍 [DEBUG] useEffect triggered!", { score, image, splitDetected, feedback, userPubName, mockPercentile });
 
-    if (score > 0) {
-      console.log("✅ [DEBUG] Score > 0, proceeding with save...");
-      try {
-        // Add points for gamification
-        addPoints(score);
-        console.log("💰 [DEBUG] Points added");
+      if (score > 0 && image) {
+        console.log("✅ [DEBUG] Score > 0, proceeding with save...");
 
-        // Save basic pint log immediately
-        const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
-        console.log("📖 [DEBUG] Existing log:", existingLog);
+        try {
+          // Step 1: Compress image (200 KB target)
+          console.log("🗜️ [DEBUG] Starting image compression...");
+          let compressedImage: string | null;
 
-        // Generate unique ID for this pint
-        const pintId = Date.now();
+          try {
+            compressedImage = await compressImage(image, 200);
+            console.log("✅ [DEBUG] Image compressed successfully");
+          } catch (compressionError) {
+            console.error("⚠️ [DEBUG] Compression failed, saving without image:", compressionError);
+            compressedImage = null; // Fallback: save metadata without image
+          }
 
-        const newEntry = {
-          id: pintId,
-          date: new Date().toISOString(),
-          splitScore: score,
-          splitImage: image,
-          splitDetected: splitDetected ?? false,
-          feedback: feedback || "That's a pour",
-          location: userPubName || undefined,
-          ranking: `Top ${mockPercentile}% this week`,
-          // Survey data (null until completed)
-          overallRating: null,
-          price: null,
-          taste: null,
-          temperature: null,
-          creaminess: null,
-          headSize: null,
-          twoPart: null,
-          settled: null,
-          tilted: null,
-          authentic: null
-        };
+          // Step 2: Add points for gamification
+          addPoints(score);
+          console.log("💰 [DEBUG] Points added");
 
-        console.log("📝 [DEBUG] New entry created:", newEntry);
+          // Step 3: Get existing log and apply 30-pint limit
+          const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
+          console.log("📖 [DEBUG] Existing log count:", existingLog.length);
 
-        localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
-        console.log("💾 [DEBUG] Saved to localStorage!");
+          // LIMIT: Keep only 29 most recent (29 + 1 new = 30 total)
+          const trimmedLog = existingLog.length >= 30
+            ? existingLog.slice(0, 29)
+            : existingLog;
 
-        // Store pintId for survey flow (BEFORE toast)
-        sessionStorage.setItem("currentPintId", pintId.toString());
-        console.log("🔑 [DEBUG] Stored pintId in sessionStorage:", pintId);
+          if (existingLog.length >= 30) {
+            console.log("🗑️ [DEBUG] Trimmed log: removed", existingLog.length - 29, "oldest pints");
+          }
 
-        // Show success toast AFTER score animation completes
-        setTimeout(() => {
-          console.log("🍞 [DEBUG] Showing success toast...");
-          toast.success("🍺 Pint saved to your log!", {
-            description: "View all your pints in the Log tab",
-            duration: 3000,
-          });
-        }, 2500); // Delay 2500ms so score animation finishes first
-      } catch (error) {
-        console.error("❌ [DEBUG] Failed to save pint log:", error);
-        // Still show a toast so user knows something happened
-        setTimeout(() => {
-          toast.error("Could not save to log (storage unavailable)", {
-            description: "Your score is still displayed below",
-            duration: 3000,
-          });
-        }, 2500);
+          // Step 4: Generate unique ID for this pint
+          const pintId = Date.now();
+
+          const newEntry = {
+            id: pintId,
+            date: new Date().toISOString(),
+            splitScore: score,
+            splitImage: compressedImage, // ← Use compressed image (or null)
+            splitDetected: splitDetected ?? false,
+            feedback: feedback || "That's a pour",
+            location: userPubName || undefined,
+            ranking: `Top ${mockPercentile}% this week`,
+            // Survey data (null until completed)
+            overallRating: null,
+            price: null,
+            taste: null,
+            temperature: null,
+            creaminess: null,
+            headSize: null,
+            twoPart: null,
+            settled: null,
+            tilted: null,
+            authentic: null
+          };
+
+          console.log("📝 [DEBUG] New entry created (with compressed image)");
+
+          // Step 5: Save to localStorage
+          localStorage.setItem("pintLog", JSON.stringify([newEntry, ...trimmedLog]));
+          console.log("💾 [DEBUG] Saved to localStorage! Total pints:", trimmedLog.length + 1);
+
+          // Step 6: Store pintId for survey flow (BEFORE toast)
+          sessionStorage.setItem("currentPintId", pintId.toString());
+          console.log("🔑 [DEBUG] Stored pintId in sessionStorage:", pintId);
+
+          // Step 7: Show success toast AFTER score animation + compression
+          setTimeout(() => {
+            console.log("🍞 [DEBUG] Showing success toast...");
+            toast.success("🍺 Pint saved to your log!", {
+              description: "View all your pints in the Log tab",
+              duration: 3000,
+            });
+          }, 2500); // Delay accounts for animation + compression time
+
+        } catch (error) {
+          console.error("❌ [DEBUG] Failed to save pint log:", error);
+
+          // Show error toast with helpful message
+          setTimeout(() => {
+            toast.error("Could not save to log (storage full)", {
+              description: "Try clearing old pints from your log",
+              duration: 4000,
+            });
+          }, 2500);
+        }
+      } else {
+        console.log("⚠️ [DEBUG] Score NOT > 0 or no image, skipping save. Score:", score);
       }
-    } else {
-      console.log("⚠️ [DEBUG] Score NOT > 0, skipping save. Score value:", score);
-    }
+    })();
   }, [score, image, splitDetected, feedback, userPubName, mockPercentile]);
 
   if (!image) {
