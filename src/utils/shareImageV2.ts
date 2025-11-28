@@ -42,7 +42,8 @@ export const generateShareImageV2 = async (
           comment: feedback,
           location: location || undefined,
           ranking: ranking || undefined,
-          mode: 'share'
+          mode: 'share',
+          pintImage: pintImage
         })
       );
 

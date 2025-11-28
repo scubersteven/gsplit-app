@@ -124,7 +124,7 @@ const ShareableResult = ({
 
                 {/* Comment */}
                 {comment && (
-                  <div className="text-[#FFF8E7] text-xs font-body italic font-normal">
+                  <div className="text-[#FFF8E7] text-lg font-body italic font-normal">
                     💬 "{comment}"
                   </div>
                 )}
