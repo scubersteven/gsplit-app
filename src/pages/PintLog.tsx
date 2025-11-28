@@ -157,7 +157,7 @@ const PintLog = () => {
                         <h3 className="text-xl font-bold text-foreground mb-1">
                           {entry.location}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm font-body" style={{ color: '#FFF8E7', opacity: 0.9 }}>
                           {new Date(entry.date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -166,7 +166,7 @@ const PintLog = () => {
                         </p>
                       </div>
                       {entry.price && (
-                        <div className="text-base text-muted-foreground">
+                        <div className="text-base font-body font-semibold" style={{ color: '#FFD700' }}>
                           {entry.price}
                         </div>
                       )}
@@ -174,8 +174,8 @@ const PintLog = () => {
 
                     {/* Survey Status - Show if incomplete */}
                     {!entry.overallRating && (
-                      <div className="mt-4 pt-4 border-t border-border">
-                        <p className="text-sm text-muted-foreground mb-3">
+                      <div className="mt-6 pt-4 border-t border-border">
+                        <p className="text-sm font-body mb-4" style={{ color: '#FFF8E7', opacity: 0.9 }}>
                           Complete your rating to unlock detailed stats
                         </p>
                         <Button
@@ -188,18 +188,19 @@ const PintLog = () => {
                               }
                             })
                           }
-                          size="sm"
-                          className="text-xs font-ui"
+                          size="default"
+                          variant="default"
+                          className="font-ui font-semibold"
                         >
                           Complete Rating ⭐
                         </Button>
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6 mt-4">
                       {entry.splitScore && (
                         <div>
-                          <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">
+                          <div className="text-xs font-body mb-1 uppercase tracking-wider font-semibold" style={{ color: '#FFF8E7', opacity: 0.6, letterSpacing: '0.05em' }}>
                             g-split
                           </div>
                           <div className="text-3xl font-bold text-success">
@@ -208,7 +209,7 @@ const PintLog = () => {
                         </div>
                       )}
                       <div>
-                        <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">
+                        <div className="text-xs font-body mb-1 uppercase tracking-wider font-semibold" style={{ color: '#FFF8E7', opacity: 0.6, letterSpacing: '0.05em' }}>
                           rating
                         </div>
                         <div className="text-2xl text-warning">
