@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Beer, BookOpen, Home, MapPin } from "lucide-react";
+import { Beer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import gSplitLogo from "@/assets/g-split-logo.png";
 
@@ -40,8 +40,8 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <Home className="w-4 h-4" />
-                  <span className="hidden sm:inline">Home</span>
+                  <span className="text-base">➤</span>
+                  <span className="hidden sm:inline font-ui">The Bar</span>
                 </Button>
               </Link>
               
@@ -53,8 +53,8 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/log") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <BookOpen className="w-4 h-4" />
-                  <span className="hidden sm:inline">Log</span>
+                  <span className="text-base">📔</span>
+                  <span className="hidden sm:inline font-ui">My Pints</span>
                 </Button>
               </Link>
               
@@ -66,8 +66,8 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/map") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <MapPin className="w-4 h-4" />
-                  <span className="hidden sm:inline">Map</span>
+                  <span className="text-base">📍</span>
+                  <span className="hidden sm:inline font-ui">Pubs</span>
                 </Button>
               </Link>
             </nav>
