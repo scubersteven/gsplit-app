@@ -40,7 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="text-base">➤</span>
+                  <span className="text-base">🎯</span>
                   <span className="hidden sm:inline font-ui">The Bar</span>
                 </Button>
               </Link>

@@ -126,9 +126,9 @@ const GSplitResultV2 = () => {
             console.log("🍞 [DEBUG] Showing success toast...");
             toast.success("🍺 Pint saved to your log!", {
               description: "View all your pints in the Log tab",
-              duration: 4000,
+              duration: 5000,
             });
-          }, 1500); // Reduced from 2500ms - show earlier
+          }, 500); // Show toast immediately after animation starts
 
         } catch (error) {
           console.error("❌ [DEBUG] Failed to save pint log:", error);
@@ -207,7 +207,7 @@ const GSplitResultV2 = () => {
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-3 pb-1 md:pt-8 md:pb-6 flex flex-col justify-center items-center gap-1 md:gap-2">
+        <div className="bg-[#fdecd0] pt-6 pb-3 md:pt-12 md:pb-8 flex flex-col justify-center items-center gap-2 md:gap-3">
           <h1 className="text-[#1C1410] text-4xl md:text-5xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
@@ -239,7 +239,7 @@ const GSplitResultV2 = () => {
           {/* Right - Stats Box */}
           <div className="w-full md:w-1/2 flex">
             <div
-              className="border-2 border-[#D4AF37] rounded-lg p-3 md:p-6 animate-scale-in w-full flex flex-col justify-center relative"
+              className="border-2 border-[#D4AF37] rounded-lg p-2 md:p-6 animate-scale-in w-full flex flex-col justify-center relative"
               style={{
                 animationDelay: '0.2s',
                 animationFillMode: 'both',
@@ -254,12 +254,12 @@ const GSplitResultV2 = () => {
                 <TierBadge />
               </div>
 
-              <div className="space-y-4 md:space-y-4 flex flex-col items-center mt-10 md:mt-10">
+              <div className="space-y-2 md:space-y-4 flex flex-col items-center mt-8 md:mt-10">
 
                 {/* Score with countup animation */}
                 <div className="animate-score-pop text-center" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
                   <div
-                    className="text-6xl md:text-[80px] font-body font-black leading-none"
+                    className="text-5xl md:text-[80px] font-body font-black leading-none"
                     style={{
                       color: getScoreColor(score),
                       letterSpacing: '-0.02em',
@@ -271,7 +271,7 @@ const GSplitResultV2 = () => {
                 </div>
             
                 {/* Centered stats */}
-                <div className="space-y-1.5 text-center pt-2 w-full">
+                <div className="space-y-1 text-center pt-1 w-full">
                   {/* Ranking */}
                   <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
                     <span className="text-[#D4AF37] text-sm md:text-lg font-body font-semibold">
