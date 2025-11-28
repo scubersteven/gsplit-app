@@ -51,10 +51,10 @@ const PintLog = () => {
 
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
-            pint log
+            Pint Log
           </h1>
           <p className="text-base text-muted-foreground">
-            your guinness journey
+            Your Guinness Journey
           </p>
         </div>
 
@@ -189,7 +189,7 @@ const PintLog = () => {
                             })
                           }
                           size="sm"
-                          className="w-full"
+                          className="text-xs font-ui"
                         >
                           Complete Rating ⭐
                         </Button>

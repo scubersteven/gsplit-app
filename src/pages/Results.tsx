@@ -68,7 +68,7 @@ const Results = () => {
           authentic: surveyData.authentic
         };
         localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
-        toast.success("Saved to pint log");
+        toast.success("Saved to Pint Log");
       }
 
       setTimeout(() => navigate("/log"), 1000);
