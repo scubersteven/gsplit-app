@@ -33,12 +33,12 @@ const ShareableResult = ({
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-12 pb-8 flex flex-col justify-center items-center gap-2">
-          <h1 className="text-[#1C1410] text-5xl font-display font-bold tracking-wide">
+        <div className="bg-[#fdecd0] pt-20 pb-14 flex flex-col justify-center items-center gap-3">
+          <h1 className="text-[#1C1410] text-7xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
           {comment && (
-            <p className="text-[#1C1410]/70 text-lg font-body italic font-normal text-center px-8">
+            <p className="text-[#1C1410]/70 text-2xl font-body italic font-normal text-center px-8">
               "{comment}"
             </p>
           )}
@@ -49,16 +49,16 @@ const ShareableResult = ({
       <div className="w-full relative z-10 flex flex-col items-center px-8 py-8">
 
         {/* Pint Photo Container */}
-        <div className="w-full max-w-[600px] aspect-[9/16] rounded-lg overflow-hidden shadow-lg">
+        <div className="w-full max-w-[750px] h-[950px] rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-black/10">
           <img
             src={pintImage}
             alt="Pint analysis"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         </div>
 
         {/* Stats Box */}
-        <div className="w-full max-w-[600px] mt-8">
+        <div className="w-full max-w-[750px] mt-8">
           <div className="border-2 border-[#D4AF37] rounded-lg p-6"
             style={{
               background: 'linear-gradient(135deg, #2A2A2A 0%, #242220 100%)',

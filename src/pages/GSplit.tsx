@@ -167,23 +167,6 @@ const GSplit = () => {
                   className="hidden"
                 />
 
-                <label htmlFor="take-photo">
-                  <Button variant="outline" className="gap-2 cursor-pointer" asChild>
-                    <span>
-                      <Camera className="w-5 h-5" />
-                      Take Photo
-                    </span>
-                  </Button>
-                </label>
-                <input
-                  id="take-photo"
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-
                 <Button
                   variant="secondary"
                   className="gap-2"
