@@ -33,12 +33,12 @@ const ShareableResult = ({
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-20 pb-14 flex flex-col justify-center items-center gap-3">
-          <h1 className="text-[#1C1410] text-7xl font-display font-bold tracking-wide">
+        <div className="bg-[#fdecd0] pt-28 pb-20 flex flex-col justify-center items-center gap-4">
+          <h1 className="text-[#1C1410] text-8xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
           {comment && (
-            <p className="text-[#1C1410]/70 text-2xl font-body italic font-normal text-center px-8">
+            <p className="text-[#1C1410]/70 text-3xl font-body italic font-normal text-center px-12">
               "{comment}"
             </p>
           )}
@@ -58,18 +58,18 @@ const ShareableResult = ({
         </div>
 
         {/* Stats Box */}
-        <div className="w-full max-w-[750px] mt-8">
-          <div className="border-2 border-[#D4AF37] rounded-lg p-6"
+        <div className="w-full max-w-[600px] mt-8">
+          <div className="border-2 border-[#D4AF37] rounded-lg p-8"
             style={{
               background: 'linear-gradient(135deg, #2A2A2A 0%, #242220 100%)',
               boxShadow: '0 6px 12px rgba(44, 24, 16, 0.5), 0 2px 4px rgba(44, 24, 16, 0.3), 0 0 20px rgba(212, 175, 55, 0.15)'
             }}>
-            <div className="space-y-4 flex flex-col items-center">
+            <div className="space-y-6 flex flex-col items-center">
 
               {/* Score - BIGGER */}
               <div className="text-center">
                 <div
-                  className="text-[80px] font-body font-black leading-none"
+                  className="text-[100px] font-body font-black leading-none"
                   style={{
                     color: getScoreColor(score),
                     letterSpacing: '-0.02em',
@@ -81,11 +81,11 @@ const ShareableResult = ({
               </div>
 
               {/* Centered stats */}
-              <div className="space-y-1.5 text-center pt-2 w-full">
+              <div className="space-y-3 text-center pt-2 w-full">
                 {/* Ranking */}
                 {ranking && (
                   <div>
-                    <span className="text-[#D4AF37] text-lg font-body font-semibold">
+                    <span className="text-[#D4AF37] text-2xl font-body font-semibold">
                       Rank: {ranking}
                     </span>
                   </div>
@@ -93,7 +93,7 @@ const ShareableResult = ({
 
                 {/* Split Status */}
                 <div>
-                  <span className="text-[#FFF8E7] text-base font-body font-semibold">
+                  <span className="text-[#FFF8E7] text-xl font-body font-semibold">
                     Split detected: {splitDetected ? '✅' : '❌'}
                   </span>
                 </div>
@@ -101,7 +101,7 @@ const ShareableResult = ({
                 {/* Location */}
                 {location && (
                   <div>
-                    <span className="text-[#FFF8E7] text-base font-body font-semibold">
+                    <span className="text-[#FFF8E7] text-xl font-body font-semibold">
                       Location 📍: {location}
                     </span>
                   </div>
