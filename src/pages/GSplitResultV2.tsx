@@ -145,7 +145,7 @@ const GSplitResultV2 = () => {
         console.log("⚠️ [DEBUG] Score NOT > 0 or no image, skipping save. Score:", score);
       }
     })();
-  }, [score, image, splitDetected, feedback, userPubName, mockPercentile]);
+  }, [score, image, splitDetected, feedback, userPubName]); // Fixed: removed mockPercentile to prevent infinite loop
 
   if (!image) {
     navigate("/split");
