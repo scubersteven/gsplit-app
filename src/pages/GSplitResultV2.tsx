@@ -126,9 +126,9 @@ const GSplitResultV2 = () => {
             console.log("🍞 [DEBUG] Showing success toast...");
             toast.success("🍺 Pint saved to your log!", {
               description: "View all your pints in the Log tab",
-              duration: 3000,
+              duration: 4000,
             });
-          }, 2500); // Delay accounts for animation + compression time
+          }, 1500); // Reduced from 2500ms - show earlier
 
         } catch (error) {
           console.error("❌ [DEBUG] Failed to save pint log:", error);
@@ -207,7 +207,7 @@ const GSplitResultV2 = () => {
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-5 pb-2 md:pt-8 md:pb-6 flex flex-col justify-center items-center gap-1 md:gap-2">
+        <div className="bg-[#fdecd0] pt-3 pb-1 md:pt-8 md:pb-6 flex flex-col justify-center items-center gap-1 md:gap-2">
           <h1 className="text-[#1C1410] text-4xl md:text-5xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
@@ -220,14 +220,14 @@ const GSplitResultV2 = () => {
       </div>
 
       {/* Responsive Container */}
-      <div className="mx-auto max-w-[360px] md:max-w-[900px] px-4 flex flex-col gap-4 md:gap-8 pb-8 md:pb-16 mt-4 md:mt-6">
+      <div className="mx-auto max-w-[360px] md:max-w-[900px] px-4 flex flex-col gap-3 md:gap-8 pb-8 md:pb-16 mt-2 md:mt-6">
         
         {/* Top Row - Pint Photo + Stats Box */}
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           
           {/* Left - Pint Photo */}
           <div className="w-full md:w-1/2">
-            <div className="w-full aspect-[9/16] md:aspect-[4/5] rounded-lg overflow-hidden animate-fade-in shadow-lg">
+            <div className="w-full aspect-[3/4] md:aspect-[4/5] rounded-lg overflow-hidden animate-fade-in shadow-lg">
               <img 
                 src={image}
                 alt="Your pint analysis"

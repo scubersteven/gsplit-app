@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Camera, Upload, ArrowLeft, Video, MapPin } from "lucide-react";
+import { Camera, Upload, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import GuidedCamera from "@/components/GuidedCamera";
 
@@ -150,9 +150,19 @@ const GSplit = () => {
                 Capture or upload your Guinness split
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <label htmlFor="upload-photo">
-                  <Button variant="default" className="gap-2 cursor-pointer" asChild>
+              <div className="flex flex-col gap-4 justify-center w-full max-w-[300px] mx-auto">
+                {/* Button 1: Live Camera (moved to top) */}
+                <Button
+                  variant="default"
+                  className="gap-2 w-full"
+                  onClick={() => setShowCamera(true)}
+                >
+                  📷 Live Camera
+                </Button>
+
+                {/* Button 2: Upload Image (moved to bottom) */}
+                <label htmlFor="upload-photo" className="w-full">
+                  <Button variant="secondary" className="gap-2 cursor-pointer w-full" asChild>
                     <span>
                       <Upload className="w-5 h-5" />
                       Upload Image
@@ -166,15 +176,6 @@ const GSplit = () => {
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-
-                <Button
-                  variant="secondary"
-                  className="gap-2"
-                  onClick={() => setShowCamera(true)}
-                >
-                  <Video className="w-5 h-5" />
-                  Use Live Camera
-                </Button>
               </div>
             </div>
 
@@ -252,12 +253,11 @@ const GSplit = () => {
       <Dialog open={showLocationModal} onOpenChange={setShowLocationModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <MapPin className="w-5 h-5 text-success" />
-              What's Your Pub?
+            <DialogTitle className="text-xl">
+              📍 What's Your Pub?
             </DialogTitle>
-            <DialogDescription className="text-base pt-2">
-              📍 See who's beating you at your local
+            <DialogDescription className="text-base pt-2" style={{ color: 'hsl(32, 35%, 88%)' }}>
+              See who's beating you at your local
             </DialogDescription>
           </DialogHeader>
 
@@ -282,7 +282,7 @@ const GSplit = () => {
             </Button>
             <Button
               onClick={handleSavePub}
-              className="w-full sm:w-auto bg-success hover:bg-success/90 text-white order-1 sm:order-2"
+              className="w-full sm:w-auto bg-cream-dark hover:bg-cream text-[#1C1410] order-1 sm:order-2"
             >
               Save
             </Button>
