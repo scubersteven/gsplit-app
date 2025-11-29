@@ -198,7 +198,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-card border-2 border-border hover:border-success rounded-lg p-6 hover:shadow-2xl transition-all duration-300">
               <h3 className="font-semibold text-foreground mb-3 text-sm uppercase tracking-wider">
                 Tips for Success
               </h3>
