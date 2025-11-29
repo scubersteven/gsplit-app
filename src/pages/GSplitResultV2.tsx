@@ -126,9 +126,10 @@ const GSplitResultV2 = () => {
             console.log("🍞 [DEBUG] Showing success toast...");
             toast.success("🍺 Pint saved to your log!", {
               description: "View all your pints in the Log tab",
-              duration: 5000,
+              duration: 6000,
+              position: "top-center",
             });
-          }, 500); // Show toast immediately after animation starts
+          }, 2000); // Wait 2 seconds for page to fully load
 
         } catch (error) {
           console.error("❌ [DEBUG] Failed to save pint log:", error);
