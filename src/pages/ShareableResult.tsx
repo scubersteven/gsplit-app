@@ -1,6 +1,4 @@
 import logo from "@/assets/g-split-logo.png";
-import StreakBadge from "@/components/StreakBadge";
-import TierBadge from "@/components/TierBadge";
 
 interface ShareableResultProps {
   score: number;
@@ -35,12 +33,12 @@ const ShareableResult = ({
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-32 pb-24 flex flex-col justify-center items-center gap-8">
-          <h1 className="text-[#1C1410] text-9xl font-display font-bold tracking-wide">
+        <div className="bg-[#fdecd0] pt-20 pb-16 flex flex-col justify-center items-center gap-6">
+          <h1 className="text-[#1C1410] text-[160px] font-display font-bold tracking-wide leading-none">
             The Verdict
           </h1>
           {comment && (
-            <p className="text-[#1C1410]/70 text-4xl font-body italic font-normal text-center px-12">
+            <p className="text-[#1C1410]/70 text-6xl font-body italic font-normal text-center px-12">
               "{comment}"
             </p>
           )}
@@ -61,24 +59,18 @@ const ShareableResult = ({
 
         {/* Stats Box */}
         <div className="w-full max-w-[900px] mt-6">
-          <div className="border-2 border-[#D4AF37] rounded-lg p-8 w-full flex flex-col justify-center relative"
+          <div className="border-2 border-[#D4AF37] rounded-lg p-10 w-full flex flex-col min-h-[600px]"
             style={{
               background: 'linear-gradient(135deg, #2A2A2A 0%, #242220 100%)',
               boxShadow: '0 6px 12px rgba(44, 24, 16, 0.5), 0 2px 4px rgba(44, 24, 16, 0.3), 0 0 20px rgba(212, 175, 55, 0.15)'
             }}>
 
-            {/* Top badges row */}
-            <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-              <StreakBadge />
-              <TierBadge />
-            </div>
+            <div className="space-y-8 flex flex-col items-center justify-center h-full py-8">
 
-            <div className="space-y-4 flex flex-col items-center mt-10">
-
-              {/* Score - Match results page (80px) */}
+              {/* Score - Bigger */}
               <div className="text-center">
                 <div
-                  className="text-[80px] font-body font-black leading-none"
+                  className="text-[100px] font-body font-black leading-none"
                   style={{
                     color: getScoreColor(score),
                     letterSpacing: '-0.02em',
@@ -90,11 +82,11 @@ const ShareableResult = ({
               </div>
 
               {/* Centered stats */}
-              <div className="space-y-1 text-center pt-1 w-full">
+              <div className="space-y-6 text-center w-full">
                 {/* Ranking */}
                 {ranking && (
                   <div>
-                    <span className="text-[#D4AF37] text-lg font-body font-semibold">
+                    <span className="text-[#D4AF37] text-4xl font-body font-semibold">
                       Rank: {ranking}
                     </span>
                   </div>
@@ -102,7 +94,7 @@ const ShareableResult = ({
 
                 {/* Split Status */}
                 <div>
-                  <span className="text-[#FFF8E7] text-base font-body font-semibold">
+                  <span className="text-[#FFF8E7] text-3xl font-body font-semibold">
                     Split detected: {splitDetected ? '✅' : '❌'}
                   </span>
                 </div>
@@ -110,7 +102,7 @@ const ShareableResult = ({
                 {/* Location */}
                 {location && (
                   <div>
-                    <span className="text-[#FFF8E7] text-base font-body font-semibold">
+                    <span className="text-[#FFF8E7] text-3xl font-body font-semibold">
                       Location 📍: {location}
                     </span>
                   </div>
