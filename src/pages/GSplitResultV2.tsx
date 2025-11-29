@@ -322,7 +322,7 @@ const GSplitResultV2 = () => {
 
           {/* Button 3 - Try Again */}
           <Button
-            onClick={() => navigate("/split")}
+            onClick={() => navigate("/")}
             className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
           >
             Try Again 🔄
