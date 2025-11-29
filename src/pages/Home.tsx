@@ -129,7 +129,7 @@ const Home = () => {
   return (
     <div className="container mx-auto px-4 py-12 md:py-20">
       {/* Hero Upload Zone */}
-      <div className="max-w-3xl mx-auto mb-12">
+      <div className="max-w-3xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-primary mb-3 tracking-tight">
             Master the Split
@@ -141,7 +141,7 @@ const Home = () => {
 
         {!selectedImage ? (
           <div className="space-y-6">
-            <div className="group relative bg-card border-2 border-border hover:border-success p-12 md:p-16 rounded-xl transition-all duration-300 hover:shadow-2xl animate-fade-in">
+            <div className="group relative bg-card border-2 border-border hover:border-success p-8 md:p-12 rounded-xl transition-all duration-300 hover:shadow-2xl animate-fade-in">
               <div className="relative text-center space-y-6">
                 <div className="inline-block p-6 bg-secondary/50 rounded-lg mb-4 group-hover:bg-success/20 transition-colors duration-300">
                   <Camera className="w-16 h-16 text-primary" />

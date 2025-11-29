@@ -16,7 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="min-h-screen flex flex-col">
       {/* Creamy Guinness Head - Header */}
       <header className="bg-[#fdecd0] sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-8 md:py-10">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
