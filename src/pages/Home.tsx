@@ -130,11 +130,11 @@ const Home = () => {
                 </div>
 
                 <h2 className="text-3xl md:text-4xl font-bold text-primary">
-                  Gsplit Challenge
+                  Split the G
                 </h2>
 
                 <p className="text-lg text-muted-foreground max-w-xl mx-auto italic">
-                  The split that haunts every bartender's nightmares
+                  Go on then.....
                 </p>
 
                 <div className="flex flex-col gap-4 justify-center w-full max-w-[300px] mx-auto pt-4">
@@ -146,14 +146,13 @@ const Home = () => {
                     📷 Live Camera
                   </Button>
 
-                  <label htmlFor="upload-photo" className="w-full">
-                    <Button variant="secondary" className="gap-2 cursor-pointer w-full" asChild>
-                      <span>
-                        <Upload className="w-5 h-5" />
-                        Upload Image
-                      </span>
-                    </Button>
-                  </label>
+                  <Button
+                    variant="secondary"
+                    className="gap-2 w-full"
+                    onClick={() => document.getElementById('upload-photo')?.click()}
+                  >
+                    📁 Upload Image
+                  </Button>
                   <input
                     id="upload-photo"
                     type="file"
