@@ -15,6 +15,7 @@ const Home = () => {
   const [showCamera, setShowCamera] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [pubName, setPubName] = useState("");
+  const [pendingAction, setPendingAction] = useState<'camera' | 'upload' | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -53,6 +54,14 @@ const Home = () => {
       sessionStorage.setItem('locationModalSeen', 'true');
       toast.success(`Saved: ${pubName.trim()}`);
       setShowLocationModal(false);
+
+      // Execute pending action after modal closes
+      if (pendingAction === 'upload') {
+        setTimeout(() => document.getElementById('upload-photo')?.click(), 100);
+      } else if (pendingAction === 'camera') {
+        setTimeout(() => setShowCamera(true), 100);
+      }
+      setPendingAction(null);
     } else {
       toast.error("Please enter your pub's name");
     }
@@ -61,6 +70,14 @@ const Home = () => {
   const handleSkipLocation = () => {
     sessionStorage.setItem('locationModalSeen', 'true');
     setShowLocationModal(false);
+
+    // Execute pending action after skipping
+    if (pendingAction === 'upload') {
+      setTimeout(() => document.getElementById('upload-photo')?.click(), 100);
+    } else if (pendingAction === 'camera') {
+      setTimeout(() => setShowCamera(true), 100);
+    }
+    setPendingAction(null);
   };
 
   const handleAnalyze = async () => {
@@ -143,8 +160,13 @@ const Home = () => {
                     variant="default"
                     className="gap-2 w-full"
                     onClick={() => {
-                      handleShowLocationModal();
-                      setShowCamera(true);
+                      const hasSeenLocationModal = sessionStorage.getItem('locationModalSeen');
+                      if (!hasSeenLocationModal) {
+                        setPendingAction('camera');
+                        setShowLocationModal(true);
+                      } else {
+                        setShowCamera(true);
+                      }
                     }}
                   >
                     📷 Live Camera
@@ -154,8 +176,13 @@ const Home = () => {
                     variant="secondary"
                     className="gap-2 w-full"
                     onClick={() => {
-                      handleShowLocationModal();
-                      document.getElementById('upload-photo')?.click();
+                      const hasSeenLocationModal = sessionStorage.getItem('locationModalSeen');
+                      if (!hasSeenLocationModal) {
+                        setPendingAction('upload');
+                        setShowLocationModal(true);
+                      } else {
+                        document.getElementById('upload-photo')?.click();
+                      }
                     }}
                   >
                     📁 Upload Image
