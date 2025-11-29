@@ -207,7 +207,7 @@ const GSplitResultV2 = () => {
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-6 pb-3 md:pt-12 md:pb-8 flex flex-col justify-center items-center gap-2 md:gap-3">
+        <div className="bg-[#fdecd0] pt-10 pb-6 md:pt-20 md:pb-14 flex flex-col justify-center items-center gap-2 md:gap-3">
           <h1 className="text-[#1C1410] text-4xl md:text-5xl font-display font-bold tracking-wide">
             The Verdict
           </h1>
