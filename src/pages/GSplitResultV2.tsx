@@ -30,6 +30,7 @@ const GSplitResultV2 = () => {
   };
 
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [showSavedBanner, setShowSavedBanner] = useState(false);
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
 
   // Get user pub name from localStorage
@@ -121,14 +122,20 @@ const GSplitResultV2 = () => {
           sessionStorage.setItem("currentPintId", pintId.toString());
           console.log("🔑 [DEBUG] Stored pintId in sessionStorage:", pintId);
 
-          // Step 7: Show success toast AFTER score animation + compression
+          // Step 7: Show visible banner AND toast
           setTimeout(() => {
-            console.log("🍞 [DEBUG] Showing success toast...");
+            console.log("🍞 [DEBUG] Showing saved banner...");
+            setShowSavedBanner(true);
             toast.success("🍺 Pint saved to your log!", {
               description: "View all your pints in the Log tab",
               duration: 6000,
               position: "top-center",
             });
+
+            // Hide banner after 4 seconds
+            setTimeout(() => {
+              setShowSavedBanner(false);
+            }, 4000);
           }, 2000); // Wait 2 seconds for page to fully load
 
         } catch (error) {
@@ -205,6 +212,19 @@ const GSplitResultV2 = () => {
 
   return (
     <div className="min-h-screen bg-[#1C1410]">
+
+      {/* Saved Banner */}
+      {showSavedBanner && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-[#36B37E] text-white px-8 py-4 rounded-lg shadow-2xl flex items-center gap-3">
+            <span className="text-2xl">🍺</span>
+            <div>
+              <div className="font-bold text-lg">Pint saved to your log!</div>
+              <div className="text-sm opacity-90">View it in the My Pints tab</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Foam Header - "The Verdict" */}
       <div className="w-full mb-0 animate-fade-in relative overflow-hidden">

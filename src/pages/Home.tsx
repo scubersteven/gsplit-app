@@ -39,12 +39,13 @@ const Home = () => {
     setShowCamera(false);
   };
 
-  useEffect(() => {
+  // Show location modal when user first interacts with upload/camera
+  const handleShowLocationModal = () => {
     const hasSeenLocationModal = sessionStorage.getItem('locationModalSeen');
     if (!hasSeenLocationModal) {
       setShowLocationModal(true);
     }
-  }, []);
+  };
 
   const handleSavePub = () => {
     if (pubName.trim()) {
@@ -141,7 +142,10 @@ const Home = () => {
                   <Button
                     variant="default"
                     className="gap-2 w-full"
-                    onClick={() => setShowCamera(true)}
+                    onClick={() => {
+                      handleShowLocationModal();
+                      setShowCamera(true);
+                    }}
                   >
                     📷 Live Camera
                   </Button>
@@ -149,7 +153,10 @@ const Home = () => {
                   <Button
                     variant="secondary"
                     className="gap-2 w-full"
-                    onClick={() => document.getElementById('upload-photo')?.click()}
+                    onClick={() => {
+                      handleShowLocationModal();
+                      document.getElementById('upload-photo')?.click();
+                    }}
                   >
                     📁 Upload Image
                   </Button>
@@ -164,7 +171,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-lg p-6 hover:shadow-2xl transition-all duration-300">
               <h3 className="font-semibold text-foreground mb-3 text-sm uppercase tracking-wider">
                 Tips for Success
               </h3>
