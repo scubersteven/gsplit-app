@@ -215,11 +215,11 @@ const GSplitResultV2 = () => {
 
       {/* Saved Banner */}
       {showSavedBanner && (
-        <div className="fixed top-24 md:top-20 left-1/2 transform -translate-x-1/2 z-[100] animate-fade-in">
-          <div className="bg-[#fdecd0] text-[#1C1410] px-8 py-4 rounded-lg shadow-2xl flex items-center gap-3">
-            <span className="text-2xl">📔</span>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] animate-fade-in">
+          <div className="bg-[#fdecd0] text-[#1C1410] px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <span className="text-xl">📔</span>
             <div>
-              <div className="font-bold text-lg">Pint saved to your log!</div>
+              <div className="font-medium text-base">Pint saved to your log!</div>
             </div>
           </div>
         </div>
