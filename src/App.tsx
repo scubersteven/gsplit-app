@@ -26,8 +26,8 @@ function App() {
           <Route path="/split-result-v2" element={<GSplitResultV2 />} />
           <Route path="/survey" element={<PintSurvey />} />
           <Route path="/results" element={<Results />} />
-          <Route path="/log" element={<PintLog />} />
-          <Route path="/log2" element={<Pintlog2 />} />
+          <Route path="/log" element={<Pintlog2 />} />
+          <Route path="/log-old" element={<PintLog />} />
           <Route path="/map" element={<Map />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
