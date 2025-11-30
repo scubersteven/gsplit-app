@@ -18,6 +18,8 @@ export default {
         body: ['Inter', '-apple-system', 'system-ui', 'sans-serif'],
         ui: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif'],
         sans: ['Inter', '-apple-system', 'system-ui', 'sans-serif'],
+        playfair: ['Playfair Display', 'serif'],  // Alias for font-playfair
+        inter: ['Inter', '-apple-system', 'system-ui', 'sans-serif'],  // Alias for font-inter
       },
       colors: {
         border: "hsl(var(--border))",
@@ -60,6 +62,13 @@ export default {
         "irish-green": "hsl(var(--irish-green))",
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
+        "foam-cream": "hsl(var(--foam-cream))",
+        "stout-black": "hsl(var(--stout-black))",
+        "harp-gold": "hsl(var(--harp-gold))",
+        "score-excellent": "hsl(var(--score-excellent))",
+        "score-good": "hsl(var(--score-good))",
+        "score-poor": "hsl(var(--score-poor))",
+        "deep-black": "hsl(var(--deep-black))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

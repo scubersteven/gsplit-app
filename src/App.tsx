@@ -10,6 +10,7 @@ import GSplitResultV2 from './pages/GSplitResultV2';
 import PintSurvey from './pages/PintSurvey';
 import Results from './pages/Results';
 import PintLog from './pages/PintLog';
+import Pintlog2 from './pages/Pintlog2';
 import Map from './pages/Map';
 import NotFound from './pages/NotFound';
 import './App.css';
@@ -26,6 +27,7 @@ function App() {
           <Route path="/survey" element={<PintSurvey />} />
           <Route path="/results" element={<Results />} />
           <Route path="/log" element={<PintLog />} />
+          <Route path="/log2" element={<Pintlog2 />} />
           <Route path="/map" element={<Map />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

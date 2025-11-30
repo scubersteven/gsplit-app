@@ -4,14 +4,15 @@ export interface TierInfo {
   maxPoints: number;
   color: string;
   icon: string;
+  tagline: string;
 }
 
 export const TIERS: TierInfo[] = [
-  { name: 'Rookie', minPoints: 0, maxPoints: 99, color: '#9CA3AF', icon: '🌱' },
-  { name: 'Bronze', minPoints: 100, maxPoints: 299, color: '#CD7F32', icon: '🥉' },
-  { name: 'Silver', minPoints: 300, maxPoints: 599, color: '#C0C0C0', icon: '🥈' },
-  { name: 'Gold', minPoints: 600, maxPoints: 999, color: '#D4AF37', icon: '🥇' },
-  { name: 'Legend', minPoints: 1000, maxPoints: Infinity, color: '#9333EA', icon: '👑' },
+  { name: 'Apprentice', minPoints: 0, maxPoints: 2499, color: '#9CA3AF', icon: '🎓', tagline: 'Learning the craft' },
+  { name: 'Pourer', minPoints: 2500, maxPoints: 9999, color: '#F59E0B', icon: '⚡', tagline: 'Getting the hang of it' },
+  { name: 'Barman', minPoints: 10000, maxPoints: 24999, color: '#10B981', icon: '🎯', tagline: "Knows what they're doing" },
+  { name: 'Master', minPoints: 25000, maxPoints: 49999, color: '#3B82F6', icon: '👨‍🍳', tagline: 'Teaching others' },
+  { name: 'Legend', minPoints: 50000, maxPoints: Infinity, color: '#9333EA', icon: '👑', tagline: 'Best in Ireland' },
 ];
 
 export const getTierFromPoints = (points: number): TierInfo => {

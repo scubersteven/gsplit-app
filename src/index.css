@@ -68,6 +68,15 @@ All colors MUST be HSL.
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
 
+    /* Pintlog2 colors */
+    --foam-cream: 32 35% 88%;          /* Cream header color */
+    --stout-black: 20 14% 11%;         /* Dark Guinness black (#1C1410) */
+    --harp-gold: 45 100% 50%;          /* Gold accent (#FFD700) */
+    --score-excellent: 142 76% 36%;    /* Green for 80%+ (#36B37E) */
+    --score-good: 38 88% 60%;          /* Amber for 60-79% (#E8A849) */
+    --score-poor: 9 61% 53%;           /* Red for <60% (#C45C4B) */
+    --deep-black: 20 14% 11%;          /* Same as stout-black */
+
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
@@ -135,6 +144,15 @@ All colors MUST be HSL.
     --irish-green: 142 76% 36%;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
+
+    /* Pintlog2 colors - dark mode */
+    --foam-cream: 32 35% 88%;          /* Cream header color */
+    --stout-black: 20 14% 11%;         /* Dark Guinness black (#1C1410) */
+    --harp-gold: 45 100% 50%;          /* Gold accent (#FFD700) */
+    --score-excellent: 142 76% 36%;    /* Green for 80%+ (#36B37E) */
+    --score-good: 38 88% 60%;          /* Amber for 60-79% (#E8A849) */
+    --score-poor: 9 61% 53%;           /* Red for <60% (#C45C4B) */
+    --deep-black: 20 14% 11%;          /* Same as stout-black */
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 32 40% 96%;
