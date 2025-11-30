@@ -10,34 +10,31 @@ const StatsCard = ({ averageScore, bestScore, totalPints }: StatsCardProps) => {
       <div className="grid grid-cols-3 gap-2 md:gap-4">
         {/* Average Score */}
         <div className="text-center">
-          <div className="text-2xl mb-2">📊</div>
           <div className="font-inter text-3xl md:text-5xl font-bold text-score-good leading-none">
-            {averageScore}%
+            {averageScore.toFixed(1)}%
           </div>
-          <div className="font-inter text-sm font-semibold text-foam-cream/60 mt-2 uppercase tracking-wide">
-            AVERAGE
+          <div className="font-inter text-sm font-semibold text-foam-cream mt-2">
+            Avg.
           </div>
         </div>
 
         {/* Best Score */}
         <div className="text-center">
-          <div className="text-2xl mb-2">🏆</div>
           <div className="font-inter text-3xl md:text-5xl font-bold text-score-excellent leading-none">
-            {bestScore}%
+            {bestScore.toFixed(1)}%
           </div>
-          <div className="font-inter text-sm font-semibold text-foam-cream/60 mt-2 uppercase tracking-wide">
-            BEST
+          <div className="font-inter text-sm font-semibold text-foam-cream mt-2">
+            Best
           </div>
         </div>
 
         {/* Total Pints Logged */}
         <div className="text-center">
-          <div className="text-2xl mb-2">🍺</div>
           <div className="font-inter text-3xl md:text-5xl font-bold text-harp-gold leading-none">
             {totalPints}
           </div>
-          <div className="font-inter text-sm font-semibold text-foam-cream/60 mt-2 uppercase tracking-wide">
-            LOGGED
+          <div className="font-inter text-sm font-semibold text-foam-cream mt-2">
+            Pints
           </div>
         </div>
       </div>

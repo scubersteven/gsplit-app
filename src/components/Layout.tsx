@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Beer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import gSplitLogo from "@/assets/g-split-logo.png";
 
 interface LayoutProps {
@@ -79,6 +80,9 @@ const Layout = ({ children }: LayoutProps) => {
       <main className="flex-1 bg-[hsl(var(--guinness-black))]">
         {children}
       </main>
+
+      {/* Toast notifications */}
+      <Toaster position="top-center" richColors closeButton />
     </div>
   );
 };

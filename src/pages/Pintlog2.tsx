@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import PintCard from "@/components/PintCard";
 import TierProgressCard from "@/components/TierProgressCard";
 import StatsCard from "@/components/StatsCard";
@@ -42,6 +43,7 @@ const getFeedback = (score: number): string => {
 };
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
@@ -344,13 +346,15 @@ const Index = () => {
           ) : pints.length === 0 ? (
             /* Empty State */
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">🍺</div>
-              <h2 className="font-inter text-xl font-semibold text-foreground/60 mb-6">
-                No pints logged yet
+              <h2 className="font-inter text-xl font-semibold text-foam-cream/60 mb-6">
+                No splits yet
               </h2>
-              <Button className="bg-harp-gold text-stout-black font-inter text-base font-semibold px-6 py-3 h-auto hover:bg-harp-gold/90">
-                Score Your First Pour
-              </Button>
+              <button
+                onClick={() => navigate('/')}
+                className="bg-harp-gold text-stout-black font-inter text-base font-semibold px-6 py-3 rounded-lg h-auto hover:bg-harp-gold/90 transition-all"
+              >
+                Split the G
+              </button>
             </div>
           ) : (
             /* No Results for Filter */

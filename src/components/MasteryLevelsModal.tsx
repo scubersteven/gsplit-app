@@ -30,6 +30,14 @@ const TIERS = GAMIFICATION_TIERS.map(tier => ({
   tagline: tier.tagline,
 }));
 
+// TODO: Replace with real data from localStorage (Phase 2)
+// Should calculate: points earned per day for last 7 days
+// Data structure: [{ day: "Su", points: 120 }, { day: "Mo", points: 240 }, ...]
+// Implementation notes:
+//   - Track point additions with timestamps
+//   - Aggregate points by day (Sunday-Saturday)
+//   - Show rolling 7-day window
+//   - Key: 'gsplit_points_history'
 const WEEKLY_DATA = [
   { day: "Su", points: 120 },
   { day: "Mo", points: 240 },
