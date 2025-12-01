@@ -1,12 +1,12 @@
 /**
  * Compress image to target size using Canvas API
  * @param dataUrl - Base64 data URL of the image
- * @param maxSizeKB - Target size in kilobytes (default: 200 KB)
+ * @param maxSizeKB - Target size in kilobytes (default: 150 KB)
  * @returns Promise<string> - Compressed base64 data URL
  */
 export const compressImage = async (
   dataUrl: string,
-  maxSizeKB: number = 200
+  maxSizeKB: number = 150
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();

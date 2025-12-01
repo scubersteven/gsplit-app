@@ -20,6 +20,20 @@
   animation: fadeIn 0.5s ease-out forwards;
 }
 
+/* Fade in (opacity only, no transform) */
+@keyframes fadeInOpacity {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-opacity {
+  animation: fadeInOpacity 0.3s ease-out forwards;
+}
+
 /* Score reveal animation */
 @keyframes scoreReveal {
   0% {

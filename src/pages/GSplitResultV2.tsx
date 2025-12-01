@@ -9,6 +9,7 @@ import StreakBadge from "@/components/StreakBadge";
 import TierBadge from "@/components/TierBadge";
 import { addPoints } from "@/lib/gamification";
 import { compressImage } from "@/utils/imageCompression";
+import { savePint } from "@/utils/db";
 
 /**
  * Get score color (MATCHES ShareableResult colors)
@@ -58,46 +59,26 @@ const GSplitResultV2 = () => {
         console.log("✅ [DEBUG] Score > 0, proceeding with save...");
 
         try {
-          // Step 1: Compress image (200 KB target)
+          // Step 1: Compress image to 150KB
           console.log("🗜️ [DEBUG] Starting image compression...");
-          let compressedImage: string | null;
-
-          try {
-            compressedImage = await compressImage(image, 200);
-            console.log("✅ [DEBUG] Image compressed successfully");
-          } catch (compressionError) {
-            console.error("⚠️ [DEBUG] Compression failed, saving without image:", compressionError);
-            compressedImage = null; // Fallback: save metadata without image
-          }
+          const compressedImage = await compressImage(image, 150);
+          console.log("✅ [DEBUG] Image compressed successfully");
 
           // Step 2: Add points for gamification
           addPoints(score);
           console.log("💰 [DEBUG] Points added");
 
-          // Step 3: Get existing log and apply 30-pint limit
-          const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
-          console.log("📖 [DEBUG] Existing log count:", existingLog.length);
-
-          // LIMIT: Keep only 29 most recent (29 + 1 new = 30 total)
-          const trimmedLog = existingLog.length >= 30
-            ? existingLog.slice(0, 29)
-            : existingLog;
-
-          if (existingLog.length >= 30) {
-            console.log("🗑️ [DEBUG] Trimmed log: removed", existingLog.length - 29, "oldest pints");
-          }
-
-          // Step 4: Generate unique ID for this pint
+          // Step 3: Generate unique ID for this pint
           const pintId = Date.now();
 
           const newEntry = {
             id: pintId,
             date: new Date().toISOString(),
             splitScore: score,
-            splitImage: compressedImage, // ← Use compressed image (or null)
+            splitImage: compressedImage,
             splitDetected: splitDetected ?? false,
             feedback: feedback || "That's a pour",
-            location: userPubName || undefined,
+            location: userPubName || null,
             ranking: `Top ${mockPercentile}% this week`,
             // Survey data (null until completed)
             overallRating: null,
@@ -105,24 +86,20 @@ const GSplitResultV2 = () => {
             taste: null,
             temperature: null,
             creaminess: null,
-            headSize: null,
-            twoPart: null,
-            settled: null,
-            tilted: null,
-            authentic: null
+            pourTechnique: null,
           };
 
-          console.log("📝 [DEBUG] New entry created (with compressed image)");
+          console.log("📝 [DEBUG] New entry created");
 
-          // Step 5: Save to localStorage
-          localStorage.setItem("pintLog", JSON.stringify([newEntry, ...trimmedLog]));
-          console.log("💾 [DEBUG] Saved to localStorage! Total pints:", trimmedLog.length + 1);
+          // Step 4: Save to IndexedDB (no trimming needed!)
+          await savePint(newEntry);
+          console.log("✅ [DEBUG] Pint saved to IndexedDB");
 
-          // Step 6: Store pintId for survey flow (BEFORE toast)
+          // Step 5: Store pintId for survey flow
           sessionStorage.setItem("currentPintId", pintId.toString());
           console.log("🔑 [DEBUG] Stored pintId in sessionStorage:", pintId);
 
-          // Step 7: Show visible banner AND toast
+          // Step 6: Show visible banner AND toast
           setTimeout(() => {
             console.log("🍞 [DEBUG] Showing saved banner...");
             setShowSavedBanner(true);
@@ -138,22 +115,29 @@ const GSplitResultV2 = () => {
             }, 4000);
           }, 2000); // Wait 2 seconds for page to fully load
 
-        } catch (error) {
-          console.error("❌ [DEBUG] Failed to save pint log:", error);
+        } catch (error: any) {
+          console.error("❌ [DEBUG] Failed to save pint:", error);
 
-          // Show error toast with helpful message
+          // Show specific error message
           setTimeout(() => {
-            toast.error("Could not save to log (storage full)", {
-              description: "Try clearing old pints from your log",
-              duration: 4000,
-            });
+            if (error.message?.includes('quota')) {
+              toast.error("Storage full", {
+                description: "Please delete old pints to free up space",
+                duration: 4000,
+              });
+            } else {
+              toast.error("Failed to save pint", {
+                description: "Please try again",
+                duration: 4000,
+              });
+            }
           }, 2500);
         }
       } else {
         console.log("⚠️ [DEBUG] Score NOT > 0 or no image, skipping save. Score:", score);
       }
     })();
-  }, [score, image, splitDetected, feedback, userPubName]); // Fixed: removed mockPercentile to prevent infinite loop
+  }, [score, image, splitDetected, feedback, userPubName, mockPercentile]);
 
   if (!image) {
     navigate("/split");
@@ -215,7 +199,7 @@ const GSplitResultV2 = () => {
 
       {/* Saved Banner */}
       {showSavedBanner && (
-        <div className="fixed top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] animate-[fadeIn_0.3s_ease-out]">
+        <div className="fixed top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] animate-fade-in-opacity">
           <div className="bg-white text-black px-3 py-1.5 rounded shadow-sm flex items-center gap-1.5 border border-black/10">
             <span className="text-sm">📁</span>
             <div className="font-normal text-xs">Pint Saved</div>

@@ -6,6 +6,7 @@ import StatsCard from "@/components/StatsCard";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getTotalPoints, getTierFromPoints, getProgressToNextTier, TIERS } from "@/lib/gamification";
+import { getAllPints, getPintStats } from "@/utils/db";
 
 interface Pint {
   id: number;
@@ -18,29 +19,7 @@ interface Pint {
   surveyComplete: boolean;
 }
 
-interface PintLogEntry {
-  id: number;
-  date: string;
-  splitScore?: number;
-  splitImage?: string;
-  overallRating?: number;
-  location?: string;
-  splitDetected?: boolean;
-  feedback?: string;
-  [key: string]: any;
-}
-
 type FilterType = "all" | "excellent" | "good" | "poor";
-
-// Generate feedback based on score
-const getFeedback = (score: number): string => {
-  if (score >= 90) return "Absolute cinema";
-  if (score >= 80) return "Textbook execution";
-  if (score >= 70) return "Solid pour";
-  if (score >= 60) return "Not bad";
-  if (score >= 50) return "Back to basics";
-  return "Keep practicing";
-};
 
 const Index = () => {
   const navigate = useNavigate();
@@ -49,46 +28,46 @@ const Index = () => {
   const [pullDistance, setPullDistance] = useState(0);
   const [isPulling, setIsPulling] = useState(false);
   const [pints, setPints] = useState<Pint[]>([]);
+  const [stats, setStats] = useState({ averageScore: 0, bestScore: 0, totalPints: 0 });
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load pints from localStorage
+  // Load pints from IndexedDB
   useEffect(() => {
     loadPints();
   }, []);
 
-  const loadPints = () => {
+  const loadPints = async () => {
     try {
-      const rawLog = localStorage.getItem("pintLog");
-      if (!rawLog) {
-        setPints([]);
-        return;
-      }
+      setIsLoading(true);
+      const allPints = await getAllPints();
+      const pintStats = await getPintStats();
 
-      const pintLogEntries: PintLogEntry[] = JSON.parse(rawLog);
-
-      // Transform localStorage data to Pint format
-      const transformedPints: Pint[] = pintLogEntries.map((entry) => ({
+      // Transform to display format
+      const transformedPints: Pint[] = allPints.map((entry) => ({
         id: entry.id,
-        image: entry.splitImage || "https://images.unsplash.com/photo-1608270586620-248524c67de9",
-        score: entry.splitScore || 0,
-        splitDetected: entry.splitDetected ?? (entry.splitScore ? entry.splitScore > 60 : false),
-        feedback: entry.feedback || getFeedback(entry.splitScore || 0),
+        image: entry.splitImage,
+        score: entry.splitScore,
+        splitDetected: entry.splitDetected,
+        feedback: entry.feedback,
         location: entry.location || null,
         date: entry.date,
         surveyComplete: !!entry.overallRating,
       }));
 
-      // Sort by date (newest first)
-      transformedPints.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
       setPints(transformedPints);
+      setStats(pintStats);
     } catch (error) {
-      console.error("Failed to load pints from localStorage:", error);
-      setPints([]);
+      console.error('Failed to load pints:', error);
+      toast({
+        title: "Failed to load pints",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
-  const totalPints = pints.length;
-  const maxPints = 30;
-  const storagePercent = (totalPints / maxPints) * 100;
+
+  const totalPints = stats.totalPints;
   const mainRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
   const { toast } = useToast();
@@ -162,11 +141,9 @@ const Index = () => {
     setIsRefreshing(true);
     setPullDistance(PULL_THRESHOLD);
 
-    // Reload data from localStorage
-    await new Promise(resolve => setTimeout(resolve, 500));
-    loadPints();
+    // Reload from IndexedDB
+    await loadPints();
 
-    // Refresh complete
     setIsRefreshing(false);
     setPullDistance(0);
 
@@ -181,19 +158,11 @@ const Index = () => {
   const isReadyToRefresh = pullDistance >= PULL_THRESHOLD;
 
   // Calculate gamification data
-  const totalPoints = getTotalPoints();
-  const currentTier = getTierFromPoints(totalPoints);
-  const progress = getProgressToNextTier(totalPoints);
+  const gamificationTotalPoints = getTotalPoints();
+  const currentTier = getTierFromPoints(gamificationTotalPoints);
+  const progress = getProgressToNextTier(gamificationTotalPoints);
   const currentTierIndex = TIERS.indexOf(currentTier);
   const nextTier = currentTierIndex < TIERS.length - 1 ? TIERS[currentTierIndex + 1] : null;
-
-  // Calculate stats from real data
-  const averageScore = pints.length > 0
-    ? pints.reduce((sum, pint) => sum + pint.score, 0) / pints.length
-    : 0;
-  const bestScore = pints.length > 0
-    ? Math.max(...pints.map(p => p.score))
-    : 0;
 
   return (
     <div className="min-h-screen">
@@ -205,28 +174,11 @@ const Index = () => {
             My Pints
           </h1>
 
-          {/* Storage Indicator */}
-          <div className="mt-6 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-inter text-base font-semibold text-stout-black/60">
-                {totalPints} / {maxPints}
-              </span>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full h-2 bg-stout-black/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-harp-gold rounded-full transition-all duration-300"
-                style={{ width: `${storagePercent}%` }}
-              />
-            </div>
-
-            {/* Warning */}
-            {totalPints >= 28 && (
-              <p className="font-inter text-sm font-semibold text-score-good mt-2">
-                ⚠️ Almost full! Oldest pints auto-deleted.
-              </p>
-            )}
+          {/* Storage Indicator - SIMPLIFIED */}
+          <div className="mt-6">
+            <span className="font-inter text-base font-semibold text-stout-black/60">
+              {totalPints} {totalPints === 1 ? 'pint' : 'pints'} logged
+            </span>
           </div>
 
           {/* Filter Tabs */}
@@ -316,28 +268,37 @@ const Index = () => {
               )}
             </div>
           )}
-          {/* Tier Progress Card */}
-          <TierProgressCard
-            currentTier={currentTier.name}
-            emoji={currentTier.icon}
-            color={currentTier.color}
-            currentPoints={totalPoints}
-            tierMin={currentTier.minPoints}
-            tierMax={currentTier.maxPoints}
-            progress={progress.percentage}
-            nextTier={nextTier?.name || "Legend"}
-            nextEmoji={nextTier?.icon || "👑"}
-            pointsToNext={nextTier ? nextTier.minPoints - totalPoints : 0}
-          />
 
-          {/* Stats Card */}
-          <StatsCard
-            averageScore={averageScore}
-            bestScore={bestScore}
-            totalPints={totalPints}
-          />
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="text-center py-20">
+              <div className="text-4xl mb-4 animate-spin">⟳</div>
+              <p className="font-inter text-lg text-foam-cream/60">Loading pints...</p>
+            </div>
+          ) : (
+            <>
+              {/* Tier Progress Card */}
+              <TierProgressCard
+                currentTier={currentTier.name}
+                emoji={currentTier.icon}
+                color={currentTier.color}
+                currentPoints={gamificationTotalPoints}
+                tierMin={currentTier.minPoints}
+                tierMax={currentTier.maxPoints}
+                progress={progress.percentage}
+                nextTier={nextTier?.name || "Legend"}
+                nextEmoji={nextTier?.icon || "👑"}
+                pointsToNext={nextTier ? nextTier.minPoints - gamificationTotalPoints : 0}
+              />
 
-          {filteredPints.length > 0 ? (
+              {/* Stats Card */}
+              <StatsCard
+                averageScore={stats.averageScore}
+                bestScore={stats.bestScore}
+                totalPints={stats.totalPints}
+              />
+
+              {filteredPints.length > 0 ? (
             <div className="space-y-4">
               {filteredPints.map((pint) => (
                 <PintCard key={pint.id} {...pint} />
@@ -364,6 +325,8 @@ const Index = () => {
                 No pints in this range
               </h2>
             </div>
+          )}
+            </>
           )}
         </div>
 

@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { getPintById, savePint } from "@/utils/db";
 
 const getRatingDescription = (rating: number) => {
   if (rating === 5) return "an exceptional pint";
@@ -21,60 +22,71 @@ const Results = () => {
     return null;
   }
 
-  const handleSaveToLog = () => {
+  const handleSaveToLog = async () => {
     try {
-      const existingLog = JSON.parse(localStorage.getItem("pintLog") || "[]");
       const pintLogId = location.state?.pintLogId;
 
       if (pintLogId) {
-        // Update existing pint log entry
-        const updatedLog = existingLog.map((entry: any) =>
-          entry.id === pintLogId
-            ? {
-                ...entry,
-                overallRating,
-                location: surveyData.location,
-                price: surveyData.price,
-                taste: surveyData.taste,
-                temperature: surveyData.temperature,
-                creaminess: surveyData.creaminess,
-                headSize: surveyData.headSize,
-                twoPart: surveyData.twoPart,
-                settled: surveyData.settled,
-                tilted: surveyData.tilted,
-                authentic: surveyData.authentic
-              }
-            : entry
-        );
-        localStorage.setItem("pintLog", JSON.stringify(updatedLog));
-        toast.success("Pint rating updated!");
+        // Update existing pint entry in IndexedDB
+        const existingPint = await getPintById(pintLogId);
+
+        if (existingPint) {
+          await savePint({
+            ...existingPint,
+            overallRating,
+            location: surveyData.location || existingPint.location,
+            price: surveyData.price,
+            taste: surveyData.taste,
+            temperature: surveyData.temperature,
+            creaminess: surveyData.creaminess,
+            // Note: Old survey had headSize, twoPart, settled, tilted, authentic
+            // New schema doesn't include these, but we store them anyway for backwards compatibility
+            pourTechnique: [
+              surveyData.twoPart ? "two-part" : "",
+              surveyData.settled ? "settled" : "",
+              surveyData.tilted ? "tilted" : "",
+              surveyData.authentic ? "authentic" : ""
+            ].filter(Boolean)
+          });
+          toast.success("Pint rating updated!");
+        } else {
+          toast.error("Pint not found");
+          return;
+        }
       } else {
         // Legacy flow: Create new entry (if coming from old route)
         const newEntry = {
           id: Date.now(),
           date: new Date().toISOString(),
-          splitScore,
-          splitImage,
+          splitScore: splitScore || 0,
+          splitImage: splitImage || "",
+          splitDetected: false,
+          feedback: "",
           overallRating,
           location: surveyData.location,
           price: surveyData.price,
           taste: surveyData.taste,
           temperature: surveyData.temperature,
           creaminess: surveyData.creaminess,
-          headSize: surveyData.headSize,
-          twoPart: surveyData.twoPart,
-          settled: surveyData.settled,
-          tilted: surveyData.tilted,
-          authentic: surveyData.authentic
+          pourTechnique: [
+            surveyData.twoPart ? "two-part" : "",
+            surveyData.settled ? "settled" : "",
+            surveyData.tilted ? "tilted" : "",
+            surveyData.authentic ? "authentic" : ""
+          ].filter(Boolean)
         };
-        localStorage.setItem("pintLog", JSON.stringify([newEntry, ...existingLog]));
+        await savePint(newEntry);
         toast.success("Saved to Pint Log");
       }
 
       setTimeout(() => navigate("/log"), 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save pint log:", error);
-      toast.error("Failed to save pint (storage unavailable)");
+      if (error.message?.includes('quota')) {
+        toast.error("Storage full - please delete old pints");
+      } else {
+        toast.error("Failed to save rating");
+      }
     }
   };
 

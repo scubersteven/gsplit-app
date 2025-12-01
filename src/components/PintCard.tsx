@@ -65,6 +65,7 @@ const PintCard = ({
               <img
                 src={image}
                 alt="Guinness pint"
+                loading="lazy"
                 className="w-full h-full object-cover"
                 onError={() => setImageError(true)}
               />
