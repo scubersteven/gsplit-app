@@ -132,10 +132,10 @@ const Home = () => {
       <div className="max-w-3xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-primary mb-3 tracking-tight">
-            Master the Split
+            The Stout Standard
           </h1>
           <p className="text-lg text-muted-foreground">
-            The art of the perfect Guinness divide
+            Score your split. The digital barman never lies.
           </p>
         </div>
 
@@ -152,7 +152,7 @@ const Home = () => {
                 </h2>
 
                 <p className="text-lg text-muted-foreground max-w-xl mx-auto italic">
-                  Go on then.....
+                  Go on then...
                 </p>
 
                 <div className="flex flex-col gap-4 justify-center w-full max-w-[300px] mx-auto pt-4">
@@ -200,12 +200,12 @@ const Home = () => {
 
             <div className="bg-card border-2 border-border hover:border-success rounded-lg p-6 hover:shadow-2xl transition-all duration-300">
               <h3 className="font-semibold text-foreground mb-3 text-sm uppercase tracking-wider">
-                Tips for Success
+                Tips
               </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• Ensure good lighting for accurate analysis</li>
-                <li>• Make sure the G logo is clearly visible</li>
-                <li>• Fill the frame with your pint</li>
+                <li>• Good light</li>
+                <li>• G visible</li>
+                <li>• Fill the frame</li>
               </ul>
             </div>
           </div>
