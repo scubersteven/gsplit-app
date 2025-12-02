@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -35,15 +35,15 @@ const GSplitResultV2 = () => {
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
   const hasSaved = useRef(false); // Track if pint has been saved
 
-  // Get user pub name from localStorage
-  const userPubName = (() => {
+  // Get user pub name from localStorage (memoized to prevent re-renders)
+  const userPubName = useMemo(() => {
     try {
       return localStorage.getItem('userPubName');
     } catch (error) {
       console.error('Failed to get user pub name:', error);
       return null;
     }
-  })();
+  }, []);
 
   // MOCK DATA: Generate competitive context once (useMemo or useState would work, but useState is simpler)
   const [mockPercentile] = useState(() =>
@@ -58,19 +58,37 @@ const GSplitResultV2 = () => {
       console.log("⏭️ [DEBUG] Already saved, skipping...");
       return;
     }
+
+    // SET FLAG IMMEDIATELY - before any async operations
+    hasSaved.current = true;
+    console.log("🔒 [DEBUG] Save flag set, proceeding with save operation...");
+
+    // Cleanup flag for unmount prevention
+    let cancelled = false;
+
     // IIFE for async operations inside useEffect
     (async () => {
+      if (cancelled) {
+        console.log("🚫 [DEBUG] Operation cancelled (component unmounted)");
+        return;
+      }
+
       console.log("🔍 [DEBUG] useEffect triggered!", { score, image, splitDetected, feedback, userPubName, mockPercentile });
 
       if (score > 0 && image) {
         console.log("✅ [DEBUG] Score > 0, proceeding with save...");
-        hasSaved.current = true; // Mark as saved
 
         try {
           // Step 1: Compress image to 150KB
           console.log("🗜️ [DEBUG] Starting image compression...");
           const compressedImage = await compressImage(image, 150);
           console.log("✅ [DEBUG] Image compressed successfully");
+
+          // Check if cancelled after async operation
+          if (cancelled) {
+            console.log("🚫 [DEBUG] Operation cancelled after compression");
+            return;
+          }
 
           // Step 2: Add points for gamification
           addPoints(score);
@@ -99,6 +117,12 @@ const GSplitResultV2 = () => {
 
           console.log("📝 [DEBUG] New entry created");
 
+          // Check if cancelled before save
+          if (cancelled) {
+            console.log("🚫 [DEBUG] Operation cancelled before save");
+            return;
+          }
+
           // Step 4: Save to IndexedDB (no trimming needed!)
           await savePint(newEntry);
           console.log("✅ [DEBUG] Pint saved to IndexedDB");
@@ -109,6 +133,7 @@ const GSplitResultV2 = () => {
 
           // Step 6: Show visible banner AND toast
           setTimeout(() => {
+            if (cancelled) return;
             console.log("🍞 [DEBUG] Showing saved banner...");
             setShowSavedBanner(true);
             toast.success("🍺 Pint saved to your log!", {
@@ -119,15 +144,18 @@ const GSplitResultV2 = () => {
 
             // Hide banner after 4 seconds
             setTimeout(() => {
+              if (cancelled) return;
               setShowSavedBanner(false);
             }, 4000);
           }, 2000); // Wait 2 seconds for page to fully load
 
         } catch (error: any) {
+          if (cancelled) return;
           console.error("❌ [DEBUG] Failed to save pint:", error);
 
           // Show specific error message
           setTimeout(() => {
+            if (cancelled) return;
             if (error.message?.includes('quota')) {
               toast.error("Storage full", {
                 description: "Please delete old pints to free up space",
@@ -145,7 +173,13 @@ const GSplitResultV2 = () => {
         console.log("⚠️ [DEBUG] Score NOT > 0 or no image, skipping save. Score:", score);
       }
     })();
-  }, [score, image, splitDetected, feedback, userPubName]); // Removed mockPercentile from dependencies
+
+    // Cleanup function
+    return () => {
+      console.log("🧹 [DEBUG] Cleanup: Cancelling any pending operations");
+      cancelled = true;
+    };
+  }, [score, image, splitDetected, feedback, userPubName, mockPercentile]); // Added mockPercentile back since it's used
 
   if (!image) {
     navigate("/split");

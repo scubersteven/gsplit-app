@@ -67,7 +67,7 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/map") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="text-base">📍</span>
+                  <span className="text-base">🌐</span>
                   <span className="hidden sm:inline font-ui">Pubs</span>
                 </Button>
               </Link>

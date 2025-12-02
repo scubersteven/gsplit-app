@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { TIERS as GAMIFICATION_TIERS } from "@/lib/gamification";
+import { getAllPints } from "@/utils/db";
 
 interface MasteryLevelsModalProps {
   open: boolean;
@@ -30,44 +31,100 @@ const TIERS = GAMIFICATION_TIERS.map(tier => ({
   tagline: tier.tagline,
 }));
 
-// TODO: Replace with real data from localStorage (Phase 2)
-// Should calculate: points earned per day for last 7 days
-// Data structure: [{ day: "Su", points: 120 }, { day: "Mo", points: 240 }, ...]
-// Implementation notes:
-//   - Track point additions with timestamps
-//   - Aggregate points by day (Sunday-Saturday)
-//   - Show rolling 7-day window
-//   - Key: 'gsplit_points_history'
-const WEEKLY_DATA = [
-  { day: "Su", points: 120 },
-  { day: "Mo", points: 240 },
-  { day: "Tu", points: 180 },
-  { day: "We", points: 360 },
-  { day: "Th", points: 360 },
-  { day: "Fr", points: 420 },
-  { day: "Sa", points: 480 },
-];
-
 const MasteryLevelsModal = ({
   open,
   onOpenChange,
   currentTier,
 }: MasteryLevelsModalProps) => {
   const [isPointsOpen, setIsPointsOpen] = useState(false);
-  const maxPoints = Math.max(...WEEKLY_DATA.map((d) => d.points));
+  const [weeklyData, setWeeklyData] = useState<{ day: string; points: number }[]>([
+    { day: "Su", points: 0 },
+    { day: "Mo", points: 0 },
+    { day: "Tu", points: 0 },
+    { day: "We", points: 0 },
+    { day: "Th", points: 0 },
+    { day: "Fr", points: 0 },
+    { day: "Sa", points: 0 },
+  ]);
+
+  // Load real data from IndexedDB
+  useEffect(() => {
+    const loadWeeklyPoints = async () => {
+      try {
+        const pints = await getAllPints();
+
+        // Get last 7 days (today and previous 6 days)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 6);
+
+        // Initialize daily totals
+        const dailyPoints: { [key: string]: number } = {};
+        const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+        // Create entries for last 7 days
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(sevenDaysAgo);
+          date.setDate(sevenDaysAgo.getDate() + i);
+          const dayName = dayNames[date.getDay()];
+          const dateKey = date.toDateString();
+          dailyPoints[dateKey] = 0;
+        }
+
+        // Aggregate points by day
+        pints.forEach(pint => {
+          const pintDate = new Date(pint.date);
+          pintDate.setHours(0, 0, 0, 0);
+          const dateKey = pintDate.toDateString();
+
+          // Only count pints from last 7 days
+          if (dailyPoints.hasOwnProperty(dateKey)) {
+            // Points = score value (matches addPoints logic in gamification.ts)
+            dailyPoints[dateKey] += Math.round(pint.splitScore);
+          }
+        });
+
+        // Convert to array format for graph
+        const weeklyDataArray = [];
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(sevenDaysAgo);
+          date.setDate(sevenDaysAgo.getDate() + i);
+          const dayName = dayNames[date.getDay()];
+          const dateKey = date.toDateString();
+
+          weeklyDataArray.push({
+            day: dayName,
+            points: dailyPoints[dateKey] || 0
+          });
+        }
+
+        setWeeklyData(weeklyDataArray);
+      } catch (error) {
+        console.error('Failed to load weekly points:', error);
+        // Keep default zero values on error
+      }
+    };
+
+    if (open) {
+      loadWeeklyPoints();
+    }
+  }, [open]);
+
+  const maxPoints = Math.max(...weeklyData.map((d) => d.points), 1); // Min 1 to avoid divide by zero
   const graphHeight = 120;
   const graphWidth = 100;
   const padding = 10;
 
   // Generate path for line graph
-  const points = WEEKLY_DATA.map((d, i) => {
-    const x = (i / (WEEKLY_DATA.length - 1)) * (graphWidth - 2 * padding) + padding;
+  const points = weeklyData.map((d, i) => {
+    const x = (i / (weeklyData.length - 1)) * (graphWidth - 2 * padding) + padding;
     const y = graphHeight - (d.points / maxPoints) * (graphHeight - 2 * padding) - padding;
     return `${x},${y}`;
   }).join(" ");
 
   const pathD = `M ${points.split(" ").join(" L ")}`;
-  
+
   // Area fill path
   const areaD = `${pathD} L ${graphWidth - padding},${graphHeight - padding} L ${padding},${graphHeight - padding} Z`;
 
@@ -131,8 +188,8 @@ const MasteryLevelsModal = ({
             />
 
             {/* Data points */}
-            {WEEKLY_DATA.map((d, i) => {
-              const x = (i / (WEEKLY_DATA.length - 1)) * (graphWidth - 2 * padding) + padding;
+            {weeklyData.map((d, i) => {
+              const x = (i / (weeklyData.length - 1)) * (graphWidth - 2 * padding) + padding;
               const y = graphHeight - (d.points / maxPoints) * (graphHeight - 2 * padding) - padding;
               return (
                 <circle
@@ -150,7 +207,7 @@ const MasteryLevelsModal = ({
 
           {/* X-axis labels */}
           <div className="flex justify-between mt-2 px-2">
-            {WEEKLY_DATA.map((d) => (
+            {weeklyData.map((d) => (
               <span
                 key={d.day}
                 className="font-inter text-xs font-medium text-stout-black/60"
