@@ -16,7 +16,7 @@ const RatingSlider = ({
   onChange,
 }: RatingSliderProps) => {
   return (
-    <div>
+    <div className="border-l-2 border-gold pl-4 pr-2">
       {/* Section Label */}
       <h3 className="text-lg font-bold text-foreground mb-3">{label}</h3>
 
