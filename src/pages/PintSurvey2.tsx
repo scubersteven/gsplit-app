@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import RatingSlider from "@/components/RatingSlider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { savePint, getPintById } from "@/utils/db";
 import {
   Select,
   SelectContent,
@@ -25,7 +26,7 @@ const PintSurvey = () => {
   const [currency, setCurrency] = useState("€");
   const [pub, setPub] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!pub.trim()) {
       toast.error("Where'd you drink it?");
       return;
@@ -33,26 +34,46 @@ const PintSurvey = () => {
 
     const overallRating = Math.round(((taste + temperature + head) / 3) * 10) / 10;
 
-    const surveyData = {
-      taste,
-      temperature,
-      head,
-      price: price ? parseFloat(price) : null,
-      currency,
-      pub: pub.trim(),
-    };
+    try {
+      // Save to IndexedDB before navigating
+      if (pintLogId) {
+        // Update existing pint entry
+        const existingPint = await getPintById(pintLogId);
+        if (existingPint) {
+          await savePint({
+            ...existingPint,
+            taste,
+            temperature,
+            creaminess: head, // Map 'head' to 'creaminess' in DB
+            price: price ? parseFloat(price) : null,
+            location: pub.trim(),
+            overallRating,
+          });
+        }
+      } else {
+        // Create new pint entry
+        await savePint({
+          id: Date.now(),
+          date: new Date().toISOString(),
+          splitScore: splitScore || 0,
+          splitImage: splitImage || '',
+          splitDetected: false,
+          feedback: '',
+          location: pub.trim(),
+          overallRating,
+          taste,
+          temperature,
+          creaminess: head, // Map 'head' to 'creaminess' in DB
+          price: price ? parseFloat(price) : null,
+        });
+      }
 
-    toast.success("Rating locked in");
-    
-    navigate("/pint-log", {
-      state: {
-        surveyData,
-        overallRating,
-        splitScore,
-        splitImage,
-        pintLogId,
-      },
-    });
+      toast.success("Rating locked in");
+      navigate("/log");
+    } catch (error) {
+      console.error('Failed to save pint:', error);
+      toast.error("Failed to save rating. Please try again.");
+    }
   };
 
   return (
