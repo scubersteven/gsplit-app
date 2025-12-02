@@ -160,6 +160,48 @@ def analyze_split():
         }), 500
 
 
+@app.route('/generate-pub-roast', methods=['POST'])
+def generate_pub_roast():
+    """
+    Generate a pub roast - 80% pre-written, 20% AI-generated.
+
+    Expects:
+        JSON body with:
+        - rating: float (0-5)
+        - taste: float (0-5)
+        - temperature: float (0-5)
+        - head: float (0-5)
+        - pub: string (pub name)
+
+    Returns:
+        JSON with 'roast' and 'is_ai_generated' keys
+    """
+    try:
+        data = request.get_json()
+
+        if not data or 'rating' not in data:
+            return jsonify({'error': 'Missing rating parameter'}), 400
+
+        rating = float(data['rating'])
+        taste = data.get('taste', 3.0)
+        temperature = data.get('temperature', 3.0)
+        head = data.get('head', 3.0)
+        pub = data.get('pub', '')
+
+        roast_result = vision_processor.generate_pub_roast(
+            rating, taste, temperature, head, pub
+        )
+
+        return jsonify(roast_result), 200
+
+    except Exception as e:
+        app.logger.error(f"Error generating pub roast: {str(e)}")
+        return jsonify({
+            'error': 'Failed to generate roast',
+            'message': str(e)
+        }), 500
+
+
 @app.errorhandler(413)
 def file_too_large(e):
     """Handle file size exceeded error."""

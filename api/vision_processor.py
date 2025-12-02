@@ -94,6 +94,45 @@ class GuinnessVisionProcessor:
         ]
     }
 
+    # Pub roast library for 80% pre-written responses
+    PUB_ROAST_LIBRARY = {
+        'top': [
+            "Found your local",
+            "Tell no one about this place",
+            "This pub gets it",
+            "Marry the barman",
+            "Certified haunt 🏠",
+        ],
+        'solid': [
+            "Decent spot",
+            "Would drink again",
+            "No complaints",
+            "Gets the job done",
+            "Safe bet 👍",
+        ],
+        'mid': [
+            "It's a pub",
+            "Meh",
+            "Nothing to write home about",
+            "You've had better",
+            "Mid tier establishment",
+        ],
+        'rough': [
+            "Questionable choices were made",
+            "Why did you stay",
+            "Tourist trap energy",
+            "Your standards have dropped",
+            "That's on you",
+        ],
+        'bottom': [
+            "Never again",
+            "Report this establishment",
+            "A crime scene",
+            "Who recommended this",
+            "Arthur weeps",
+        ],
+    }
+
     def __init__(self):
         """Initialize the vision processor."""
         self.debug_mode = True
@@ -799,4 +838,128 @@ Your response:"""
             print(f"   ❌ AI feedback error: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
+            return None
+
+    def generate_pub_roast(self, rating: float, taste: float,
+                           temperature: float, head: float, pub: str) -> Dict:
+        """
+        Generate pub roast - 80% pre-written, 20% AI-generated.
+
+        Args:
+            rating: Overall rating (0-5)
+            taste: Taste rating (0-5)
+            temperature: Temperature rating (0-5)
+            head: Head rating (0-5)
+            pub: Pub name
+
+        Returns:
+            Dictionary with 'roast' and 'is_ai_generated' keys
+        """
+        import random
+
+        print(f'\n{"─"*80}')
+        print(f'🍺 PUB ROAST GENERATION: Rolling for AI vs Pre-written')
+        print(f'   Rating: {rating}/5, Pub: {pub}')
+
+        # Determine tier
+        if rating >= 4.5:
+            tier = 'top'
+        elif rating >= 3.5:
+            tier = 'solid'
+        elif rating >= 2.5:
+            tier = 'mid'
+        elif rating >= 1.5:
+            tier = 'rough'
+        else:
+            tier = 'bottom'
+
+        roast_options = self.PUB_ROAST_LIBRARY[tier]
+
+        # 20% chance: Call Claude API
+        roll = random.random()
+        print(f'   Random roll: {roll:.4f} (need < 0.2 for AI)')
+
+        if roll < 0.2:
+            print(f'🤖 AI ROAST TRIGGERED! Calling Claude API...')
+            try:
+                ai_roast = self._generate_ai_pub_roast(
+                    rating, taste, temperature, head, pub, tier
+                )
+                if ai_roast:
+                    print(f'✅ Using AI-generated roast')
+                    print(f'{"─"*80}\n')
+                    return {
+                        'roast': ai_roast,
+                        'is_ai_generated': True
+                    }
+                else:
+                    print(f'⚠️  AI returned None, falling back to pre-written')
+            except Exception as e:
+                print(f"❌ AI roast exception: {e}")
+
+        # 80% chance: Use pre-written
+        selected = random.choice(roast_options)
+        print(f'📝 Using pre-written roast: "{selected}"')
+        print(f'{"─"*80}\n')
+        return {
+            'roast': selected,
+            'is_ai_generated': False
+        }
+
+    def _generate_ai_pub_roast(self, rating: float, taste: float,
+                               temperature: float, head: float,
+                               pub: str, tier: str) -> str:
+        """
+        Call Claude API for dynamic pub roast generation.
+        """
+        print(f'\n   🔑 _generate_ai_pub_roast() called')
+
+        try:
+            import anthropic
+            import os
+
+            api_key = os.environ.get("ANTHROPIC_API_KEY")
+
+            if not api_key:
+                print("   ❌ ANTHROPIC_API_KEY not set in environment")
+                return None
+
+            print(f'   ✅ API key found, initializing Anthropic client...')
+            client = anthropic.Anthropic(api_key=api_key)
+
+            ratings_context = f"""Overall: {rating}/5 stars
+Taste: {taste}/5
+Temperature: {temperature}/5
+Head: {head}/5"""
+
+            prompt = f"""You're The Digital Barman - sharp, witty, brutally honest. Judge this pub experience:
+
+{ratings_context}
+Pub: {pub}
+Tier: {tier}
+
+Generate ONE punchy roast/compliment about the pub (max 8 words). Match the {tier} tier vibe - be authentic and sharp, not forced. Use an emoji only if it fits naturally.
+
+Your style examples:
+- Top tier: "Found your local" / "This pub gets it"
+- Solid: "Decent spot" / "Would drink again"
+- Mid: "It's a pub" / "Nothing special"
+- Rough: "Tourist trap energy" / "Why did you stay"
+- Bottom: "Never again" / "A crime scene"
+
+Your response:"""
+
+            print(f'   📡 Calling Claude Sonnet 4 API...')
+            message = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=30,
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            roast = message.content[0].text.strip()
+            print(f'   ✨ AI response received: "{roast}"')
+            return roast
+
+        except Exception as e:
+            print(f"   ❌ AI roast error: {type(e).__name__}: {e}")
             return None

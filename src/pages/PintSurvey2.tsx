@@ -14,8 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Roast generation helper
-const getRandomRoast = (rating: number): string => {
+// Fallback roast generation (client-side, if API fails)
+const getRandomRoastFallback = (rating: number): string => {
   const roastsByTier = {
     top: [
       "Found your local",
@@ -76,11 +76,41 @@ const PintSurvey = () => {
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("$");
   const [pub, setPub] = useState("");
+  const [isGeneratingRoast, setIsGeneratingRoast] = useState(false);
 
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Generate roast via API (with fallback)
+  const generateRoast = async (rating: number): Promise<string> => {
+    try {
+      const response = await fetch('https://g-split-judge-production.up.railway.app/generate-pub-roast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rating,
+          taste,
+          temperature,
+          head,
+          pub: pub.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result.roast;
+    } catch (error) {
+      console.error('Failed to generate roast from API, using fallback:', error);
+      return getRandomRoastFallback(rating);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!pub.trim()) {
@@ -89,19 +119,22 @@ const PintSurvey = () => {
     }
 
     const overallRating = Math.round(((taste + temperature + head) / 3) * 10) / 10;
-    const roast = getRandomRoast(overallRating);
+
+    setIsGeneratingRoast(true);
 
     try {
-      // Save to IndexedDB before navigating
+      // Generate roast via API (with fallback)
+      const roast = await generateRoast(overallRating);
+
+      // Save to IndexedDB
       if (pintLogId) {
-        // Update existing pint entry
         const existingPint = await getPintById(pintLogId);
         if (existingPint) {
           await savePint({
             ...existingPint,
             taste,
             temperature,
-            creaminess: head, // Map 'head' to 'creaminess' in DB
+            creaminess: head,
             price: price ? parseFloat(price) : null,
             location: pub.trim(),
             overallRating,
@@ -109,7 +142,6 @@ const PintSurvey = () => {
           });
         }
       } else {
-        // Create new pint entry
         await savePint({
           id: Date.now(),
           date: new Date().toISOString(),
@@ -121,7 +153,7 @@ const PintSurvey = () => {
           overallRating,
           taste,
           temperature,
-          creaminess: head, // Map 'head' to 'creaminess' in DB
+          creaminess: head,
           price: price ? parseFloat(price) : null,
           roast,
         });
@@ -129,7 +161,6 @@ const PintSurvey = () => {
 
       toast.success("Rating locked in");
 
-      // Navigate to log with receipt data (will show as modal)
       navigate("/log", {
         state: {
           splitScore,
@@ -142,6 +173,8 @@ const PintSurvey = () => {
     } catch (error) {
       console.error('Failed to save pint:', error);
       toast.error("Failed to save rating. Please try again.");
+    } finally {
+      setIsGeneratingRoast(false);
     }
   };
 
@@ -233,9 +266,10 @@ const PintSurvey = () => {
           {/* Submit Button */}
           <Button
             onClick={handleSubmit}
+            disabled={isGeneratingRoast}
             className="w-full h-[52px] bg-foreground hover:bg-foreground/90 text-background font-semibold text-base rounded-lg mt-8 active:bg-foreground/80"
           >
-            Lock It In
+            {isGeneratingRoast ? "Brewing roast..." : "Lock It In"}
           </Button>
         </div>
       </div>
