@@ -149,16 +149,7 @@ const PintSurvey = () => {
     <div className="min-h-screen bg-background px-6 pt-6 pb-8 md:px-8">
       <div className="md:max-w-[480px] md:mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            className="mb-3 text-foreground hover:bg-muted -ml-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          
+        <div className="mb-3">
           <h1 className="font-display text-[32px] font-bold text-foreground tracking-tight">
             How Was She?
           </h1>

@@ -116,9 +116,9 @@ const PintCard = ({
             <Button
               variant="outline"
               onClick={handleCompleteRating}
-              className="mt-3 bg-harp-gold/10 border-harp-gold/30 text-harp-gold hover:bg-harp-gold/20 font-inter text-sm font-semibold px-4 py-2 h-auto"
+              className="mt-3 bg-[#FFF8E7] border-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-inter text-xs font-medium px-3 py-1.5 h-auto"
             >
-              Complete Rating ⭐
+              Rate this Pint
             </Button>
           )}
         </div>
