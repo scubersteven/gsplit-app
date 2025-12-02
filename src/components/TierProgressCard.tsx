@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MasteryLevelsModal from "./MasteryLevelsModal";
+import { getTotalPoints, TIERS, getProgressToNextTier } from "@/lib/gamification";
 
 interface TierProgressCardProps {
   currentTier: string;
@@ -40,6 +41,12 @@ const TierProgressCard = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (animatedProgress / 100) * circumference;
+
+  // Calculate gamification data for modal
+  const totalPoints = getTotalPoints();
+  const progressData = getProgressToNextTier(totalPoints);
+  const currentTierIndex = TIERS.findIndex(t => t.name === currentTier);
+  const nextTierInfo = currentTierIndex < TIERS.length - 1 ? TIERS[currentTierIndex + 1] : null;
 
   return (
     <div className="bg-deep-black border-2 border-harp-gold/20 rounded-2xl p-8 shadow-[0_8px_16px_rgba(0,0,0,0.4)] mb-6 text-center">
@@ -106,6 +113,14 @@ const TierProgressCard = ({
         open={modalOpen}
         onOpenChange={setModalOpen}
         currentTier={currentTier}
+        currentTierEmoji={emoji}
+        totalPoints={totalPoints}
+        pointsInTier={progressData.current}
+        pointsNeededForNext={progressData.total}
+        progressPercentage={progressData.percentage}
+        nextTierName={nextTierInfo?.name || null}
+        nextTierEmoji={nextTierInfo?.icon || null}
+        pointsToNextTier={nextTierInfo ? (nextTierInfo.minPoints - totalPoints) : 0}
       />
     </div>
   );

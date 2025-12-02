@@ -326,6 +326,14 @@ const Index = () => {
         open={isMasteryModalOpen}
         onOpenChange={setIsMasteryModalOpen}
         currentTier={currentTier.name}
+        currentTierEmoji={currentTier.icon}
+        totalPoints={gamificationTotalPoints}
+        pointsInTier={progress.current}
+        pointsNeededForNext={progress.total}
+        progressPercentage={progress.percentage}
+        nextTierName={nextTier?.name || null}
+        nextTierEmoji={nextTier?.icon || null}
+        pointsToNextTier={nextTier ? (nextTier.minPoints - gamificationTotalPoints) : 0}
       />
     </div>
   );
