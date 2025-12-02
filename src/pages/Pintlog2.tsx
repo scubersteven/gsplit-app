@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PintCard from "@/components/PintCard";
 import StatsCard from "@/components/StatsCard";
 import MasteryBadge from "@/components/MasteryBadge";
 import MasteryLevelsModal from "@/components/MasteryLevelsModal";
+import PintReceiptModal from "@/components/PintReceiptModal";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getTotalPoints, getTierFromPoints, getProgressToNextTier, TIERS } from "@/lib/gamification";
@@ -25,6 +26,7 @@ type FilterType = "all" | "excellent" | "good" | "poor";
 
 const Index = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
@@ -33,11 +35,24 @@ const Index = () => {
   const [stats, setStats] = useState({ averageScore: 0, bestScore: 0, totalPints: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [isMasteryModalOpen, setIsMasteryModalOpen] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
 
   // Load pints from IndexedDB
   useEffect(() => {
     loadPints();
   }, []);
+
+  // Check for receipt data in navigation state
+  useEffect(() => {
+    if (location.state && (location.state as any).overallRating) {
+      // Store receipt data and show modal
+      setReceiptData(location.state);
+      setIsReceiptModalOpen(true);
+      // Clear location state immediately to prevent modal re-showing on refresh
+      navigate("/log", { replace: true });
+    }
+  }, [location.state, navigate]);
 
   const loadPints = async () => {
     try {
@@ -328,6 +343,13 @@ const Index = () => {
         open={isMasteryModalOpen}
         onOpenChange={setIsMasteryModalOpen}
         currentTier={currentTier.name}
+      />
+
+      {/* Receipt Modal */}
+      <PintReceiptModal
+        open={isReceiptModalOpen}
+        onOpenChange={setIsReceiptModalOpen}
+        receiptData={receiptData}
       />
     </div>
   );

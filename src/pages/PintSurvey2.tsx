@@ -124,8 +124,8 @@ const PintSurvey = () => {
 
       toast.success("Rating locked in");
 
-      // Navigate to summary with data
-      navigate("/summary", {
+      // Navigate to log with receipt data (will show as modal)
+      navigate("/log", {
         state: {
           splitScore,
           splitImage,

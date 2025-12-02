@@ -87,11 +87,6 @@ const PintCard = ({
             {score}%
           </div>
 
-          {/* Split Status */}
-          <div className="mt-1 font-inter text-sm font-semibold text-foreground/90">
-            {splitDetected ? "✅ Split detected" : "❌ No split"}
-          </div>
-
           {/* Star Rating - show when overallRating exists */}
           {overallRating && (
             <div className="flex items-center gap-2 mt-2">
