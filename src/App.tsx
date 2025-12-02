@@ -9,6 +9,7 @@ import GSplit from './pages/GSplit';
 import GSplitResult from './pages/GSplitResult';
 import GSplitResultV2 from './pages/GSplitResultV2';
 import PintSurvey2 from './pages/PintSurvey2';
+import PintReceipt from './pages/PintReceipt';
 import Results from './pages/Results';
 import PintLog from './pages/PintLog';
 import Pintlog2 from './pages/Pintlog2';
@@ -99,6 +100,7 @@ function App() {
           <Route path="/split-result" element={<GSplitResult />} />
           <Route path="/split-result-v2" element={<GSplitResultV2 />} />
           <Route path="/survey" element={<PintSurvey2 />} />
+          <Route path="/summary" element={<PintReceipt />} />
           <Route path="/results" element={<Results />} />
           <Route path="/log" element={<Pintlog2 />} />
           <Route path="/log-old" element={<PintLog />} />

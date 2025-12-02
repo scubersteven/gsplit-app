@@ -19,6 +19,7 @@ interface PintDB extends DBSchema {
       temperature?: number | null;
       creaminess?: number | null;
       pourTechnique?: string[] | null;
+      roast?: string | null;
     };
   };
 }

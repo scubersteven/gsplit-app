@@ -14,6 +14,57 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Roast generation helper
+const getRandomRoast = (rating: number): string => {
+  const roastsByTier = {
+    top: [
+      "Found your local",
+      "Tell no one about this place",
+      "This pub gets it",
+      "Marry the barman",
+      "Certified haunt 🏠",
+    ],
+    solid: [
+      "Decent spot",
+      "Would drink again",
+      "No complaints",
+      "Gets the job done",
+      "Safe bet 👍",
+    ],
+    mid: [
+      "It's a pub",
+      "Meh",
+      "Nothing to write home about",
+      "You've had better",
+      "Mid tier establishment",
+    ],
+    rough: [
+      "Questionable choices were made",
+      "Why did you stay",
+      "Tourist trap energy",
+      "Your standards have dropped",
+      "That's on you",
+    ],
+    bottom: [
+      "Never again",
+      "Report this establishment",
+      "A crime scene",
+      "Who recommended this",
+      "Arthur weeps",
+    ],
+  };
+
+  let tier: keyof typeof roastsByTier;
+  if (rating >= 4.5) tier = "top";
+  else if (rating >= 3.5) tier = "solid";
+  else if (rating >= 2.5) tier = "mid";
+  else if (rating >= 1.5) tier = "rough";
+  else tier = "bottom";
+
+  const roasts = roastsByTier[tier];
+  return roasts[Math.floor(Math.random() * roasts.length)];
+};
+
 const PintSurvey = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +84,7 @@ const PintSurvey = () => {
     }
 
     const overallRating = Math.round(((taste + temperature + head) / 3) * 10) / 10;
+    const roast = getRandomRoast(overallRating);
 
     try {
       // Save to IndexedDB before navigating
@@ -48,6 +100,7 @@ const PintSurvey = () => {
             price: price ? parseFloat(price) : null,
             location: pub.trim(),
             overallRating,
+            roast,
           });
         }
       } else {
@@ -65,11 +118,22 @@ const PintSurvey = () => {
           temperature,
           creaminess: head, // Map 'head' to 'creaminess' in DB
           price: price ? parseFloat(price) : null,
+          roast,
         });
       }
 
       toast.success("Rating locked in");
-      navigate("/log");
+
+      // Navigate to summary with data
+      navigate("/summary", {
+        state: {
+          splitScore,
+          splitImage,
+          overallRating,
+          pub: pub.trim(),
+          roast,
+        },
+      });
     } catch (error) {
       console.error('Failed to save pint:', error);
       toast.error("Failed to save rating. Please try again.");
