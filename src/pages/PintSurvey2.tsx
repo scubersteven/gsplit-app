@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -74,8 +74,13 @@ const PintSurvey = () => {
   const [temperature, setTemperature] = useState(3.0);
   const [head, setHead] = useState(3.0);
   const [price, setPrice] = useState("");
-  const [currency, setCurrency] = useState("€");
+  const [currency, setCurrency] = useState("$");
   const [pub, setPub] = useState("");
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = async () => {
     if (!pub.trim()) {
