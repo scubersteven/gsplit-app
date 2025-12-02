@@ -165,12 +165,12 @@ const Index = () => {
   const nextTier = currentTierIndex < TIERS.length - 1 ? TIERS[currentTierIndex + 1] : null;
 
   return (
-    <div className="min-h-screen">
-      {/* Header - Foam Cream */}
-      <header className="bg-foam-cream px-4 md:px-8 py-10 md:py-20">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="bg-background px-4 md:px-8 py-10 md:py-20">
         <div className="max-w-[900px] mx-auto">
           {/* Title */}
-          <h1 className="font-playfair text-4xl md:text-5xl font-bold text-stout-black">
+          <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white">
             My Pints
           </h1>
 
@@ -180,8 +180,8 @@ const Index = () => {
               onClick={() => setActiveFilter("all")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
                 activeFilter === "all"
-                  ? "bg-stout-black text-foam-cream"
-                  : "bg-transparent text-stout-black/60 hover:text-stout-black"
+                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
               All
@@ -190,8 +190,8 @@ const Index = () => {
               onClick={() => setActiveFilter("excellent")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
                 activeFilter === "excellent"
-                  ? "bg-stout-black text-foam-cream"
-                  : "bg-transparent text-stout-black/60 hover:text-stout-black"
+                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
               80%+
@@ -200,8 +200,8 @@ const Index = () => {
               onClick={() => setActiveFilter("good")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
                 activeFilter === "good"
-                  ? "bg-stout-black text-foam-cream"
-                  : "bg-transparent text-stout-black/60 hover:text-stout-black"
+                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
               60-79%
@@ -210,8 +210,8 @@ const Index = () => {
               onClick={() => setActiveFilter("poor")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
                 activeFilter === "poor"
-                  ? "bg-stout-black text-foam-cream"
-                  : "bg-transparent text-stout-black/60 hover:text-stout-black"
+                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
               &lt;60%
@@ -220,10 +220,10 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Pint Cards Section - Stout Black */}
-      <main 
+      {/* Pint Cards Section */}
+      <main
         ref={mainRef}
-        className="bg-stout-black px-4 md:px-8 py-4 md:py-8 min-h-[60vh] overflow-y-auto touch-pan-y"
+        className="bg-background px-4 md:px-8 py-4 md:py-8 min-h-[60vh] overflow-y-auto touch-pan-y"
         style={{ overscrollBehavior: "none" }}
       >
         <div className="max-w-[900px] mx-auto relative">
@@ -243,16 +243,7 @@ const Index = () => {
                   transition: "transform 200ms ease-out",
                 }}
               >
-                <div
-                  className="text-lg font-inter font-semibold text-harp-gold"
-                  style={{
-                    transform: isRefreshing ? "none" : `rotate(${pullRotation}deg)`,
-                    display: "inline-block",
-                    animation: isRefreshing ? "spin 1s linear infinite" : "none",
-                  }}
-                >
-                  ↻
-                </div>
+                <div className="w-6 h-6 border-2 border-harp-gold border-t-transparent rounded-full animate-spin" />
               </div>
               {isRefreshing && (
                 <span className="font-inter text-sm font-semibold text-white mt-2">
@@ -265,9 +256,7 @@ const Index = () => {
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-20">
-              <div className="text-2xl mb-4 animate-spin text-harp-gold font-inter font-semibold">
-                ↻
-              </div>
+              <div className="w-8 h-8 border-2 border-harp-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               <p className="font-inter text-lg text-white/80">Loading pints...</p>
             </div>
           ) : (
