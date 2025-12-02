@@ -41,10 +41,10 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="hidden sm:inline font-ui">The Bar</span>
+                  <span className="font-ui">The Bar</span>
                 </Button>
               </Link>
-              
+
               <Link to="/log">
                 <Button
                   variant="ghost"
@@ -53,10 +53,10 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/log") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="hidden sm:inline font-ui">My Pints</span>
+                  <span className="font-ui">My Pints</span>
                 </Button>
               </Link>
-              
+
               <Link to="/map">
                 <Button
                   variant="ghost"
@@ -65,7 +65,7 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/map") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="hidden sm:inline font-ui">Pubs</span>
+                  <span className="font-ui">Pubs</span>
                 </Button>
               </Link>
             </nav>
