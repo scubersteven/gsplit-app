@@ -120,54 +120,65 @@ const PintSurvey = () => {
 
     const overallRating = Math.round(((taste + temperature + head) / 3) * 10) / 10;
 
+    // DETECTION: Check if G-Split flow or Survey-only
+    // If pintLogId exists, it's updating an existing pint (G-Split)
+    const isGSplitFlow = pintLogId || (splitImage && splitImage.length > 0);
+
     setIsGeneratingRoast(true);
 
     try {
-      // Generate roast via API (with fallback)
+      // BOTH flows generate roast (attention to detail!)
       const roast = await generateRoast(overallRating);
 
-      // Save to IndexedDB
-      if (pintLogId) {
-        const existingPint = await getPintById(pintLogId);
-        if (existingPint) {
+      // CONDITIONAL: Only G-Split flow saves to IndexedDB
+      if (isGSplitFlow) {
+        if (pintLogId) {
+          // Update existing pint
+          const existingPint = await getPintById(pintLogId);
+          if (existingPint) {
+            await savePint({
+              ...existingPint,
+              taste,
+              temperature,
+              creaminess: head,
+              price: price ? parseFloat(price) : null,
+              location: pub.trim(),
+              overallRating,
+              roast,
+            });
+          }
+        } else {
+          // Create new pint (G-Split)
           await savePint({
-            ...existingPint,
+            id: Date.now(),
+            date: new Date().toISOString(),
+            splitScore: splitScore || 0,
+            splitImage: splitImage || '',
+            splitDetected: false,
+            feedback: '',
+            location: pub.trim(),
+            overallRating,
             taste,
             temperature,
             creaminess: head,
             price: price ? parseFloat(price) : null,
-            location: pub.trim(),
-            overallRating,
             roast,
           });
         }
-      } else {
-        await savePint({
-          id: Date.now(),
-          date: new Date().toISOString(),
-          splitScore: splitScore || 0,
-          splitImage: splitImage || '',
-          splitDetected: false,
-          feedback: '',
-          location: pub.trim(),
-          overallRating,
-          taste,
-          temperature,
-          creaminess: head,
-          price: price ? parseFloat(price) : null,
-          roast,
-        });
       }
+      // Survey-only: NO savePint() call
 
-      toast.success("Rating locked in");
+      toast.success("Rating saved");
 
+      // BOTH flows navigate to /log with receipt data
       navigate("/log", {
         state: {
-          splitScore,
-          splitImage,
+          splitScore: isGSplitFlow ? splitScore : null,
+          splitImage: isGSplitFlow ? splitImage : null,
           overallRating,
           pub: pub.trim(),
           roast,
+          isSurveyOnly: !isGSplitFlow,
         },
       });
     } catch (error) {

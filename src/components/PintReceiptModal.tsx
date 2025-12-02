@@ -5,13 +5,15 @@ import {
 import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisplayStars from "@/components/DisplayStars";
+import gsplitLogo from "@/assets/g-split-logo.png";
 
 interface ReceiptData {
-  splitScore?: number;
-  splitImage?: string;
+  splitScore?: number | null;
+  splitImage?: string | null;
   overallRating: number;
   pub: string;
   roast?: string;
+  isSurveyOnly?: boolean;
 }
 
 interface PintReceiptModalProps {
@@ -27,7 +29,10 @@ const PintReceiptModal = ({
 }: PintReceiptModalProps) => {
   if (!receiptData) return null;
 
-  const { splitScore, splitImage, overallRating, pub, roast } = receiptData;
+  const { splitScore, splitImage, overallRating, pub, roast, isSurveyOnly } = receiptData;
+
+  // Determine display mode
+  const isGSplitMode = !isSurveyOnly && splitImage && splitImage.length > 0;
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-[#00B140]";
@@ -39,9 +44,8 @@ const PintReceiptModal = ({
     console.log("Share clicked - placeholder");
   };
 
-  // Use placeholder if no image
-  const displayImage = splitImage || "https://placehold.co/400x400/1a1a1a/ffffff?text=Pint";
-  const displayScore = splitScore ?? 89.5;
+  // IMAGE: G-Split uses pint image, Survey-only uses Gsplit logo
+  const displayImage = isGSplitMode ? splitImage : gsplitLogo;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -67,22 +71,22 @@ const PintReceiptModal = ({
               <X size={20} />
             </button>
 
-            {/* Pint Photo - compact */}
+            {/* Pint Photo or Logo */}
             <div className="w-full">
               <img
                 src={displayImage}
-                alt="Your pint"
+                alt={isGSplitMode ? "Your pint" : "Gsplit logo"}
                 className="w-full max-h-[280px] rounded-xl object-cover"
               />
             </div>
 
-            {/* Split Score */}
-            {splitScore && (
+            {/* Split Score - ONLY show for G-Split mode */}
+            {isGSplitMode && splitScore && (
               <div className="text-center">
                 <span
-                  className={`font-playfair text-[42px] font-bold ${getScoreColor(displayScore)}`}
+                  className={`font-playfair text-[42px] font-bold ${getScoreColor(splitScore)}`}
                 >
-                  {displayScore.toFixed(1)}%
+                  {splitScore.toFixed(1)}%
                 </span>
               </div>
             )}
@@ -108,15 +112,17 @@ const PintReceiptModal = ({
               <span className="text-base">{pub}</span>
             </div>
 
-            {/* Share Button (centered, View Log button removed) */}
-            <div className="flex justify-center pt-1">
-              <Button
-                onClick={handleShare}
-                className="w-full h-11 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold text-sm"
-              >
-                Share
-              </Button>
-            </div>
+            {/* Share Button - ONLY show for G-Split mode (shareable score + image) */}
+            {isGSplitMode && (
+              <div className="flex justify-center pt-1">
+                <Button
+                  onClick={handleShare}
+                  className="w-full h-11 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold text-sm"
+                >
+                  Share
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
