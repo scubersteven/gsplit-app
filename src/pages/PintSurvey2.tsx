@@ -56,7 +56,7 @@ const PintSurvey = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 pt-6 pb-8 md:px-8">
+    <div className="min-h-screen bg-background px-6 pt-6 pb-8 md:px-8">
       <div className="md:max-w-[480px] md:mx-auto">
         {/* Header */}
         <div className="mb-6">
