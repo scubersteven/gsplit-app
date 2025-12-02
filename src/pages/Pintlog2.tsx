@@ -174,13 +174,6 @@ const Index = () => {
             My Pints
           </h1>
 
-          {/* Storage Indicator - SIMPLIFIED */}
-          <div className="mt-6">
-            <span className="font-inter text-base font-semibold text-stout-black/60">
-              {totalPints} {totalPints === 1 ? 'pint' : 'pints'} logged
-            </span>
-          </div>
-
           {/* Filter Tabs */}
           <div className="mt-8 flex gap-2 flex-wrap">
             <button
@@ -250,19 +243,19 @@ const Index = () => {
                   transition: "transform 200ms ease-out",
                 }}
               >
-                <span
-                  className="text-2xl text-harp-gold"
+                <div
+                  className="text-lg font-inter font-semibold text-harp-gold"
                   style={{
                     transform: isRefreshing ? "none" : `rotate(${pullRotation}deg)`,
                     display: "inline-block",
                     animation: isRefreshing ? "spin 1s linear infinite" : "none",
                   }}
                 >
-                  ⟳
-                </span>
+                  ↻
+                </div>
               </div>
               {isRefreshing && (
-                <span className="font-inter text-sm font-semibold text-foam-cream/80 mt-2">
+                <span className="font-inter text-sm font-semibold text-white mt-2">
                   Refreshing...
                 </span>
               )}
@@ -272,8 +265,10 @@ const Index = () => {
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-20">
-              <div className="text-4xl mb-4 animate-spin">⟳</div>
-              <p className="font-inter text-lg text-foam-cream/60">Loading pints...</p>
+              <div className="text-2xl mb-4 animate-spin text-harp-gold font-inter font-semibold">
+                ↻
+              </div>
+              <p className="font-inter text-lg text-white/80">Loading pints...</p>
             </div>
           ) : (
             <>
@@ -307,7 +302,7 @@ const Index = () => {
           ) : pints.length === 0 ? (
             /* Empty State */
             <div className="text-center py-20">
-              <h2 className="font-inter text-xl font-semibold text-foam-cream/60 mb-6">
+              <h2 className="font-inter text-xl font-semibold text-white/80 mb-6">
                 No splits yet
               </h2>
               <button
@@ -320,8 +315,7 @@ const Index = () => {
           ) : (
             /* No Results for Filter */
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">🔍</div>
-              <h2 className="font-inter text-xl font-semibold text-foreground/60">
+              <h2 className="font-inter text-xl font-semibold text-white/80">
                 No pints in this range
               </h2>
             </div>

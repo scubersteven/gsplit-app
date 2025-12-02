@@ -10,31 +10,31 @@ const StatsCard = ({ averageScore, bestScore, totalPints }: StatsCardProps) => {
       <div className="grid grid-cols-3 gap-2 md:gap-4">
         {/* Average Score */}
         <div className="text-center">
-          <div className="font-inter text-3xl md:text-5xl font-bold text-score-good leading-none">
-            {averageScore.toFixed(1)}%
-          </div>
-          <div className="font-inter text-sm font-semibold text-foam-cream mt-2">
+          <div className="font-inter text-xs md:text-sm font-semibold text-foam-cream/60 mb-2 uppercase tracking-wider">
             Avg.
+          </div>
+          <div className="font-inter text-3xl md:text-5xl font-bold text-white leading-none">
+            {averageScore.toFixed(1)}%
           </div>
         </div>
 
         {/* Best Score */}
         <div className="text-center">
-          <div className="font-inter text-3xl md:text-5xl font-bold text-score-excellent leading-none">
-            {bestScore.toFixed(1)}%
-          </div>
-          <div className="font-inter text-sm font-semibold text-foam-cream mt-2">
+          <div className="font-inter text-xs md:text-sm font-semibold text-foam-cream/60 mb-2 uppercase tracking-wider">
             Best
+          </div>
+          <div className="font-inter text-3xl md:text-5xl font-bold text-white leading-none">
+            {bestScore.toFixed(1)}%
           </div>
         </div>
 
         {/* Total Pints Logged */}
         <div className="text-center">
-          <div className="font-inter text-3xl md:text-5xl font-bold text-harp-gold leading-none">
-            {totalPints}
-          </div>
-          <div className="font-inter text-sm font-semibold text-foam-cream mt-2">
+          <div className="font-inter text-xs md:text-sm font-semibold text-foam-cream/60 mb-2 uppercase tracking-wider">
             Pints
+          </div>
+          <div className="font-inter text-3xl md:text-5xl font-bold text-white leading-none">
+            {totalPints}
           </div>
         </div>
       </div>
