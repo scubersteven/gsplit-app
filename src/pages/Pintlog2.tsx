@@ -5,6 +5,7 @@ import StatsCard from "@/components/StatsCard";
 import MasteryBadge from "@/components/MasteryBadge";
 import MasteryLevelsModal from "@/components/MasteryLevelsModal";
 import PintReceiptModal from "@/components/PintReceiptModal";
+import PintCardModal from "@/components/PintCardModal";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getTotalPoints, getTierFromPoints, getProgressToNextTier, TIERS } from "@/lib/gamification";
@@ -37,6 +38,8 @@ const Index = () => {
   const [isMasteryModalOpen, setIsMasteryModalOpen] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
+  const [isPintModalOpen, setIsPintModalOpen] = useState(false);
+  const [selectedPint, setSelectedPint] = useState<Pint | null>(null);
 
   // Load pints from IndexedDB
   useEffect(() => {
@@ -84,6 +87,11 @@ const Index = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePintClick = (pint: Pint) => {
+    setSelectedPint(pint);
+    setIsPintModalOpen(true);
   };
 
   const totalPints = stats.totalPints;
@@ -298,7 +306,11 @@ const Index = () => {
               {filteredPints.length > 0 ? (
             <div className="space-y-4">
               {filteredPints.map((pint) => (
-                <PintCard key={pint.id} {...pint} />
+                <PintCard
+                  key={pint.id}
+                  {...pint}
+                  onClick={() => handlePintClick(pint)}
+                />
               ))}
             </div>
           ) : pints.length === 0 ? (
@@ -350,6 +362,13 @@ const Index = () => {
         open={isReceiptModalOpen}
         onOpenChange={setIsReceiptModalOpen}
         receiptData={receiptData}
+      />
+
+      {/* Pint Card Modal */}
+      <PintCardModal
+        open={isPintModalOpen}
+        onOpenChange={setIsPintModalOpen}
+        pintData={selectedPint}
       />
     </div>
   );

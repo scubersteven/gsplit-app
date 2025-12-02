@@ -13,6 +13,7 @@ interface PintCardProps {
   date: string;
   surveyComplete: boolean;
   overallRating?: number | null;
+  onClick?: () => void;
 }
 
 const PintCard = ({
@@ -25,6 +26,7 @@ const PintCard = ({
   date,
   surveyComplete,
   overallRating,
+  onClick,
 }: PintCardProps) => {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -59,7 +61,10 @@ const PintCard = ({
   };
 
   return (
-    <div className="bg-card border border-harp-gold/20 rounded-xl p-4 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-harp-gold/40 cursor-pointer">
+    <div
+      onClick={onClick}
+      className="bg-card border border-harp-gold/20 rounded-xl p-4 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-harp-gold/40 cursor-pointer"
+    >
       <div className="flex gap-4">
         {/* Photo Section */}
         <div className="flex-shrink-0 self-stretch">
@@ -115,7 +120,10 @@ const PintCard = ({
           {!surveyComplete && (
             <Button
               variant="outline"
-              onClick={handleCompleteRating}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCompleteRating();
+              }}
               className="mt-3 bg-[#FFF8E7] border-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-inter text-xs font-medium px-3 py-1.5 h-auto"
             >
               Rate this Pint
