@@ -59,8 +59,8 @@ const PintCard = ({
     <div className="bg-card border border-harp-gold/20 rounded-xl p-4 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-harp-gold/40 cursor-pointer">
       <div className="flex gap-4">
         {/* Photo Section */}
-        <div className="flex-shrink-0">
-          <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] rounded-lg overflow-hidden border border-harp-gold/10">
+        <div className="flex-shrink-0 self-stretch">
+          <div className="w-[100px] md:w-[140px] h-full rounded-lg overflow-hidden border border-harp-gold/10">
             {!imageError ? (
               <img
                 src={image}
@@ -95,9 +95,12 @@ const PintCard = ({
           </p>
 
           {/* Metadata */}
-          <div className="mt-2 space-y-1 font-inter text-sm font-semibold text-foreground/60">
-            {location && <div>📍 {location}</div>}
-            <div>{formatDate(date)}</div>
+          <div className="mt-2 font-inter text-sm font-semibold text-foreground/60">
+            {location ? (
+              <>📍 {location} • {formatDate(date)}</>
+            ) : (
+              formatDate(date)
+            )}
           </div>
 
           {/* Complete Rating Button */}
