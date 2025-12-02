@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -33,6 +33,7 @@ const GSplitResultV2 = () => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [showSavedBanner, setShowSavedBanner] = useState(false);
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
+  const hasSaved = useRef(false); // Track if pint has been saved
 
   // Get user pub name from localStorage
   const userPubName = (() => {
@@ -44,19 +45,26 @@ const GSplitResultV2 = () => {
     }
   })();
 
-  // MOCK DATA: Generate competitive context
-  const mockRank = Math.floor(Math.random() * 50) + 1;
-  const mockPercentile = score >= 85 ? Math.floor(Math.random() * 15) + 1 :
-                         score >= 60 ? Math.floor(Math.random() * 20) + 15 :
-                         Math.floor(Math.random() * 50) + 50;
+  // MOCK DATA: Generate competitive context once (useMemo or useState would work, but useState is simpler)
+  const [mockPercentile] = useState(() =>
+    score >= 85 ? Math.floor(Math.random() * 15) + 1 :
+    score >= 60 ? Math.floor(Math.random() * 20) + 15 :
+    Math.floor(Math.random() * 50) + 50
+  );
 
   useEffect(() => {
+    // Prevent multiple saves
+    if (hasSaved.current) {
+      console.log("⏭️ [DEBUG] Already saved, skipping...");
+      return;
+    }
     // IIFE for async operations inside useEffect
     (async () => {
       console.log("🔍 [DEBUG] useEffect triggered!", { score, image, splitDetected, feedback, userPubName, mockPercentile });
 
       if (score > 0 && image) {
         console.log("✅ [DEBUG] Score > 0, proceeding with save...");
+        hasSaved.current = true; // Mark as saved
 
         try {
           // Step 1: Compress image to 150KB
@@ -137,7 +145,7 @@ const GSplitResultV2 = () => {
         console.log("⚠️ [DEBUG] Score NOT > 0 or no image, skipping save. Score:", score);
       }
     })();
-  }, [score, image, splitDetected, feedback, userPubName, mockPercentile]);
+  }, [score, image, splitDetected, feedback, userPubName]); // Removed mockPercentile from dependencies
 
   if (!image) {
     navigate("/split");
