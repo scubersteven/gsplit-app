@@ -44,7 +44,7 @@ const PintSurvey = () => {
 
     toast.success("Rating locked in");
     
-    navigate("/log", {
+    navigate("/pint-log", {
       state: {
         surveyData,
         overallRating,
@@ -80,7 +80,7 @@ const PintSurvey = () => {
         {/* Card Container - only on tablet/desktop */}
         <div className="md:bg-card md:border md:border-border md:rounded-xl md:p-6">
           {/* Rating Sliders */}
-          <div className="space-y-7">
+          <div className="space-y-10">
             <RatingSlider
               label="Taste"
               lowLabel="Drain Pour"
