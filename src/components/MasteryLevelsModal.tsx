@@ -263,8 +263,52 @@ const MasteryLevelsModal = ({
             </div>
           </div>
 
+          {/* How Points Work Section */}
+          <div className="mb-6">
+            <Collapsible open={isPointsOpen} onOpenChange={setIsPointsOpen}>
+              <CollapsibleTrigger className="flex justify-between items-center w-full p-4 hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+                <span className="font-inter text-base font-semibold text-white">
+                  How Points Work
+                </span>
+                <ChevronDown
+                  className={`h-5 w-5 text-white transition-transform duration-300 ${
+                    isPointsOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <div className="bg-white/5 rounded-lg p-4 space-y-2">
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    Your score = base points (86% = 86 pts)
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    ✅ Split detected: +25 pts
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    ⭐ Survey complete: +15 pts
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    🔥 First pour today: +10 pts
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    📸 Share to Instagram: +10 pts
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    💯 Score 90%+: +20 bonus
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80">
+                    🔥 7-day streak: +100 bonus
+                  </p>
+                  <p className="font-inter text-sm font-normal text-white/80 mt-4 pt-2 border-t border-white/10">
+                    Daily limit: 1,000 points max
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+
           {/* Tier List */}
-          <div className="space-y-0 mb-6">
+          <div className="space-y-0 border-t border-white/10 pt-4">
             <h3 className="font-inter text-base font-semibold text-white mb-4">
               Tier Levels
             </h3>
@@ -315,50 +359,6 @@ const MasteryLevelsModal = ({
                 </div>
               );
             })}
-          </div>
-
-          {/* How Points Work Section */}
-          <div className="border-t border-white/10 pt-4">
-            <Collapsible open={isPointsOpen} onOpenChange={setIsPointsOpen}>
-              <CollapsibleTrigger className="flex justify-between items-center w-full p-4 hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
-                <span className="font-inter text-base font-semibold text-white">
-                  How Points Work
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-white transition-transform duration-300 ${
-                    isPointsOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
-                <div className="bg-white/5 rounded-lg p-4 space-y-2">
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    Your score = base points (86% = 86 pts)
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    ✅ Split detected: +25 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    ⭐ Survey complete: +15 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    🔥 First pour today: +10 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    📸 Share to Instagram: +10 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    💯 Score 90%+: +20 bonus
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    🔥 7-day streak: +100 bonus
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80 mt-4 pt-2 border-t border-white/10">
-                    Daily limit: 1,000 points max
-                  </p>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
           </div>
         </div>
 
