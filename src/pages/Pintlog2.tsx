@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PintCard from "@/components/PintCard";
-import TierProgressCard from "@/components/TierProgressCard";
 import StatsCard from "@/components/StatsCard";
+import MasteryBadge from "@/components/MasteryBadge";
+import MasteryLevelsModal from "@/components/MasteryLevelsModal";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getTotalPoints, getTierFromPoints, getProgressToNextTier, TIERS } from "@/lib/gamification";
@@ -30,6 +31,7 @@ const Index = () => {
   const [pints, setPints] = useState<Pint[]>([]);
   const [stats, setStats] = useState({ averageScore: 0, bestScore: 0, totalPints: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [isMasteryModalOpen, setIsMasteryModalOpen] = useState(false);
 
   // Load pints from IndexedDB
   useEffect(() => {
@@ -169,13 +171,21 @@ const Index = () => {
       {/* Header */}
       <header className="bg-background px-4 md:px-8 py-10 md:py-20">
         <div className="max-w-[900px] mx-auto">
-          {/* Title */}
-          <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white">
-            My Pints
-          </h1>
+          {/* Title Row with Badge */}
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white">
+              My Pints
+            </h1>
+            <MasteryBadge
+              tierName={currentTier.name}
+              emoji={currentTier.icon}
+              progress={progress.percentage}
+              onClick={() => setIsMasteryModalOpen(true)}
+            />
+          </div>
 
           {/* Filter Tabs */}
-          <div className="mt-8 flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => setActiveFilter("all")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
@@ -261,20 +271,6 @@ const Index = () => {
             </div>
           ) : (
             <>
-              {/* Tier Progress Card */}
-              <TierProgressCard
-                currentTier={currentTier.name}
-                emoji={currentTier.icon}
-                color={currentTier.color}
-                currentPoints={gamificationTotalPoints}
-                tierMin={currentTier.minPoints}
-                tierMax={currentTier.maxPoints}
-                progress={progress.percentage}
-                nextTier={nextTier?.name || "Legend"}
-                nextEmoji={nextTier?.icon || "👑"}
-                pointsToNext={nextTier ? nextTier.minPoints - gamificationTotalPoints : 0}
-              />
-
               {/* Stats Card */}
               <StatsCard
                 averageScore={stats.averageScore}
@@ -324,6 +320,13 @@ const Index = () => {
           }
         `}</style>
       </main>
+
+      {/* Mastery Levels Modal */}
+      <MasteryLevelsModal
+        open={isMasteryModalOpen}
+        onOpenChange={setIsMasteryModalOpen}
+        currentTier={currentTier.name}
+      />
     </div>
   );
 };
