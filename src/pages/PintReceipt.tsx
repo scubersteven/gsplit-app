@@ -43,7 +43,7 @@ const PintReceipt = () => {
   const displayScore = splitScore ?? 89.5;
 
   return (
-    <div className="min-h-screen bg-stout flex items-center justify-center px-2">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center px-2 z-50">
       {/* Receipt Card - Compact Achievement Moment */}
       <div
         className="relative w-[95%] max-w-[400px] bg-deep-black rounded-2xl p-5 space-y-4 shadow-2xl animate-scale-in"
@@ -65,7 +65,7 @@ const PintReceipt = () => {
           <img
             src={displayImage}
             alt="Your pint"
-            className="w-full max-h-[200px] rounded-xl object-cover"
+            className="w-full max-h-[280px] rounded-xl object-cover"
           />
         </div>
 
@@ -105,14 +105,13 @@ const PintReceipt = () => {
         <div className="flex gap-3 pt-1">
           <Button
             onClick={() => navigate("/log")}
-            variant="outline"
-            className="flex-1 h-11 border-foreground text-foreground hover:bg-foreground hover:text-deep-black font-semibold text-sm"
+            className="flex-1 h-11 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold text-sm"
           >
             View Log
           </Button>
           <Button
             onClick={handleShare}
-            className="flex-1 h-11 bg-foreground text-deep-black hover:bg-foreground/90 font-semibold text-sm"
+            className="flex-1 h-11 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold text-sm"
           >
             Share
           </Button>

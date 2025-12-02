@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import DisplayStars from "@/components/DisplayStars";
 
 interface PintCardProps {
   id: number;
@@ -11,6 +12,7 @@ interface PintCardProps {
   location: string | null;
   date: string;
   surveyComplete: boolean;
+  overallRating?: number | null;
 }
 
 const PintCard = ({
@@ -22,6 +24,7 @@ const PintCard = ({
   location,
   date,
   surveyComplete,
+  overallRating,
 }: PintCardProps) => {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -88,6 +91,16 @@ const PintCard = ({
           <div className="mt-1 font-inter text-sm font-semibold text-foreground/90">
             {splitDetected ? "✅ Split detected" : "❌ No split"}
           </div>
+
+          {/* Star Rating - show when overallRating exists */}
+          {overallRating && (
+            <div className="flex items-center gap-2 mt-2">
+              <DisplayStars value={overallRating} maxStars={5} size={20} />
+              <span className="text-lg font-bold text-foreground">
+                {overallRating.toFixed(1)}
+              </span>
+            </div>
+          )}
 
           {/* Feedback Quote */}
           <p className="mt-2 font-inter text-base md:text-lg italic text-foreground">

@@ -18,6 +18,7 @@ interface Pint {
   location: string | null;
   date: string;
   surveyComplete: boolean;
+  overallRating?: number | null;
 }
 
 type FilterType = "all" | "excellent" | "good" | "poor";
@@ -54,6 +55,7 @@ const Index = () => {
         location: entry.location || null,
         date: entry.date,
         surveyComplete: !!entry.overallRating,
+        overallRating: entry.overallRating || null,
       }));
 
       setPints(transformedPints);
