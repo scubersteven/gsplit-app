@@ -41,7 +41,6 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="text-base">🎯</span>
                   <span className="hidden sm:inline font-ui">The Bar</span>
                 </Button>
               </Link>
@@ -54,7 +53,6 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/log") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="text-base">📔</span>
                   <span className="hidden sm:inline font-ui">My Pints</span>
                 </Button>
               </Link>
@@ -67,7 +65,6 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/map") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="text-base">🌐</span>
                   <span className="hidden sm:inline font-ui">Pubs</span>
                 </Button>
               </Link>
