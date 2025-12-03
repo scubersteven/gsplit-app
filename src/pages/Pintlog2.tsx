@@ -28,9 +28,6 @@ const Index = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [pullDistance, setPullDistance] = useState(0);
-  const [isPulling, setIsPulling] = useState(false);
   const [pints, setPints] = useState<Pint[]>([]);
   const [stats, setStats] = useState({ averageScore: 0, bestScore: 0, totalPints: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -95,11 +92,7 @@ const Index = () => {
 
   const totalPints = stats.totalPints;
   const mainRef = useRef<HTMLDivElement>(null);
-  const startY = useRef(0);
   const { toast } = useToast();
-
-  const PULL_THRESHOLD = 80;
-  const MAX_PULL = 120;
 
   const filterPints = (pints: Pint[], filter: FilterType) => {
     switch (filter) {
@@ -115,73 +108,6 @@ const Index = () => {
   };
 
   const filteredPints = filterPints(pints, activeFilter);
-
-  // Pull to refresh handlers
-  useEffect(() => {
-    const mainElement = mainRef.current;
-    if (!mainElement) return;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (mainElement.scrollTop === 0 && !isRefreshing) {
-        startY.current = e.touches[0].clientY;
-        setIsPulling(true);
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isPulling || isRefreshing) return;
-
-      const currentY = e.touches[0].clientY;
-      const distance = currentY - startY.current;
-
-      if (distance > 0 && mainElement.scrollTop === 0) {
-        e.preventDefault();
-        const pull = Math.min(distance, MAX_PULL);
-        setPullDistance(pull);
-      }
-    };
-
-    const handleTouchEnd = () => {
-      if (!isPulling) return;
-
-      if (pullDistance >= PULL_THRESHOLD && !isRefreshing) {
-        triggerRefresh();
-      } else {
-        setPullDistance(0);
-      }
-      setIsPulling(false);
-    };
-
-    mainElement.addEventListener("touchstart", handleTouchStart, { passive: true });
-    mainElement.addEventListener("touchmove", handleTouchMove, { passive: false });
-    mainElement.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      mainElement.removeEventListener("touchstart", handleTouchStart);
-      mainElement.removeEventListener("touchmove", handleTouchMove);
-      mainElement.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [isPulling, pullDistance, isRefreshing]);
-
-  const triggerRefresh = async () => {
-    setIsRefreshing(true);
-    setPullDistance(PULL_THRESHOLD);
-
-    // Reload from IndexedDB
-    await loadPints();
-
-    setIsRefreshing(false);
-    setPullDistance(0);
-
-    toast({
-      title: "Pints refreshed ✓",
-      duration: 2000,
-    });
-  };
-
-  const pullOpacity = Math.min(pullDistance / PULL_THRESHOLD, 1);
-  const pullRotation = (pullDistance / MAX_PULL) * 360;
-  const isReadyToRefresh = pullDistance >= PULL_THRESHOLD;
 
   // Calculate gamification data
   const gamificationTotalPoints = getTotalPoints();
@@ -268,32 +194,6 @@ const Index = () => {
         style={{ overscrollBehavior: "none" }}
       >
         <div className="max-w-[900px] mx-auto relative">
-          {/* Pull to Refresh Indicator */}
-          {(isPulling || isRefreshing) && (
-            <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-300"
-              style={{
-                opacity: isRefreshing ? 1 : pullOpacity,
-                transform: `translateX(-50%) translateY(${isRefreshing ? '0' : `-${100 - (pullDistance / MAX_PULL) * 100}%`})`,
-              }}
-            >
-              <div
-                className="bg-harp-gold/10 rounded-full p-4 flex items-center justify-center"
-                style={{
-                  transform: `scale(${isReadyToRefresh ? 1.1 : 1})`,
-                  transition: "transform 200ms ease-out",
-                }}
-              >
-                <div className="w-6 h-6 border-2 border-harp-gold border-t-transparent rounded-full animate-spin" />
-              </div>
-              {isRefreshing && (
-                <span className="font-inter text-sm font-semibold text-white mt-2">
-                  Refreshing...
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-20">
