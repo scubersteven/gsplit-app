@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Camera, Upload, Star } from "lucide-react";
+import { Upload, Star } from "lucide-react";
 import { toast } from "sonner";
 import GuidedCamera from "@/components/GuidedCamera";
 
@@ -131,31 +131,27 @@ const Home = () => {
       {/* Hero Upload Zone */}
       <div className="max-w-3xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold text-primary mb-3 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-primary mb-2 tracking-tight">
             The Stout Standard
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Score your split. The digital barman never lies.
+          <p className="text-lg text-muted-foreground mb-8">
+            The digital barman never lies.
           </p>
         </div>
 
         {!selectedImage ? (
           <div className="space-y-6">
-            <div className="group relative bg-card border-2 border-border hover:border-success p-8 md:p-12 rounded-xl transition-all duration-300 hover:shadow-2xl animate-fade-in">
-              <div className="relative text-center space-y-6">
-                <div className="inline-block p-6 bg-secondary/50 rounded-lg mb-4 group-hover:bg-success/20 transition-colors duration-300">
-                  <Camera className="w-16 h-16 text-primary" />
-                </div>
-
+            <div className="group relative bg-card border-2 border-border hover:border-success p-6 md:p-8 rounded-xl transition-all duration-300 hover:shadow-2xl animate-fade-in">
+              <div className="relative text-center space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-primary">
                   Split the G
                 </h2>
 
                 <p className="text-lg text-muted-foreground max-w-xl mx-auto italic">
-                  Go on then...
+                  G'wan Then...
                 </p>
 
-                <div className="flex flex-col gap-4 justify-center w-full max-w-[300px] mx-auto pt-4">
+                <div className="flex flex-row gap-4 justify-center w-full max-w-[300px] mx-auto pt-4">
                   <Button
                     variant="default"
                     className="gap-2 w-full"
@@ -261,7 +257,7 @@ const Home = () => {
       {/* Secondary Feature */}
       <div className="max-w-3xl mx-auto">
         <Link to="/survey">
-          <div className="group bg-card border-2 border-border hover:border-gold p-8 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer">
+          <div className="group bg-card border-2 border-border hover:border-gold p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer">
             <div className="flex items-center gap-4 mb-4">
               <div className="p-4 bg-secondary/50 rounded-lg group-hover:bg-gold/20 transition-colors duration-300">
                 <Star className="w-8 h-8 text-primary" />
@@ -271,7 +267,7 @@ const Home = () => {
               </h2>
             </div>
             <p className="text-base text-muted-foreground mb-4">
-              Comprehensive evaluation of taste, pour technique, and presentation
+              The full verdict
             </p>
             <div className="text-primary font-medium group-hover:translate-x-2 transition-transform duration-300">
               Begin Evaluation →
