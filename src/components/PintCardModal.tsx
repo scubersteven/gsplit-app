@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, Share2, MapPin, Clock } from "lucide-react";
+import { X, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import DisplayStars from "@/components/DisplayStars";
 import { generatePintShareImage } from "@/utils/sharePintImage";
@@ -98,7 +98,7 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-none">
+      <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-[700px] [&>button]:hidden">
         <div className="relative w-[95%] max-w-[700px] bg-deep-black border-2 border-harp-gold rounded-2xl p-6 animate-scale-in">
           {/* Close Button - Top Right */}
           <button
@@ -142,12 +142,11 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
               <div className="space-y-2 text-base md:text-lg text-foreground/60">
                 {pintData.location && (
                   <div className="flex items-center gap-2">
-                    <MapPin size={20} className="flex-shrink-0" />
+                    <MapPin size={20} className="flex-shrink-0 text-[#D40003]" />
                     <span>{pintData.location}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
-                  <Clock size={20} className="flex-shrink-0" />
                   <span>{formatDate(pintData.date)}</span>
                 </div>
               </div>
@@ -158,9 +157,8 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
           <Button
             onClick={handleShare}
             disabled={isGeneratingImage}
-            className="w-full mt-6 h-12 bg-harp-gold hover:bg-harp-gold/90 text-deep-black font-semibold rounded-lg transition-colors active:bg-harp-gold/80"
+            className="w-full mt-6 h-12 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold rounded-lg transition-colors active:bg-[#FFF8E7]/80"
           >
-            <Share2 size={20} className="mr-2" />
             {isGeneratingImage ? "Generating..." : "Share Pint"}
           </Button>
         </div>
