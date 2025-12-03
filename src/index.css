@@ -179,4 +179,8 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground font-body;
   }
+
+  .score-display {
+    font-variant-numeric: lining-nums;
+  }
 }

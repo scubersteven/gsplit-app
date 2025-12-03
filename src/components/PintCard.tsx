@@ -88,7 +88,7 @@ const PintCard = ({
         {/* Content Section */}
         <div className="flex-1 min-w-0">
           {/* Score */}
-          <div className={`font-inter font-bold leading-none ${getScoreColor(score)} text-4xl md:text-5xl`}>
+          <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
             {score}%
           </div>
 

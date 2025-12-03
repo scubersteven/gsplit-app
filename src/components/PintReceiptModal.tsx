@@ -84,7 +84,7 @@ const PintReceiptModal = ({
             {isGSplitMode && splitScore && (
               <div className="text-center">
                 <span
-                  className={`font-playfair text-[42px] font-bold ${getScoreColor(splitScore)}`}
+                  className={`score-display font-display text-8xl font-black tracking-tight ${getScoreColor(splitScore)}`}
                 >
                   {splitScore.toFixed(1)}%
                 </span>

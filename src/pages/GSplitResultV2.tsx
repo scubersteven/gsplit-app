@@ -5,19 +5,17 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { generateShareImageV2, shareToInstagramV2 } from "@/utils/shareImageV2";
 import { useCountUp } from "@/hooks/useCountUp";
-import StreakBadge from "@/components/StreakBadge";
-import TierBadge from "@/components/TierBadge";
-import { addPoints } from "@/lib/gamification";
+import { addPoints, updateStreak } from "@/lib/gamification";
 import { compressImage } from "@/utils/imageCompression";
 import { savePint } from "@/utils/db";
 
 /**
- * Get score color (MATCHES ShareableResult colors)
+ * Get score color
  */
 const getScoreColor = (score: number): string => {
-  if (score >= 80) return "#36B37E"; // Irish green - vibrant! (MATCHED)
-  if (score >= 60) return "#E8A849"; // Softer amber (MATCHED)
-  return "#C45C4B"; // Softer red (MATCHED)
+  if (score >= 80) return "#00B140"; // Bright green
+  if (score >= 60) return "#FFA500"; // Orange
+  return "#D40003"; // Red
 };
 
 const GSplitResultV2 = () => {
@@ -236,8 +234,11 @@ const GSplitResultV2 = () => {
     }
   };
 
+  // Get streak count
+  const currentStreak = updateStreak();
+
   return (
-    <div className="min-h-screen bg-[#1C1410]">
+    <div className="min-h-screen bg-[#0A0A0A]">
 
       {/* Saved Banner */}
       {showSavedBanner && (
@@ -249,131 +250,73 @@ const GSplitResultV2 = () => {
         </div>
       )}
 
-      {/* Foam Header - "The Verdict" */}
-      <div className="w-full mb-0 animate-fade-in relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-10 pb-6 md:pt-20 md:pb-14 flex flex-col justify-center items-center gap-2 md:gap-3">
-          <h1 className="text-[#1C1410] text-4xl md:text-5xl font-display font-bold tracking-wide">
-            The Verdict
-          </h1>
-          {feedback && (
-            <p className="text-[#1C1410]/70 text-sm md:text-lg font-body italic font-normal text-center">
+      {/* Responsive Container */}
+      <div className="mx-auto max-w-[360px] md:max-w-[500px] px-6 flex flex-col pt-6 pb-8">
+        
+        {/* Score - THE HERO */}
+        <div className="text-center mb-2 animate-score-pop" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+          <div
+            className="score-display font-display font-black text-7xl leading-none tracking-tight"
+            style={{
+              color: getScoreColor(score),
+              textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+            }}
+          >
+            {displayedScore.toFixed(1)}%
+          </div>
+        </div>
+
+        {/* Feedback Quote */}
+        {feedback && (
+          <div className="text-center mb-4 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+            <p className="text-[#E8E8DD] text-lg font-body italic">
               "{feedback}"
             </p>
-          )}
-        </div>
-      </div>
-
-      {/* Responsive Container */}
-      <div className="mx-auto max-w-[360px] md:max-w-[900px] px-4 flex flex-col gap-3 md:gap-8 pb-8 md:pb-16 mt-2 md:mt-6">
-        
-        {/* Top Row - Pint Photo + Stats Box */}
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          
-          {/* Left - Pint Photo */}
-          <div className="w-full md:w-1/2">
-            <div className="w-full aspect-[3/4] md:aspect-[4/5] rounded-lg overflow-hidden animate-fade-in shadow-lg">
-              <img 
-                src={image}
-                alt="Your pint analysis"
-                className="w-full h-full object-cover"
-              />
-            </div>
           </div>
+        )}
 
-          {/* Right - Stats Box */}
-          <div className="w-full md:w-1/2 flex">
-            <div
-              className="border-2 border-[#D4AF37] rounded-lg p-2 md:p-6 animate-scale-in w-full flex flex-col justify-center relative"
-              style={{
-                animationDelay: '0.2s',
-                animationFillMode: 'both',
-                background: 'linear-gradient(135deg, #2A2A2A 0%, #242220 100%)',
-                boxShadow: '0 6px 12px rgba(44, 24, 16, 0.5), 0 2px 4px rgba(44, 24, 16, 0.3), 0 0 20px rgba(212, 175, 55, 0.15)'
-              }}
-            >
-          
-              {/* Top badges row */}
-              <div className="absolute top-1 md:top-3 left-2 md:left-3 right-2 md:right-3 flex items-center justify-between gap-1 md:gap-2">
-                <StreakBadge />
-                <TierBadge />
-              </div>
-
-              <div className="space-y-2 md:space-y-4 flex flex-col items-center mt-8 md:mt-10">
-
-                {/* Score with countup animation */}
-                <div className="animate-score-pop text-center" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
-                  <div
-                    className="text-5xl md:text-[80px] font-body font-black leading-none"
-                    style={{
-                      color: getScoreColor(score),
-                      letterSpacing: '-0.02em',
-                      textShadow: '0 4px 12px rgba(44, 24, 16, 0.4)'
-                    }}
-                  >
-                    {displayedScore.toFixed(1)}%
-                  </div>
-                </div>
-            
-                {/* Centered stats */}
-                <div className="space-y-1 text-center pt-1 w-full">
-                  {/* Ranking */}
-                  <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
-                    <span className="text-[#D4AF37] text-sm md:text-lg font-body font-semibold">
-                      Rank: Top {mockPercentile}% this week
-                    </span>
-                  </div>
-
-                  {/* Split Status */}
-                  <div className="animate-fade-in" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
-                    <span className="text-[#FFF8E7] text-sm md:text-base font-body font-semibold">
-                      Split detected: {splitDetected ? '✅' : '❌'}
-                    </span>
-                  </div>
-
-                  {/* Location */}
-                  {userPubName && (
-                    <div className="animate-fade-in" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
-                      <span className="text-[#FFF8E7] text-sm md:text-base font-body font-semibold">
-                        Location 📍: {userPubName}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Context Line: Streak + Location + Rank - ALL IN ONE LINE */}
+        <div className="text-center mb-6 animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
+          <span className="text-[#E8E8DD]/70 text-sm font-body">
+            🔥 {currentStreak} {currentStreak === 1 ? 'day' : 'days'}
+            {userPubName && (
+              <> • 📍 {userPubName}</>
+            )}
+            {' '} • Top {mockPercentile}%
+          </span>
         </div>
 
-        {/* Bottom Row - Action Buttons */}
-        <div className="flex flex-col items-center space-y-2 animate-fade-in mt-2 md:mt-6" style={{ animationDelay: '1.4s', animationFillMode: 'both' }}>
+        {/* Pint Photo */}
+        <div className="w-full max-h-[45vh] mb-6 rounded-xl overflow-hidden animate-fade-in" style={{ animationDelay: '0.8s', animationFillMode: 'both' }}>
+          <img
+            src={image}
+            alt="Your pint"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-          {/* Button 1 - Share to Instagram */}
-          <Button
-            onClick={handleInstagramShare}
-            disabled={isGeneratingImage}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
-          >
-            {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
-          </Button>
+        {/* Primary Button: Share to Instagram */}
+        <Button
+          onClick={handleInstagramShare}
+          disabled={isGeneratingImage}
+          className="w-full h-12 text-base font-body font-semibold bg-[#00B140] hover:bg-[#00B140]/90 text-white rounded-lg mb-3 animate-fade-in"
+          style={{ animationDelay: '1s', animationFillMode: 'both' }}
+        >
+          {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
+        </Button>
 
-          {/* Button 2 - Challenge Friend */}
-          <Button
-            onClick={handleShare}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
-          >
-            Challenge Friend ⚔️
-          </Button>
+        {/* Secondary Button: Challenge a Mate */}
+        <Button
+          onClick={handleShare}
+          className="w-full h-12 text-base font-body font-semibold bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-[#0A0A0A] rounded-lg mb-3 animate-fade-in"
+          style={{ animationDelay: '1.1s', animationFillMode: 'both' }}
+        >
+          Challenge a Mate ⚔️
+        </Button>
 
-          {/* Button 3 - Try Again */}
-          <Button
-            onClick={() => navigate("/")}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
-          >
-            Try Again 🔄
-          </Button>
-
-          {/* Button 4 - Rate this Pint */}
-          <Button
+        {/* Text Links */}
+        <div className="flex items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: '1.2s', animationFillMode: 'both' }}>
+          <button
             onClick={() => {
               try {
                 const pintId = sessionStorage.getItem("currentPintId");
@@ -389,10 +332,17 @@ const GSplitResultV2 = () => {
                 toast.error("Failed to load survey");
               }
             }}
-            className="w-full h-10 md:h-14 text-xs md:text-base font-ui font-semibold bg-[#fdecd0] hover:bg-[#fdecd0]/90 text-[#1C1410] rounded-md transition-all duration-300"
+            className="text-[#E8E8DD] text-sm font-body underline hover:text-[#D4AF37] transition-colors"
           >
-            Rate this Pint ⭐
-          </Button>
+            Rate this Pint
+          </button>
+          <span className="text-[#E8E8DD]/50 text-sm">•</span>
+          <button
+            onClick={() => navigate("/")}
+            className="text-[#E8E8DD] text-sm font-body underline hover:text-[#D4AF37] transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     </div>

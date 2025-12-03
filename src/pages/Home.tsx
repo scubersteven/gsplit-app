@@ -131,7 +131,7 @@ const Home = () => {
       {/* Hero Upload Zone */}
       <div className="max-w-3xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold text-primary mb-2 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-display font-bold text-primary mb-2 tracking-wide">
             The Stout Standard
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
@@ -143,7 +143,7 @@ const Home = () => {
           <div className="space-y-6">
             <div className="group relative bg-card border-2 border-border hover:border-success p-6 md:p-8 rounded-xl transition-all duration-300 hover:shadow-2xl animate-fade-in">
               <div className="relative text-center space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary">
+                <h2 className="text-3xl md:text-4xl font-display font-bold text-primary">
                   Split the G
                 </h2>
 
@@ -251,7 +251,7 @@ const Home = () => {
               <div className="p-4 bg-secondary/50 rounded-lg group-hover:bg-gold/20 transition-colors duration-300">
                 <Star className="w-8 h-8 text-primary" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-primary">
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-primary">
                 Rate Your Guinness
               </h2>
             </div>

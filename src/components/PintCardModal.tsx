@@ -120,7 +120,7 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
             {/* Content */}
             <div className="flex flex-col gap-4">
               {/* Score */}
-              <div className={`text-5xl font-bold ${getScoreColor(pintData.score)}`}>
+              <div className={`score-display font-display text-5xl font-black tracking-tight ${getScoreColor(pintData.score)}`}>
                 {pintData.score}%
               </div>
 
