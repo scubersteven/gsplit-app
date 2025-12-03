@@ -193,17 +193,6 @@ const Home = () => {
                 </div>
               </div>
             </div>
-
-            <div className="bg-card border-2 border-border hover:border-success rounded-lg p-6 hover:shadow-2xl transition-all duration-300">
-              <h3 className="font-semibold text-foreground mb-3 text-sm uppercase tracking-wider">
-                Tips
-              </h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• Good light</li>
-                <li>• G visible</li>
-                <li>• Fill the frame</li>
-              </ul>
-            </div>
           </div>
         ) : (
           <div className="space-y-6 animate-fade-in">

@@ -98,8 +98,8 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-[700px] [&>button]:hidden">
-        <div className="relative w-[95%] max-w-[700px] bg-deep-black border-2 border-harp-gold rounded-2xl p-6 animate-scale-in">
+      <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-[380px] [&>button]:hidden">
+        <div className="relative w-[95%] max-w-[380px] max-h-[70vh] overflow-y-auto bg-deep-black border-2 border-harp-gold rounded-2xl p-6 animate-scale-in">
           {/* Close Button - Top Right */}
           <button
             onClick={() => onOpenChange(false)}
@@ -108,38 +108,38 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
             <X size={24} />
           </button>
 
-          {/* Horizontal Layout - Scaled Up PintCard */}
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6 mt-8 md:mt-0">
-            {/* Left: Pint Image */}
+          {/* Vertical Compact Layout */}
+          <div className="flex flex-col gap-4 mt-8">
+            {/* Pint Image */}
             <img
               src={pintData.image}
               alt="Pint"
-              className="w-full md:w-[300px] h-[400px] md:h-[450px] rounded-xl object-cover border-2 border-harp-gold/30"
+              className="w-full h-[280px] rounded-xl object-cover border-2 border-harp-gold/30"
             />
 
-            {/* Right: Content */}
-            <div className="flex-1 flex flex-col justify-between gap-4">
+            {/* Content */}
+            <div className="flex flex-col gap-4">
               {/* Score */}
-              <div className={`text-6xl md:text-7xl font-bold ${getScoreColor(pintData.score)}`}>
+              <div className={`text-5xl font-bold ${getScoreColor(pintData.score)}`}>
                 {pintData.score}%
               </div>
 
               {/* Star Rating */}
               {pintData.overallRating && pintData.overallRating > 0 && (
                 <div>
-                  <DisplayStars value={pintData.overallRating} size={32} />
+                  <DisplayStars value={pintData.overallRating} size={28} />
                 </div>
               )}
 
               {/* Feedback */}
               {pintData.feedback && (
-                <p className="text-xl md:text-2xl italic text-foreground/90 leading-relaxed">
+                <p className="text-lg italic text-foreground/90 leading-relaxed">
                   "{pintData.feedback}"
                 </p>
               )}
 
               {/* Location & Date */}
-              <div className="space-y-2 text-base md:text-lg text-foreground/60">
+              <div className="space-y-2 text-base text-foreground/60">
                 {pintData.location && (
                   <div className="flex items-center gap-2">
                     <MapPin size={20} className="flex-shrink-0 text-[#D40003]" />
