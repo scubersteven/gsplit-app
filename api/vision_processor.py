@@ -207,18 +207,15 @@ class GuinnessVisionProcessor:
             else:
                 outputs = workflow_result
 
-            # Extract ALL THREE model results
+            # Extract TWO model results (Model 3 removed in v9)
             # CRITICAL: Roboflow uses spaces in some keys, underscores in others
             pint_results = outputs.get('pint results', {})  # SPACE
             split_results_array = outputs.get('split_results', [])  # UNDERSCORE
             split_results = split_results_array[0] if split_results_array else {}
-            g_bar_results_array = outputs.get('g bar results', [])  # SPACE
-            g_bar_results = g_bar_results_array[0] if g_bar_results_array else {}
 
             print(f'--- Parsed Workflow Outputs ---')
             print(f'Pint results available: {bool(pint_results)}')
             print(f'Split results available: {bool(split_results)}')
-            print(f'G-bar results available: {bool(g_bar_results)}')
 
             # ALWAYS CROP G-LOGO USING MODEL 1 (for debugging all cases)
             g_crop = None
@@ -254,6 +251,28 @@ class GuinnessVisionProcessor:
                     print(f'   Crop size: {crop_width}x{crop_height} pixels')
                     print(f'   Crop offset: ({offset_x}, {offset_y})')
                     print(f'{"─"*80}\n')
+
+                    # DEBUG: Save crop for diagnostic analysis
+                    if os.getenv('SAVE_DEBUG_CROPS') == '1':
+                        debug_dir = "/tmp/gsplit_crops"
+                        os.makedirs(debug_dir, exist_ok=True)
+
+                        # Extract image name from path
+                        image_name = os.path.basename(image_path)
+                        base_name = os.path.splitext(image_name)[0]
+
+                        # Tag filename with crop source (Model_2 or Model_1)
+                        source_tag = crop_info['source'].replace(' ', '_')
+
+                        # Save crop
+                        crop_path = f"{debug_dir}/{base_name}_{source_tag}_crop.jpg"
+                        cv2.imwrite(crop_path, g_crop)
+
+                        # Log crop metadata
+                        height, width = g_crop.shape[:2] if len(g_crop.shape) >= 2 else (0, 0)
+                        aspect_ratio = width / height if height > 0 else 0
+                        print(f"DEBUG: Saved {source_tag} crop: {crop_path}")
+                        print(f"       Size: {width}x{height} | Aspect: {aspect_ratio:.2f} | Source: {crop_info['source']}")
 
             # Fallback: Use Model 1's G-logo detection to crop (for Tier 2 cases)
             if g_crop is None and pint_results and 'predictions' in pint_results:
@@ -303,24 +322,86 @@ class GuinnessVisionProcessor:
                     print(f'   Crop offset: ({offset_x}, {offset_y})')
                     print(f'{"─"*80}\n')
 
-            # Save crop to disk for debugging
-            if g_crop is not None:
-                os.makedirs('debug_crops', exist_ok=True)
-                crop_filename = f'debug_crops/g_crop_{datetime.now().strftime("%Y%m%d_%H%M%S")}.jpg'
-                cv2.imwrite(crop_filename, g_crop)
-                print(f'   Saved to: {crop_filename}\n')
+                    # DEBUG: Save crop for diagnostic analysis
+                    if os.getenv('SAVE_DEBUG_CROPS') == '1':
+                        debug_dir = "/tmp/gsplit_crops"
+                        os.makedirs(debug_dir, exist_ok=True)
 
-            # Calculate score using THREE-MODEL SYSTEM
-            score, distance_mm, split_detected = self._calculate_score_from_workflow(
-                split_results, g_bar_results, pint_results, g_crop, crop_info
+                        # Extract image name from path
+                        image_name = os.path.basename(image_path)
+                        base_name = os.path.splitext(image_name)[0]
+
+                        # Tag filename with crop source (Model_2 or Model_1)
+                        source_tag = crop_info['source'].replace(' ', '_')
+
+                        # Save crop
+                        crop_path = f"{debug_dir}/{base_name}_{source_tag}_crop.jpg"
+                        cv2.imwrite(crop_path, g_crop)
+
+                        # Log crop metadata
+                        height, width = g_crop.shape[:2] if len(g_crop.shape) >= 2 else (0, 0)
+                        aspect_ratio = width / height if height > 0 else 0
+                        print(f"DEBUG: Saved {source_tag} crop: {crop_path}")
+                        print(f"       Size: {width}x{height} | Aspect: {aspect_ratio:.2f} | Source: {crop_info['source']}")
+
+            # Calculate score using v9 SIMPLIFIED SYSTEM (Model 2 + Model 1 fallback)
+            score_result = self._calculate_score_from_workflow(
+                split_results, pint_results, g_crop, crop_info, image_path
             )
+
+            # Extract values from result dictionary
+            score = score_result['score']
+            distance_mm = score_result['distance_mm']
+            split_detected = score_result['split_detected']
+
+            # DEBUG: Save annotated crop with g-bar (green) and beer line (red)
+            if os.getenv('SAVE_DEBUG_CROPS') == '1' and g_crop is not None:
+                beer_line_y = score_result.get('beer_line_y')
+                if beer_line_y is not None:
+                    debug_dir = "/tmp/gsplit_crops"
+                    image_name = os.path.basename(image_path)
+                    base_name = os.path.splitext(image_name)[0]
+                    source_tag = crop_info['source'].replace(' ', '_')
+
+                    # Create annotated copy
+                    annotated = g_crop.copy()
+                    height, width = annotated.shape[:2] if len(annotated.shape) >= 2 else (0, 0)
+
+                    if height > 0 and width > 0:
+                        # Draw green line at y=0.5 (assumed g-bar position)
+                        center_y = int(height * 0.5)
+                        cv2.line(annotated, (0, center_y), (width, center_y), (0, 255, 0), 2)
+
+                        # Draw red line at detected beer line position
+                        beer_y = int(height * beer_line_y)
+                        cv2.line(annotated, (0, beer_y), (width, beer_y), (0, 0, 255), 2)
+
+                        # Save annotated crop
+                        annotated_path = f"{debug_dir}/{base_name}_{source_tag}_annotated.jpg"
+                        cv2.imwrite(annotated_path, annotated)
+                        print(f"DEBUG: Saved annotated crop: {annotated_path}")
+                        print(f"       Green line (g-bar @ 0.5): y={center_y} | Red line (beer): y={beer_y}")
 
             print(f'\n{"="*80}')
             print(f'=== FINAL SCORE CALCULATION ===')
             print(f'Score: {score}%')
             print(f'Split detected: {split_detected}')
             print(f'Distance: {distance_mm:.2f}mm')
+            print(f'Model 2 available: {score_result["model2_available"]}')
             print(f'{"="*80}\n')
+
+            # Save G-logo crop for Model 2 failed cases (for debugging)
+            if g_crop is not None and not score_result['model2_available']:
+                failed_crops_dir = '/Users/justinshaffer/Desktop/GSplit_Test_Results/failed_crops'
+                os.makedirs(failed_crops_dir, exist_ok=True)
+
+                base_name = os.path.splitext(os.path.basename(image_path))[0]
+                crop_filename = f'{base_name}_crop.jpg'
+                crop_path = os.path.join(failed_crops_dir, crop_filename)
+
+                cv2.imwrite(crop_path, g_crop)
+                print(f'💾 SAVED FAILED CROP: {crop_path}')
+                print(f'   (Model 2 could not detect beer-split in this crop)\n')
 
             feedback = self._generate_feedback(distance_mm, score, split_detected)
 
@@ -330,6 +411,17 @@ class GuinnessVisionProcessor:
                 'g_line_detected': split_detected,
                 'confidence': 0.95 if split_detected else 0.5,
                 'feedback': feedback,
+                # Debug fields
+                'model2_available': score_result['model2_available'],
+                'model3_fallback_used': score_result['model3_fallback_used'],
+                'beer_line_in_zone': score_result['beer_line_in_zone'],
+                'beer_line_y': score_result['beer_line_y'],
+                'g_bar_y': score_result['g_bar_y'],
+                'g_curve_y': score_result['g_curve_y'],
+                'debug_crop_path': score_result['debug_crop_path'],
+                # G-logo bbox from Model 1 (for diagnostic analysis)
+                'g_logo_width': score_result.get('g_logo_width'),
+                'g_logo_height': score_result.get('g_logo_height'),
                 'debug_info': {
                     'workflow_outputs': outputs,
                     'split_detected': split_detected
@@ -351,349 +443,165 @@ class GuinnessVisionProcessor:
             logger.error(f"Error in analyze_guinness_split: {str(e)}", exc_info=True)
             return {'error': 'Analysis failed', 'message': str(e)}
 
-    def _calculate_score_from_workflow(self, split_results: Dict, g_bar_results: Dict, pint_results: Dict,
-                                       g_crop: np.ndarray, crop_info: Dict) -> tuple:
+    def _calculate_score_from_workflow(self, split_results: Dict, pint_results: Dict,
+                                       g_crop: np.ndarray, crop_info: Dict, image_path: str) -> Dict:
+        """v5 SIMPLIFIED SCORING: Binary multiplier + exponential decay."""
+
+        # Extract Model 1 G-logo bbox for diagnostic analysis
+        pint_predictions = pint_results.get('predictions', []) if pint_results else []
+        g_logo_model1 = next((p for p in pint_predictions if p.get('class') in ['g-logo', 'G']), None)
+        g_logo_width = g_logo_model1['width'] if g_logo_model1 else None
+        g_logo_height_full = g_logo_model1['height'] if g_logo_model1 else None
+
+        # v6: Use ALL Model 2 predictions (no confidence filter)
+        split_predictions = split_results.get('predictions', [])
+        model2_available = bool(split_predictions)
+
+        if model2_available:
+            # v9 DEAD SIMPLE: Distance from center
+            img_height = split_results['image']['height']
+            beer_split = split_predictions[0]
+
+            # Step 1: Extract beer line top edge (normalized 0-1)
+            beer_line_y = (beer_split['y'] - (beer_split['height'] / 2)) / img_height
+
+            # Step 2: Calculate distance from center (0.5)
+            distance = abs(beer_line_y - 0.5)
+
+            # Step 3: Linear scoring, clamped to 50-100
+            score = 100 - (distance * 100)
+            score = max(50.0, min(100.0, score))
+
+            distance_mm = distance * 100  # For API response
+
+            print(f"  [v9] Beer line: {beer_line_y:.4f} | Distance: {distance:.4f} | Score: {score:.1f}%")
+
+            # For backwards compatibility, set dummy values
+            g_bar_y_normalized = 0.5
+            g_curve_y_normalized = 0.5
+            in_zone = (distance < 0.25)  # Within 25% of center
+
+            # Debug visualization (keep existing)
+            debug_crop_path = None
+            if g_crop is not None:
+                debug_crop_path = self._save_debug_visualization(
+                    g_crop, beer_line_y * img_height,
+                    0.5 * img_height,  # g_bar at center
+                    0.5 * img_height,  # g_curve at center
+                    distance_mm, img_height, image_path
+                )
+
+            return {
+                'score': round(score, 1),
+                'distance_mm': round(distance_mm, 2),
+                'split_detected': in_zone,
+                'model2_available': True,
+                'model3_fallback_used': True,  # We don't use Model 3
+                'beer_line_in_zone': in_zone,
+                'beer_line_y': beer_line_y,
+                'g_bar_y': 0.5,
+                'g_curve_y': 0.5,
+                'debug_crop_path': debug_crop_path,
+                'g_logo_width': g_logo_width,
+                'g_logo_height': g_logo_height_full
+            }
+        else:
+            # Model 2 failed - return 25%
+            return {
+                'score': 25.0,
+                'distance_mm': 50.0,
+                'split_detected': False,
+                'model2_available': False,
+                'model3_fallback_used': False,
+                'beer_line_in_zone': False,
+                'beer_line_y': None,
+                'g_bar_y': None,
+                'g_curve_y': None,
+                'debug_crop_path': None,
+                'g_logo_width': g_logo_width,
+                'g_logo_height': g_logo_height_full
+            }
+
+    def _find_beer_line_center_column(self, g_crop: np.ndarray, model2_top_edge_y: float,
+                                      img_height: int) -> Optional[float]:
         """
-        Calculate score using THREE-MODEL SYSTEM.
-        - Model 2: Beer line detection
-        - Model 3: G-bar detection
-        - Model 1: Fallback for TIER 2
+        Use OpenCV to find precise beer line at center of G-logo crop.
 
         Args:
-            split_results: Model 2 results (beer-split detection)
-            g_bar_results: Model 3 results (G-bar detection)
-            pint_results: Model 1 results (pint-level, coarse)
-            g_crop: Cropped G-logo image (for annotation)
-            crop_info: Crop coordinates and metadata
+            g_crop: G-logo crop image (numpy array)
+            model2_top_edge_y: TOP EDGE from Model 2 (pixels, not normalized)
+            img_height: Height of g_crop
 
-        Tier 1 (Split Detected): 75-100% with linear decay
-        Tier 2 (No Split): 0-75% with quadratic decay
+        Returns:
+            Y coordinate of beer line in center column (pixels), or None if not found
         """
-        print(f'\n{"="*80}')
-        print(f'=== SCORE CALCULATION (Three-Model System) ===')
-        print(f'{"="*80}\n')
+        import cv2
 
-        # Check if split was detected in Model 2
-        split_predictions = split_results.get('predictions', [])
+        # Extract center column (middle 10% of width)
+        height, width = g_crop.shape[:2]
+        center_x = width // 2
+        column_width = max(int(width * 0.1), 3)  # At least 3 pixels wide
+        left = center_x - column_width // 2
+        right = center_x + column_width // 2
 
-        print(f'--- Checking for Split Detection ---')
-        print(f'Split predictions count: {len(split_predictions)}')
+        center_column = g_crop[:, left:right]
 
-        # Look for beer-split class in predictions
-        beer_split = None
-        
-        for pred in split_predictions:
-            class_name = pred.get('class', '')
-            print(f'  Found class: "{class_name}" (confidence: {pred.get("confidence", 0):.4f})')
-
-            if class_name in ['beer-split', 'split']:
-                beer_split = pred
-                print(f'    → Identified as BEER-SPLIT')
-
-        # TIER 1: Split detected (75-100% range) - USE MODEL 2 + MODEL 3
-        if beer_split:
-            print(f'\n{"─"*80}')
-            print(f'✓ TIER 1: SPLIT DETECTED - Using Model 2 + Model 3 (75-100%)')
-            print(f'{"─"*80}\n')
-
-            # Get crop dimensions
-            img_height = split_results.get('image', {}).get('height', 1)
-            img_width = split_results.get('image', {}).get('width', 1)
-
-            # ===== MODEL 2: BEER LINE =====
-            split_y = beer_split['y']
-            split_height = beer_split['height']
-            beer_line_y_pixel = split_y - (split_height / 2)  # Top edge of bounding box
-            beer_line_normalized = beer_line_y_pixel / img_height
-
-            print(f'🟢 MODEL 2 - Beer line:')
-            print(f'  Y center: {split_y:.2f} px')
-            print(f'  Height: {split_height:.2f} px')
-            print(f'  Top edge (beer line): {beer_line_y_pixel:.2f} px')
-            print(f'  Normalized: {beer_line_normalized:.6f}\n')
-
-            # ===== MODEL 3: G-BAR =====
-            g_bar_predictions = g_bar_results.get('predictions', [])
-            g_bar = None
-            
-            for pred in g_bar_predictions:
-                if pred.get('class') in ['g-bar', 'gbar', 'G-bar']:
-                    g_bar = pred
-                    break
-
-            g_bar_y_normalized = None
-            g_bar_y_pixel = None
-
-            if g_bar:
-                g_bar_y = g_bar['y']
-                g_bar_height = g_bar['height']
-                g_bar_y_pixel = g_bar_y - (g_bar_height / 2)  # Top edge
-                g_bar_y_normalized = g_bar_y_pixel / img_height
-                
-                print(f'🔴 MODEL 3 - G-bar detected:')
-                print(f'  Y center: {g_bar_y:.2f} px')
-                print(f'  Height: {g_bar_height:.2f} px')
-                print(f'  Top edge (G-bar): {g_bar_y_pixel:.2f} px')
-                print(f'  Normalized: {g_bar_y_normalized:.6f}')
-                print(f'  Confidence: {g_bar.get("confidence", 0):.4f}\n')
-            else:
-                # Fallback if Model 3 failed
-                g_bar_y_normalized = 0.42
-                g_bar_y_pixel = g_bar_y_normalized * img_height
-                print(f'⚠️  MODEL 3 FAILED - Using fallback G-bar position: {g_bar_y_normalized:.6f}\n')
-
-            # ===== CALCULATE G-TOP (TIP OF G) =====
-            # The true split zone is from the very tip of the G down to the G-bar
-            # G-top is approximately 0.18 (18% of G-logo height) above the G-bar
-            G_TOP_OFFSET = 0.18  # Distance from G-bar to G-tip
-            g_top_y_pixel_raw = g_bar_y_pixel - (G_TOP_OFFSET * img_height)
-            g_top_y_pixel = max(0, g_top_y_pixel_raw)  # Clamp to prevent negative (out of bounds)
-            g_top_normalized = g_top_y_pixel / img_height
-
-            print(f'🔵 G-TOP CALCULATION (True Split Zone):')
-            print(f'  G-bar position: {g_bar_y_pixel:.2f} px ({g_bar_y_normalized:.6f})')
-            print(f'  G-top offset: {G_TOP_OFFSET} ({G_TOP_OFFSET * img_height:.2f} px)')
-            print(f'  G-top position (raw): {g_top_y_pixel_raw:.2f} px')
-            print(f'  G-top position (clamped): {g_top_y_pixel:.2f} px ({g_top_normalized:.6f})')
-            if g_top_y_pixel_raw < 0:
-                print(f'  ⚠️  WARNING: G-top calculated outside image bounds! Clamped to 0')
-            print(f'  TRUE SPLIT ZONE: {g_top_normalized:.6f} to {g_bar_y_normalized:.6f}\n')
-
-            # ===== CALCULATE DISTANCE =====
-            distance_from_center = abs(beer_line_normalized - g_bar_y_normalized)
-            
-            print(f'--- Distance Calculation ---')
-            print(f'Beer line: {beer_line_normalized:.6f}')
-            print(f'G-bar:     {g_bar_y_normalized:.6f}')
-            print(f'Distance:  {distance_from_center:.6f}')
-
-            # Normalize distance (max distance is 0.5 from center to edge)
-            normalized_distance = min(distance_from_center / 0.5, 1.0)
-            distance_mm = normalized_distance * 50
-
-            print(f'Normalized distance: {normalized_distance:.6f}')
-            print(f'Distance in mm: {distance_mm:.6f}mm')
-
-            # Save debug visualization using passed crop
-            if g_crop is not None:
-                self._save_debug_visualization(
-                    g_crop,
-                    beer_line_y_pixel,
-                    g_bar_y_pixel,
-                    g_top_y_pixel,
-                    distance_mm,
-                    img_height
-                )
-
-            # ===== CALCULATE BASE SCORE FROM DISTANCE =====
-            # This applies to EVERYONE - inside or outside the zone
-            # Uses exponential decay: closer = better
-            decay_rate = 1.0  # Softer penalties for smoother scoring progression
-            base_score = 100 * math.exp(-normalized_distance * decay_rate)
-
-            print(f'\n--- Base Score Calculation ---')
-            print(f'Distance: {distance_mm:.1f}mm')
-            print(f'Normalized distance: {normalized_distance:.6f}')
-            print(f'Base score (before bonus): {base_score:.1f}%\n')
-
-            # ===== SMOOTH TAPERING BONUS =====
-            # Bonus gradually increases from 10mm to 20mm to avoid scoring inversions
-            # < 10mm: No bonus (already scoring 82-100%)
-            # 10-20mm: Bonus ramps up linearly from 0% to 100%
-            # >= 20mm: Full bonus applies
-
-            bonus = 0
-
-            if g_top_normalized <= beer_line_normalized <= g_bar_y_normalized:
-                # ===== INSIDE THE TRUE SPLIT ZONE =====
-                # Now check if far enough away to benefit from bonus
-
-                # Calculate distance factor (smooth tapering from 10mm to 20mm)
-                if distance_mm < 10:
-                    # Too close - already scoring 82-100%, no bonus needed
-                    distance_factor = 0
-                    print(f'✓ Inside split zone but distance < 10mm')
-                    print(f'  No bonus needed - already scoring high\n')
-
-                elif distance_mm <= 20:
-                    # Tapering zone: bonus gradually increases
-                    # 10mm = 0%, 15mm = 50%, 20mm = 100%
-                    distance_factor = (distance_mm - 10) / 10.0  # Linear ramp: 0 → 1
-
-                    # Calculate base bonus (13-18% range based on centering)
-                    zone_center = (g_top_normalized + g_bar_y_normalized) / 2
-                    distance_from_center = abs(beer_line_normalized - zone_center)
-                    zone_radius = (g_bar_y_normalized - g_top_normalized) / 2
-                    centering_quality = max(0, 1.0 - (distance_from_center / zone_radius))
-
-                    # Base bonus: 13% at edges, 18% at center
-                    base_bonus = 13 + (5 * centering_quality)
-
-                    # Apply distance tapering
-                    bonus = base_bonus * distance_factor
-
-                    print(f'🎯 TAPERING BONUS APPLIED!')
-                    print(f'   Beer line is inside zone: {g_top_normalized:.3f} to {g_bar_y_normalized:.3f}')
-                    print(f'   Distance from G-bar: {distance_mm:.1f}mm')
-                    print(f'   Distance factor: {distance_factor:.1%} (10mm=0%, 20mm=100%)')
-                    print(f'   Centering quality: {centering_quality:.1%}')
-                    print(f'   Base bonus (if at 20mm+): {base_bonus:.1f}%')
-                    print(f'   Applied bonus: +{bonus:.1f}%\n')
-
-                else:
-                    # 20mm+ - full bonus applies
-                    zone_center = (g_top_normalized + g_bar_y_normalized) / 2
-                    distance_from_center = abs(beer_line_normalized - zone_center)
-                    zone_radius = (g_bar_y_normalized - g_top_normalized) / 2
-                    centering_quality = max(0, 1.0 - (distance_from_center / zone_radius))
-
-                    # Full bonus: 13% at edges, 18% at center
-                    bonus = 13 + (5 * centering_quality)
-
-                    print(f'🎯 FULL BONUS APPLIED!')
-                    print(f'   Beer line is inside zone: {g_top_normalized:.3f} to {g_bar_y_normalized:.3f}')
-                    print(f'   Distance from G-bar: {distance_mm:.1f}mm (>= 20mm)')
-                    print(f'   Centering quality: {centering_quality:.1%}')
-                    print(f'   Bonus: +{bonus:.1f}%\n')
-
-            else:
-                # ===== OUTSIDE THE SPLIT ZONE =====
-                # No bonus regardless of distance
-                if beer_line_normalized < g_top_normalized:
-                    print(f'✗ Outside zone: Beer line too HIGH (above G-top)')
-                    print(f'  Beer: {beer_line_normalized:.3f} < G-top: {g_top_normalized:.3f}')
-                else:
-                    print(f'✗ Outside zone: Beer line too LOW (below G-bar)')
-                    print(f'  Beer: {beer_line_normalized:.3f} > G-bar: {g_bar_y_normalized:.3f}')
-                print(f'  No bonus - base score only\n')
-
-            # ===== FINAL SCORE =====
-            score = base_score + bonus
-
-            # Cap at 100% but NO FLOOR - let bad pours score bad
-            score = min(score, 100.0)
-
-            print(f'--- Final Score ---')
-            print(f'Base: {base_score:.1f}%')
-            print(f'Bonus: +{bonus:.1f}%')
-            print(f'Final: {score:.1f}%')
-            print(f'Formula: 100 × exp(-{normalized_distance:.6f} × {decay_rate}) + {bonus:.1f}%\n')
-
-            print(f'\n{"="*80}')
-            print(f'✓ SPLIT DETECTED - SCORE = {score:.1f}%')
-            print(f'{"="*80}\n')
-
-            # Return score with 1 decimal place precision
-            return round(score, 1), round(distance_mm, 2), True
-
-        # TIER 2: No split detected (0-45% range) - USE COARSE MODEL 1
+        # Convert to grayscale
+        if len(center_column.shape) == 3:
+            gray = cv2.cvtColor(center_column, cv2.COLOR_BGR2GRAY)
         else:
-            print(f'\n{"─"*80}')
-            print(f'✗ TIER 2: NO SPLIT - Using quadratic decay (0-45% MAX)')
-            print(f'{"─"*80}\n')
-            print(f'⚠️  NOTE: No split detected = Model 1 measurements only (less precise)')
-            print(f'   Maximum possible score capped at 45%\n')
+            gray = center_column
 
-            # Use pint-level detections for rough scoring
-            pint_predictions = pint_results.get('predictions', [])
+        # Average across the column width to get 1D signal
+        column_avg = np.mean(gray, axis=1)
 
-            beer = None
-            g_logo_pint = None
+        # Search region: From Model 2 TOP EDGE down to 75% of crop height
+        # Model 2 TOP EDGE is the MINIMUM boundary (meniscus peak at edge)
+        # Real beer line at center is always BELOW this point
+        search_start = int(model2_top_edge_y)
+        search_end = int(img_height * 0.75)
 
-            for pred in pint_predictions:
-                class_name = pred.get('class', '')
-                if class_name == 'beer':
-                    beer = pred
-                elif class_name in ['g-logo', 'G']:
-                    g_logo_pint = pred
+        if search_start >= search_end:
+            return None
 
-            if not beer or not g_logo_pint:
-                print(f'Missing beer or G-logo in pint detection')
-                print(f'Returning minimum score: 10.0%')
-                return 10.0, 50.0, False
+        search_region = column_avg[search_start:search_end]
 
-            # Calculate rough distance (NOTE: Model 1 is imprecise)
-            img_height = pint_results.get('image', {}).get('height', 1)
+        # Check if search region is large enough for gradient calculation
+        # np.gradient requires at least 2 elements
+        if len(search_region) < 2:
+            return None
 
-            beer_top = (beer['y'] - beer['height']/2) / img_height
-            g_center = g_logo_pint['y'] / img_height
+        # Find largest gradient (foam->beer transition)
+        # Foam is LIGHT (high values), Beer is DARK (low values)
+        # We want the sharpest DROP in brightness
+        gradient = np.gradient(search_region)
 
-            distance = abs(beer_top - g_center)
-            distance_mm = distance * 200  # Approximate
+        # Find steepest negative gradient (light to dark transition)
+        min_gradient_idx = np.argmin(gradient)
 
-            print(f'Beer top (Model 1, imprecise): {beer_top:.6f}')
-            print(f'G center (normalized): {g_center:.6f}')
-            print(f'Distance: {distance:.6f}')
-            print(f'Distance in mm: ~{distance_mm:.0f}mm (approximate)')
+        # Convert back to full image coordinates
+        beer_line_y = search_start + min_gradient_idx
 
-            # Quadratic decay with 45% MAX CAP: score = 45 * (1 - normalized_distance)²
-            max_score = 45  # Hard cap - no split = max 45%
-            max_distance = 0.5  # Maximum reasonable distance
-            normalized_distance = min(distance / max_distance, 1.0)
-
-            score = max_score * pow(1 - normalized_distance, 2)
-
-            print(f'\nFormula: score = {max_score} × (1 - {normalized_distance:.6f})²')
-            print(f'Result: score = {score:.6f}% (full precision)')
-
-            # Round to 1 decimal place for final score
-            score = round(score, 1)
-
-            print(f'Final score: {score}% (capped at {max_score}% max for no split)')
-
-            # Save debug visualization for Tier 2 using Model 1 measurements
-            if g_crop is not None and crop_info is not None:
-                print(f'\n📊 TIER 2 - Creating annotation with Model 1 measurements (approximate)')
-
-                # Transform Model 1's beer position from full image to crop coordinates
-                # Beer position in full image
-                pint_img_height = pint_results['image']['height']
-                beer_top_pixel_full = beer_top * pint_img_height
-
-                # Transform to crop coordinates
-                offset_y = crop_info['offset_y']
-                crop_height = crop_info['height']
-                beer_line_y_pixel_crop = beer_top_pixel_full - offset_y
-
-                # Use Model 1's G-logo center as approximate G-bar position
-                # G-logo center in full image
-                g_center_pixel_full = g_center * pint_img_height
-
-                # Transform to crop coordinates
-                g_bar_y_pixel_crop = g_center_pixel_full - offset_y
-
-                # Calculate approximate G-top using 0.18 offset
-                G_TOP_OFFSET = 0.18
-                g_top_y_pixel_crop = g_bar_y_pixel_crop - (G_TOP_OFFSET * crop_height)
-
-                print(f'   Beer line (Model 1): {beer_line_y_pixel_crop:.1f}px in crop')
-                print(f'   G-bar approx: {g_bar_y_pixel_crop:.1f}px in crop')
-                print(f'   G-top approx: {g_top_y_pixel_crop:.1f}px in crop')
-                print(f'   ⚠️  Note: These are APPROXIMATE positions from Model 1\n')
-
-                # Call debug visualization with approximate measurements
-                self._save_debug_visualization(
-                    g_crop,
-                    beer_line_y_pixel_crop,
-                    g_bar_y_pixel_crop,
-                    g_top_y_pixel_crop,
-                    distance_mm,
-                    crop_height
-                )
-            else:
-                print(f'\n📊 TIER 2 - No G-logo crop available for annotation')
-                print(f'   Model 1 detected: Beer at {beer_top:.3f}, G at {g_center:.3f}')
-                print(f'   Distance: {distance_mm:.2f}mm\n')
-
-            print(f'\n{"="*80}')
-            print(f'✗ NO SPLIT - SCORE = {score}%')
-            print(f'{"="*80}\n')
-
-            return score, distance_mm, False
+        return float(beer_line_y)
 
     def _save_debug_visualization(self, crop_image: np.ndarray, beer_line_y: float,
-                                  g_bar_y: float, g_top_y: float, distance_mm: float, img_height: int):
-        """Save annotated crop showing beer line, G-bar, and G-top positions"""
+                                  g_bar_y: float, g_curve_y: float, distance_mm: float, img_height: int,
+                                  original_filename: str) -> str:
+        """
+        Save annotated crop showing beer line, G-bar, and G-curve positions
+
+        Args:
+            crop_image: Cropped G-logo image
+            beer_line_y: Y coordinate of beer line in crop
+            g_bar_y: Y coordinate of G-bar in crop
+            g_curve_y: Y coordinate of G-curve in crop
+            distance_mm: Distance in millimeters
+            img_height: Height of crop image
+            original_filename: Original image filename for unique naming
+
+        Returns:
+            Full path to saved debug crop
+        """
         annotated = crop_image.copy()
         height, width = annotated.shape[:2]
 
@@ -703,8 +611,8 @@ class GuinnessVisionProcessor:
         font_thickness = 1
         font = cv2.FONT_HERSHEY_SIMPLEX
 
-        # Draw G-TOP line (CYAN) - MUST DRAW THIS!
-        y_top = max(0, min(int(g_top_y), height - 1))  # Clamp to image bounds [0, height-1]
+        # Draw G-CURVE line (CYAN) - MUST DRAW THIS!
+        y_top = max(0, min(int(g_curve_y), height - 1))  # Clamp to image bounds [0, height-1]
         cv2.line(annotated, (0, y_top), (width, y_top), (255, 255, 0), line_thickness)
         cv2.putText(annotated, 'TOP', (2, max(y_top - 2, 8)), font, font_scale, (255, 255, 0), font_thickness)
 
@@ -724,16 +632,100 @@ class GuinnessVisionProcessor:
         cv2.putText(annotated, f'{distance_mm:.0f}mm', (mid_x + 2, (y_beer + y_bar) // 2),
                     font, 0.22, (0, 255, 255), 1)
 
-        # Save
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_path = f'debug_annotated/annotated_{timestamp}.jpg'
+        # Save to centralized location with original filename
+        output_dir = '/Users/justinshaffer/Desktop/GSplit_Test_Results/debug_crops'
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Extract base filename without extension
+        base_name = os.path.splitext(os.path.basename(original_filename))[0]
+        output_filename = f'{base_name}_debug.jpg'
+        output_path = os.path.join(output_dir, output_filename)
+
         cv2.imwrite(output_path, annotated)
 
         print(f'📊 SAVED DEBUG VISUALIZATION: {output_path}')
-        print(f'   🔵 Cyan line = G-top (calculated)')
+        print(f'   🔵 Cyan line = G-curve (calculated)')
         print(f'   🔴 Red line = G-bar (Model 3)')
         print(f'   🟢 Green line = Beer line (Model 2)')
         print(f'   🟡 Yellow = Distance\n')
+
+        return output_path
+
+    def _save_debug_visualization_full_image(self, image_path: str, beer_line_y: float,
+                                             g_bar_y: float, g_curve_y: float,
+                                             distance_mm: float, img_height: int) -> str:
+        """
+        Save annotated FULL IMAGE showing Model 1 detections (for Model 2 unavailable cases).
+
+        Args:
+            image_path: Path to original full image
+            beer_line_y: Y coordinate of beer line in FULL IMAGE
+            g_bar_y: Y coordinate of G-bar proxy (G-logo center) in FULL IMAGE
+            g_curve_y: Y coordinate of G-curve in FULL IMAGE
+            distance_mm: Distance in millimeters
+            img_height: Height of full image
+
+        Returns:
+            Full path to saved debug image
+        """
+        # Load original image
+        original_image = cv2.imread(image_path)
+        if original_image is None:
+            print(f'⚠️  Could not load original image: {image_path}')
+            return None
+
+        annotated = original_image.copy()
+        height, width = annotated.shape[:2]
+
+        # Line styling - thicker for full image visibility
+        line_thickness = 2
+        font_scale = 0.6
+        font_thickness = 2
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+        # Draw G-CURVE line (CYAN)
+        y_top = max(0, min(int(g_curve_y), height - 1))
+        cv2.line(annotated, (0, y_top), (width, y_top), (255, 255, 0), line_thickness)
+        cv2.putText(annotated, 'G-CURVE (calc)', (10, y_top - 10), font, font_scale, (255, 255, 0), font_thickness)
+
+        # Draw G-BAR proxy line (RED) - this is G-logo center from Model 1
+        y_bar = max(0, min(int(g_bar_y), height - 1))
+        cv2.line(annotated, (0, y_bar), (width, y_bar), (0, 0, 255), line_thickness)
+        cv2.putText(annotated, 'G-BAR (G-logo center)', (10, y_bar - 10), font, font_scale, (0, 0, 255), font_thickness)
+
+        # Draw BEER line (GREEN) - from Model 1
+        y_beer = max(0, min(int(beer_line_y), height - 1))
+        cv2.line(annotated, (0, y_beer), (width, y_beer), (0, 255, 0), line_thickness)
+        cv2.putText(annotated, 'BEER LINE (Model 1)', (10, y_beer + 25), font, font_scale, (0, 255, 0), font_thickness)
+
+        # Distance indicator (YELLOW)
+        mid_x = width // 2
+        cv2.line(annotated, (mid_x, y_beer), (mid_x, y_bar), (0, 255, 255), line_thickness)
+        cv2.putText(annotated, f'{distance_mm:.1f}mm', (mid_x + 10, (y_beer + y_bar) // 2),
+                    font, font_scale, (0, 255, 255), font_thickness)
+
+        # Add "MODEL 1 ONLY" watermark
+        cv2.putText(annotated, 'MODEL 1 ONLY - FULL IMAGE', (10, 40),
+                    font, font_scale, (255, 0, 255), font_thickness)
+
+        # Save with M1 suffix to distinguish from Model 2 visualizations
+        output_dir = '/Users/justinshaffer/Desktop/GSplit_Test_Results/debug_crops'
+        os.makedirs(output_dir, exist_ok=True)
+
+        base_name = os.path.splitext(os.path.basename(image_path))[0]
+        output_filename = f'{base_name}_debug_m1.jpg'
+        output_path = os.path.join(output_dir, output_filename)
+
+        cv2.imwrite(output_path, annotated)
+
+        print(f'📊 SAVED MODEL 1 DEBUG VISUALIZATION: {output_path}')
+        print(f'   🔵 Cyan line = G-curve (calculated)')
+        print(f'   🔴 Red line = G-bar proxy (G-logo center from Model 1)')
+        print(f'   🟢 Green line = Beer line (Model 1, coarse)')
+        print(f'   🟡 Yellow = Distance')
+        print(f'   ⚠️  Full image visualization - Model 2 unavailable\n')
+
+        return output_path
 
     def _generate_feedback(self, distance_mm: float, score: float, split_detected: bool) -> str:
         """
