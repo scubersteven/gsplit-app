@@ -12,8 +12,6 @@ from typing import Dict
 import logging
 from datetime import datetime
 import os
-import glob
-import math
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -522,68 +520,6 @@ class GuinnessVisionProcessor:
                 'g_logo_height': g_logo_height_full
             }
 
-    def _find_beer_line_center_column(self, g_crop: np.ndarray, model2_top_edge_y: float,
-                                      img_height: int) -> Optional[float]:
-        """
-        Use OpenCV to find precise beer line at center of G-logo crop.
-
-        Args:
-            g_crop: G-logo crop image (numpy array)
-            model2_top_edge_y: TOP EDGE from Model 2 (pixels, not normalized)
-            img_height: Height of g_crop
-
-        Returns:
-            Y coordinate of beer line in center column (pixels), or None if not found
-        """
-        import cv2
-
-        # Extract center column (middle 10% of width)
-        height, width = g_crop.shape[:2]
-        center_x = width // 2
-        column_width = max(int(width * 0.1), 3)  # At least 3 pixels wide
-        left = center_x - column_width // 2
-        right = center_x + column_width // 2
-
-        center_column = g_crop[:, left:right]
-
-        # Convert to grayscale
-        if len(center_column.shape) == 3:
-            gray = cv2.cvtColor(center_column, cv2.COLOR_BGR2GRAY)
-        else:
-            gray = center_column
-
-        # Average across the column width to get 1D signal
-        column_avg = np.mean(gray, axis=1)
-
-        # Search region: From Model 2 TOP EDGE down to 75% of crop height
-        # Model 2 TOP EDGE is the MINIMUM boundary (meniscus peak at edge)
-        # Real beer line at center is always BELOW this point
-        search_start = int(model2_top_edge_y)
-        search_end = int(img_height * 0.75)
-
-        if search_start >= search_end:
-            return None
-
-        search_region = column_avg[search_start:search_end]
-
-        # Check if search region is large enough for gradient calculation
-        # np.gradient requires at least 2 elements
-        if len(search_region) < 2:
-            return None
-
-        # Find largest gradient (foam->beer transition)
-        # Foam is LIGHT (high values), Beer is DARK (low values)
-        # We want the sharpest DROP in brightness
-        gradient = np.gradient(search_region)
-
-        # Find steepest negative gradient (light to dark transition)
-        min_gradient_idx = np.argmin(gradient)
-
-        # Convert back to full image coordinates
-        beer_line_y = search_start + min_gradient_idx
-
-        return float(beer_line_y)
-
     def _save_debug_visualization(self, crop_image: np.ndarray, beer_line_y: float,
                                   g_bar_y: float, g_curve_y: float, distance_mm: float, img_height: int,
                                   original_filename: str) -> str:
@@ -648,82 +584,6 @@ class GuinnessVisionProcessor:
         print(f'   🔴 Red line = G-bar (Model 3)')
         print(f'   🟢 Green line = Beer line (Model 2)')
         print(f'   🟡 Yellow = Distance\n')
-
-        return output_path
-
-    def _save_debug_visualization_full_image(self, image_path: str, beer_line_y: float,
-                                             g_bar_y: float, g_curve_y: float,
-                                             distance_mm: float, img_height: int) -> str:
-        """
-        Save annotated FULL IMAGE showing Model 1 detections (for Model 2 unavailable cases).
-
-        Args:
-            image_path: Path to original full image
-            beer_line_y: Y coordinate of beer line in FULL IMAGE
-            g_bar_y: Y coordinate of G-bar proxy (G-logo center) in FULL IMAGE
-            g_curve_y: Y coordinate of G-curve in FULL IMAGE
-            distance_mm: Distance in millimeters
-            img_height: Height of full image
-
-        Returns:
-            Full path to saved debug image
-        """
-        # Load original image
-        original_image = cv2.imread(image_path)
-        if original_image is None:
-            print(f'⚠️  Could not load original image: {image_path}')
-            return None
-
-        annotated = original_image.copy()
-        height, width = annotated.shape[:2]
-
-        # Line styling - thicker for full image visibility
-        line_thickness = 2
-        font_scale = 0.6
-        font_thickness = 2
-        font = cv2.FONT_HERSHEY_SIMPLEX
-
-        # Draw G-CURVE line (CYAN)
-        y_top = max(0, min(int(g_curve_y), height - 1))
-        cv2.line(annotated, (0, y_top), (width, y_top), (255, 255, 0), line_thickness)
-        cv2.putText(annotated, 'G-CURVE (calc)', (10, y_top - 10), font, font_scale, (255, 255, 0), font_thickness)
-
-        # Draw G-BAR proxy line (RED) - this is G-logo center from Model 1
-        y_bar = max(0, min(int(g_bar_y), height - 1))
-        cv2.line(annotated, (0, y_bar), (width, y_bar), (0, 0, 255), line_thickness)
-        cv2.putText(annotated, 'G-BAR (G-logo center)', (10, y_bar - 10), font, font_scale, (0, 0, 255), font_thickness)
-
-        # Draw BEER line (GREEN) - from Model 1
-        y_beer = max(0, min(int(beer_line_y), height - 1))
-        cv2.line(annotated, (0, y_beer), (width, y_beer), (0, 255, 0), line_thickness)
-        cv2.putText(annotated, 'BEER LINE (Model 1)', (10, y_beer + 25), font, font_scale, (0, 255, 0), font_thickness)
-
-        # Distance indicator (YELLOW)
-        mid_x = width // 2
-        cv2.line(annotated, (mid_x, y_beer), (mid_x, y_bar), (0, 255, 255), line_thickness)
-        cv2.putText(annotated, f'{distance_mm:.1f}mm', (mid_x + 10, (y_beer + y_bar) // 2),
-                    font, font_scale, (0, 255, 255), font_thickness)
-
-        # Add "MODEL 1 ONLY" watermark
-        cv2.putText(annotated, 'MODEL 1 ONLY - FULL IMAGE', (10, 40),
-                    font, font_scale, (255, 0, 255), font_thickness)
-
-        # Save with M1 suffix to distinguish from Model 2 visualizations
-        output_dir = '/Users/justinshaffer/Desktop/GSplit_Test_Results/debug_crops'
-        os.makedirs(output_dir, exist_ok=True)
-
-        base_name = os.path.splitext(os.path.basename(image_path))[0]
-        output_filename = f'{base_name}_debug_m1.jpg'
-        output_path = os.path.join(output_dir, output_filename)
-
-        cv2.imwrite(output_path, annotated)
-
-        print(f'📊 SAVED MODEL 1 DEBUG VISUALIZATION: {output_path}')
-        print(f'   🔵 Cyan line = G-curve (calculated)')
-        print(f'   🔴 Red line = G-bar proxy (G-logo center from Model 1)')
-        print(f'   🟢 Green line = Beer line (Model 1, coarse)')
-        print(f'   🟡 Yellow = Distance')
-        print(f'   ⚠️  Full image visualization - Model 2 unavailable\n')
 
         return output_path
 
