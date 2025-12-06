@@ -142,6 +142,9 @@ const GSplitResultV2 = () => {
               localStorage.setItem('anonymous_id', anonymousId);
             }
 
+            // Get username from sessionStorage (set in PubSelectModal)
+            const username = sessionStorage.getItem('gsplit_username');
+
             // Get pub data from sessionStorage
             const selectedPubStr = sessionStorage.getItem('selectedPub');
             if (selectedPubStr) {
@@ -155,6 +158,7 @@ const GSplitResultV2 = () => {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     score: score,
+                    username: username || null,
                     anonymous_id: anonymousId,
                     split_detected: splitDetected,
                     feedback: feedback,
