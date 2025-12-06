@@ -12,6 +12,11 @@ interface PintDB extends DBSchema {
       splitDetected: boolean;
       feedback: string;
       location?: string | null;
+      place_id?: string;
+      pub_name?: string;
+      pub_address?: string;
+      pub_lat?: number;
+      pub_lng?: number;
       ranking?: string;
       overallRating?: number | null;
       price?: number | null;

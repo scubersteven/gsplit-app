@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import RatingSlider from "@/components/RatingSlider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PlacesAutocomplete from "@/components/PlacesAutocomplete";
 import { savePint, getPintById } from "@/utils/db";
 import {
   Select,
@@ -13,6 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+interface PlaceData {
+  place_id: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
 
 // Fallback roast generation (client-side, if API fails)
 const getRandomRoastFallback = (rating: number): string => {
@@ -68,20 +77,36 @@ const getRandomRoastFallback = (rating: number): string => {
 const PintSurvey = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { splitScore, splitImage, pintLogId } = location.state || {};
+  const { splitScore, splitImage, pintLogId, pub: pubFromState } = location.state || {};
 
   const [taste, setTaste] = useState(3.0);
   const [temperature, setTemperature] = useState(3.0);
   const [head, setHead] = useState(3.0);
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("$");
-  const [pub, setPub] = useState("");
+  const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(null);
   const [isGeneratingRoast, setIsGeneratingRoast] = useState(false);
 
-  // Scroll to top when component mounts
+  // Check sessionStorage and location state for pub data on mount
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+
+    // Check if pub was passed from previous page
+    if (pubFromState) {
+      setSelectedPlace(pubFromState);
+    } else {
+      // Check sessionStorage for pub selected during upload flow
+      const storedPub = sessionStorage.getItem('selectedPub');
+      if (storedPub) {
+        try {
+          const pubData = JSON.parse(storedPub);
+          setSelectedPlace(pubData);
+        } catch (error) {
+          console.error('Failed to parse stored pub data:', error);
+        }
+      }
+    }
+  }, [pubFromState]);
 
   // Generate roast via API (with fallback)
   const generateRoast = async (rating: number): Promise<string> => {
@@ -96,7 +121,7 @@ const PintSurvey = () => {
           taste,
           temperature,
           head,
-          pub: pub.trim(),
+          pub: selectedPlace?.name || '',
         }),
       });
 
@@ -113,7 +138,7 @@ const PintSurvey = () => {
   };
 
   const handleSubmit = async () => {
-    if (!pub.trim()) {
+    if (!selectedPlace) {
       toast.error("Where'd you drink it?");
       return;
     }
@@ -142,7 +167,12 @@ const PintSurvey = () => {
               temperature,
               creaminess: head,
               price: price ? parseFloat(price) : null,
-              location: pub.trim(),
+              location: selectedPlace.name,
+              place_id: selectedPlace.place_id,
+              pub_name: selectedPlace.name,
+              pub_address: selectedPlace.address,
+              pub_lat: selectedPlace.lat,
+              pub_lng: selectedPlace.lng,
               overallRating,
               roast,
             });
@@ -156,7 +186,12 @@ const PintSurvey = () => {
             splitImage: splitImage || '',
             splitDetected: false,
             feedback: '',
-            location: pub.trim(),
+            location: selectedPlace.name,
+            place_id: selectedPlace.place_id,
+            pub_name: selectedPlace.name,
+            pub_address: selectedPlace.address,
+            pub_lat: selectedPlace.lat,
+            pub_lng: selectedPlace.lng,
             overallRating,
             taste,
             temperature,
@@ -170,17 +205,30 @@ const PintSurvey = () => {
 
       toast.success("Rating saved");
 
-      // BOTH flows navigate to /log with receipt data
-      navigate("/log", {
-        state: {
-          splitScore: isGSplitFlow ? splitScore : null,
-          splitImage: isGSplitFlow ? splitImage : null,
-          overallRating,
-          pub: pub.trim(),
-          roast,
-          isSurveyOnly: !isGSplitFlow,
-        },
-      });
+      // Redirect to pub detail page if place_id exists, otherwise to log
+      if (selectedPlace.place_id) {
+        navigate(`/locals/${selectedPlace.place_id}`, {
+          state: {
+            splitScore: isGSplitFlow ? splitScore : null,
+            splitImage: isGSplitFlow ? splitImage : null,
+            overallRating,
+            pub: selectedPlace.name,
+            roast,
+            isSurveyOnly: !isGSplitFlow,
+          },
+        });
+      } else {
+        navigate("/log", {
+          state: {
+            splitScore: isGSplitFlow ? splitScore : null,
+            splitImage: isGSplitFlow ? splitImage : null,
+            overallRating,
+            pub: selectedPlace.name,
+            roast,
+            isSurveyOnly: !isGSplitFlow,
+          },
+        });
+      }
     } catch (error) {
       console.error('Failed to save pint:', error);
       toast.error("Failed to save rating. Please try again.");
@@ -265,13 +313,13 @@ const PintSurvey = () => {
             <label className="text-sm font-semibold text-foreground">
               Pub <span className="text-destructive">*</span>
             </label>
-            <Input
-              type="text"
-              placeholder="e.g., The Temple Bar, Dublin"
-              value={pub}
-              onChange={(e) => setPub(e.target.value)}
-              className="mt-2 h-12 bg-card border-border text-foreground placeholder:text-foreground/30 text-base"
-            />
+            <div className="mt-2">
+              <PlacesAutocomplete
+                value={selectedPlace?.name || ''}
+                onChange={setSelectedPlace}
+                placeholder="e.g., The Temple Bar, Dublin"
+              />
+            </div>
           </div>
 
           {/* Submit Button */}
