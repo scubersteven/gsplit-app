@@ -7,9 +7,17 @@ interface PubQualityProps {
   rating: number | null;
   count: number;
   stats?: PubStats;
+  pub?: {
+    place_id: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  };
+  onRateClick?: () => void;
 }
 
-const PubQuality: React.FC<PubQualityProps> = ({ rating, count, stats }) => {
+const PubQuality: React.FC<PubQualityProps> = ({ rating, count, stats, onRateClick }) => {
   const getBestCategoryText = () => {
     if (!stats) return null;
     
@@ -35,6 +43,14 @@ const PubQuality: React.FC<PubQualityProps> = ({ rating, count, stats }) => {
         <div className="p-4 rounded-lg border border-dashed border-[#2a2a2a] text-center">
           <p className="text-[#F5F5F0] font-medium">Jury's still out</p>
           {count > 0 && <p className="text-[#9CA3AF] text-sm mt-1">{count} pints logged</p>}
+          {onRateClick && (
+            <button
+              onClick={onRateClick}
+              className="bg-[#f8d548] text-[#121212] font-bold text-sm py-2 px-6 rounded-lg hover:bg-[#DDC9B4] transition-colors mt-4"
+            >
+              Rate Your Pint
+            </button>
+          )}
         </div>
       ) : (
         <div className="bg-[#1A1A1A] p-6 rounded-xl border border-[#2a2a2a]">

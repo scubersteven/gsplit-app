@@ -3,9 +3,17 @@ import { LeaderboardEntry } from '../type/locals';
 
 interface PubLeaderboardProps {
   entries: LeaderboardEntry[];
+  pub?: {
+    place_id: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  };
+  onSplitClick?: () => void;
 }
 
-const PubLeaderboard: React.FC<PubLeaderboardProps> = ({ entries }) => {
+const PubLeaderboard: React.FC<PubLeaderboardProps> = ({ entries, onSplitClick }) => {
   const displayedEntries = entries?.slice(0, 5) || [];
   const hasEntries = displayedEntries.length > 0;
 
@@ -18,7 +26,15 @@ const PubLeaderboard: React.FC<PubLeaderboardProps> = ({ entries }) => {
       {!hasEntries ? (
         <div className="p-4 rounded-lg border border-dashed border-[#2a2a2a] text-center">
           <p className="text-[#F5F5F0] font-medium">Uncharted</p>
-          <p className="text-[#9CA3AF] text-sm mt-1">Be the first to claim it.</p>
+          <p className="text-[#9CA3AF] text-sm mt-1 mb-4">Be the first to claim it.</p>
+          {onSplitClick && (
+            <button
+              onClick={onSplitClick}
+              className="bg-[#f8d548] text-[#121212] font-bold text-sm py-2 px-6 rounded-lg hover:bg-[#DDC9B4] transition-colors"
+            >
+              Split the G
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-3">

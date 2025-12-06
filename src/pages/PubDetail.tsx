@@ -41,6 +41,40 @@ const PubDetail: React.FC = () => {
     fetchPub();
   }, [id, dynamicPub]);
 
+  // Handler for "Split the G" button in PubLeaderboard
+  const handleSplitClick = () => {
+    if (!pub) return;
+
+    // Store pub data in sessionStorage for camera flow
+    sessionStorage.setItem('selectedPub', JSON.stringify({
+      place_id: pub.place_id,
+      name: pub.name,
+      address: pub.address,
+      lat: pub.lat,
+      lng: pub.lng
+    }));
+
+    // Navigate to home page (camera)
+    navigate('/');
+  };
+
+  // Handler for "Rate Your Pint" button in PubQuality
+  const handleRateClick = () => {
+    if (!pub) return;
+
+    // Store pub data in sessionStorage for survey flow
+    sessionStorage.setItem('selectedPub', JSON.stringify({
+      place_id: pub.place_id,
+      name: pub.name,
+      address: pub.address,
+      lat: pub.lat,
+      lng: pub.lng
+    }));
+
+    // Navigate to survey page
+    navigate('/survey');
+  };
+
   if (!pub) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-[#9CA3AF] px-4">
@@ -78,14 +112,32 @@ const PubDetail: React.FC = () => {
       </div>
 
       {/* Main Content Sections */}
-      <PubLeaderboard entries={pub.leaderboard} />
-      
+      <PubLeaderboard
+        entries={pub.leaderboard}
+        pub={{
+          place_id: pub.place_id,
+          name: pub.name,
+          address: pub.address,
+          lat: pub.lat,
+          lng: pub.lng
+        }}
+        onSplitClick={handleSplitClick}
+      />
+
       <div className="w-full h-px bg-[#2a2a2a] my-8" />
-      
-      <PubQuality 
-        rating={pub.qualityRating} 
+
+      <PubQuality
+        rating={pub.qualityRating}
         count={pub.pintsLogged}
         stats={pub.stats}
+        pub={{
+          place_id: pub.place_id,
+          name: pub.name,
+          address: pub.address,
+          lat: pub.lat,
+          lng: pub.lng
+        }}
+        onRateClick={handleRateClick}
       />
       
     </div>
