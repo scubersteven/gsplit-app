@@ -1,15 +1,91 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PubCard from '../components/PubCard';
+import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { MOCK_PUBS } from '../constants';
+import { Pub } from '../type/locals';
+import { requestUserLocation, calculateDistance } from '@/utils/geolocation';
+
+interface PlaceData {
+  place_id: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
 
 const Locals: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
-  const filteredPubs = MOCK_PUBS.filter(pub => {
-    return pub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           pub.address.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  // Request location on mount
+  useEffect(() => {
+    const getLocation = async () => {
+      try {
+        const coords = await requestUserLocation();
+        setUserLocation(coords);
+      } catch (error) {
+        console.error('Failed to get user location:', error);
+        setLocationError('Location access denied');
+      }
+    };
+
+    getLocation();
+  }, []);
+
+  // Handle place selection from Google Places
+  const handlePlaceSelect = (place: PlaceData) => {
+    // Check if pub exists in MOCK_PUBS
+    const existingPub = MOCK_PUBS.find(p => p.id === place.place_id);
+
+    if (existingPub) {
+      // Navigate to existing pub
+      navigate(`/locals/${existingPub.id}`);
+    } else {
+      // Create dynamic Pub object from Google data
+      const newPub: Pub = {
+        id: place.place_id,
+        name: place.name,
+        address: place.address,
+        lat: place.lat,
+        lng: place.lng,
+        topSplit: null,
+        qualityRating: null,
+        pintsLogged: 0,
+        avgPrice: null,
+        leaderboard: [],
+      };
+
+      // Navigate to pub detail with state
+      navigate(`/locals/${place.place_id}`, { state: { pub: newPub } });
+    }
+  };
+
+  // Calculate distances and sort pubs
+  const pubsWithDistance = MOCK_PUBS.map(pub => ({
+    ...pub,
+    distance: userLocation
+      ? calculateDistance(userLocation.lat, userLocation.lng, pub.lat, pub.lng)
+      : null,
+  }));
+
+  // Sort by distance if user location available
+  const sortedPubs = userLocation
+    ? pubsWithDistance.sort((a, b) => (a.distance || 999) - (b.distance || 999))
+    : pubsWithDistance;
+
+  // Apply search filter if place selected
+  const filteredPubs = selectedPlace
+    ? sortedPubs.filter(pub => {
+        const distance = calculateDistance(
+          selectedPlace.lat, selectedPlace.lng,
+          pub.lat, pub.lng
+        );
+        return distance <= 5; // Within 5 miles of search
+      })
+    : sortedPubs;
 
   return (
     <div className="pb-32 px-4 animate-in fade-in duration-500">
@@ -19,21 +95,18 @@ const Locals: React.FC = () => {
           The Local Hunt
         </h1>
         <p className="text-[#E8E8DD] text-sm mb-8 font-light tracking-wide">Find where the black stuff flows best.</p>
-        
-        {/* Search Bar - Cleaner, less boxy */}
-        <div className="relative mb-8 group">
-          <div className="absolute inset-y-0 left-0 pl-0 flex items-center pointer-events-none">
-            <Search 
-              className="text-[#525252] group-focus-within:text-[#DDC9B4] transition-colors duration-300" 
-              size={20} 
-            />
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search pubs"
-            className="w-full bg-transparent border-b border-[#2a2a2a] text-[#DDC9B4] text-base py-3 pl-8 pr-4 placeholder-[#525252] focus:outline-none focus:border-[#DDC9B4] transition-all duration-300 rounded-none"
+
+        {/* Google Places Search */}
+        <div className="mb-8">
+          <PlacesAutocomplete
+            value={selectedPlace?.name || ''}
+            onChange={(place) => {
+              setSelectedPlace(place);
+              if (place) {
+                handlePlaceSelect(place);
+              }
+            }}
+            placeholder="Search pubs..."
           />
         </div>
 
@@ -55,8 +128,8 @@ const Locals: React.FC = () => {
              <div className="text-center py-20 px-4">
                <p className="text-[#9CA3AF] font-serif italic text-xl mb-2">Dry as a bone.</p>
                <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your criteria.</p>
-               <button 
-                 onClick={() => setSearchQuery('')}
+               <button
+                 onClick={() => setSelectedPlace(null)}
                  className="mt-6 text-[#DDC9B4] text-sm hover:underline"
                >
                  Clear search

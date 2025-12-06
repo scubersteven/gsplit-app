@@ -2,9 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { Pub } from '../type/locals';
+import { formatDistance } from '../utils/geolocation';
 
 interface PubCardProps {
-  pub: Pub;
+  pub: Pub & { distance?: number | null };
 }
 
 const PubCard: React.FC<PubCardProps> = ({ pub }) => {
@@ -25,6 +26,11 @@ const PubCard: React.FC<PubCardProps> = ({ pub }) => {
             <MapPin size={10} className="mr-1.5 opacity-70" />
             <p className="text-xs font-medium tracking-wide opacity-80 truncate max-w-[200px]">{pub.address}</p>
           </div>
+          {pub.distance !== undefined && pub.distance !== null && (
+            <p className="text-xs text-[#10B981] mt-1 font-medium">
+              {formatDistance(pub.distance)} away
+            </p>
+          )}
         </div>
 
         {/* Rating Badge (Boxed - Minimal with Emoji) */}

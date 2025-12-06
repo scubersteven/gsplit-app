@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import PubLeaderboard from '../components/PubLeaderboard';
 import PubQuality from '../components/PubQuality';
@@ -8,13 +8,18 @@ import { MOCK_PUBS } from '../constants';
 const PubDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const pub = MOCK_PUBS.find(p => p.id === id);
+  const location = useLocation();
+  const { pub: dynamicPub } = location.state || {};
+
+  // Try to find pub in MOCK_PUBS, fall back to dynamicPub from navigation state
+  const pub = MOCK_PUBS.find(p => p.id === id) || dynamicPub;
 
   if (!pub) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-[#9CA3AF] px-4">
-        <p className="mb-4">Pub not found.</p>
-        <button 
+        <p className="text-xl font-serif mb-2 text-[#DDC9B4]">New territory.</p>
+        <p className="mb-6 text-sm text-[#525252]">Be the first to log a pint here!</p>
+        <button
           onClick={() => navigate('/locals')}
           className="text-[#f8d548] hover:underline"
         >
