@@ -33,9 +33,17 @@ const GSplitResultV2 = () => {
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
   const hasSaved = useRef(false); // Track if pint has been saved
 
-  // Get user pub name from localStorage (memoized to prevent re-renders)
+  // Get user pub name from sessionStorage or localStorage (memoized to prevent re-renders)
   const userPubName = useMemo(() => {
     try {
+      // Check sessionStorage first (from PubSelectModal flow on Home page)
+      const selectedPub = sessionStorage.getItem('selectedPub');
+      if (selectedPub) {
+        const pubData = JSON.parse(selectedPub);
+        return pubData.name;
+      }
+
+      // Fallback to localStorage (from GSplit page direct input flow)
       return localStorage.getItem('userPubName');
     } catch (error) {
       console.error('Failed to get user pub name:', error);

@@ -205,8 +205,11 @@ const PintSurvey = () => {
 
       toast.success("Rating saved");
 
-      // Redirect to pub detail page if place_id exists, otherwise to log
-      if (selectedPlace.place_id) {
+      // Redirect to pub detail page if place_id exists and is valid, otherwise to log
+      if (selectedPlace.place_id &&
+          selectedPlace.place_id !== 'null' &&
+          selectedPlace.place_id !== 'undefined' &&
+          selectedPlace.place_id !== '') {
         navigate(`/locals/${selectedPlace.place_id}`, {
           state: {
             splitScore: isGSplitFlow ? splitScore : null,
@@ -218,6 +221,7 @@ const PintSurvey = () => {
           },
         });
       } else {
+        // Always redirect to /log if no valid place_id
         navigate("/log", {
           state: {
             splitScore: isGSplitFlow ? splitScore : null,
