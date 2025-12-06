@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Upload, Star } from "lucide-react";
 import { toast } from "sonner";
 import GuidedCamera from "@/components/GuidedCamera";
+import PubSelectModal from "@/components/PubSelectModal";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -13,8 +12,7 @@ const Home = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const [showLocationModal, setShowLocationModal] = useState(false);
-  const [pubName, setPubName] = useState("");
+  const [showPubModal, setShowPubModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'camera' | 'upload' | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,38 +38,23 @@ const Home = () => {
     setShowCamera(false);
   };
 
-  // Show location modal when user first interacts with upload/camera
-  const handleShowLocationModal = () => {
-    const hasSeenLocationModal = sessionStorage.getItem('locationModalSeen');
-    if (!hasSeenLocationModal) {
-      setShowLocationModal(true);
-    }
-  };
-
-  const handleSavePub = () => {
-    if (pubName.trim()) {
-      localStorage.setItem('userPubName', pubName.trim());
-      sessionStorage.setItem('locationModalSeen', 'true');
-      toast.success(`Saved: ${pubName.trim()}`);
-      setShowLocationModal(false);
-
-      // Execute pending action after modal closes
-      if (pendingAction === 'upload') {
-        setTimeout(() => document.getElementById('upload-photo')?.click(), 100);
-      } else if (pendingAction === 'camera') {
-        setTimeout(() => setShowCamera(true), 100);
+  const handlePubModalSave = (place: any, username: string | null) => {
+    if (place) {
+      // Store place data in sessionStorage
+      sessionStorage.setItem('selectedPub', JSON.stringify(place));
+      if (username) {
+        sessionStorage.setItem('gsplit_username', username);
       }
-      setPendingAction(null);
+      toast.success(`Pub selected: ${place.name}`);
     } else {
-      toast.error("Please enter your pub's name");
+      // Clear pub data if skipped
+      sessionStorage.removeItem('selectedPub');
+      sessionStorage.removeItem('gsplit_username');
     }
-  };
 
-  const handleSkipLocation = () => {
-    sessionStorage.setItem('locationModalSeen', 'true');
-    setShowLocationModal(false);
+    setShowPubModal(false);
 
-    // Execute pending action after skipping
+    // Execute pending action after modal closes
     if (pendingAction === 'upload') {
       setTimeout(() => document.getElementById('upload-photo')?.click(), 100);
     } else if (pendingAction === 'camera') {
@@ -156,13 +139,8 @@ const Home = () => {
                     variant="default"
                     className="gap-2 w-full"
                     onClick={() => {
-                      const hasSeenLocationModal = sessionStorage.getItem('locationModalSeen');
-                      if (!hasSeenLocationModal) {
-                        setPendingAction('camera');
-                        setShowLocationModal(true);
-                      } else {
-                        setShowCamera(true);
-                      }
+                      setPendingAction('camera');
+                      setShowPubModal(true);
                     }}
                   >
                     📷 Live Camera
@@ -172,13 +150,8 @@ const Home = () => {
                     variant="secondary"
                     className="gap-2 w-full"
                     onClick={() => {
-                      const hasSeenLocationModal = sessionStorage.getItem('locationModalSeen');
-                      if (!hasSeenLocationModal) {
-                        setPendingAction('upload');
-                        setShowLocationModal(true);
-                      } else {
-                        document.getElementById('upload-photo')?.click();
-                      }
+                      setPendingAction('upload');
+                      setShowPubModal(true);
                     }}
                   >
                     📁 Upload Image
@@ -273,46 +246,15 @@ const Home = () => {
         />
       )}
 
-      {/* Location Modal */}
-      <Dialog open={showLocationModal} onOpenChange={setShowLocationModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              📍 What's Your Pub?
-            </DialogTitle>
-            <DialogDescription className="text-base pt-2" style={{ color: 'hsl(32, 35%, 88%)' }}>
-              See who's beating you at your local
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="py-4">
-            <Input
-              placeholder="e.g., Temple Bar, O'Donoghue's"
-              value={pubName}
-              onChange={(e) => setPubName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSavePub()}
-              className="w-full"
-              autoFocus
-            />
-          </div>
-
-          <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2">
-            <Button
-              variant="ghost"
-              onClick={handleSkipLocation}
-              className="w-full sm:w-auto order-2 sm:order-1"
-            >
-              Skip
-            </Button>
-            <Button
-              onClick={handleSavePub}
-              className="w-full sm:w-auto bg-cream-dark hover:bg-cream text-[#1C1410] order-1 sm:order-2"
-            >
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Pub Selection Modal */}
+      <PubSelectModal
+        isOpen={showPubModal}
+        onClose={() => {
+          setShowPubModal(false);
+          setPendingAction(null);
+        }}
+        onSave={handlePubModalSave}
+      />
     </div>
   );
 };
