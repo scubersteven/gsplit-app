@@ -38,7 +38,7 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
     if (isLoaded && inputRef.current && !autocompleteRef.current) {
       // Initialize autocomplete with bar/restaurant focus
       autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, {
-        types: ['establishment'],
+        types: ['bar', 'restaurant', 'night_club', 'cafe'],
         fields: ['place_id', 'name', 'formatted_address', 'geometry']
       });
 

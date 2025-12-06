@@ -19,6 +19,8 @@ const Locals: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [pubs, setPubs] = useState<Pub[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Request location on mount
   useEffect(() => {
@@ -35,10 +37,32 @@ const Locals: React.FC = () => {
     getLocation();
   }, []);
 
+  // Fetch pubs from API
+  useEffect(() => {
+    const fetchPubs = async () => {
+      try {
+        const response = await fetch('https://g-split-judge-production.up.railway.app/api/pubs');
+        if (!response.ok) {
+          throw new Error('Failed to fetch pubs');
+        }
+        const data = await response.json();
+        setPubs(data);
+      } catch (error) {
+        console.error('Failed to fetch pubs:', error);
+        // Fallback to MOCK_PUBS if API fails
+        setPubs(MOCK_PUBS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPubs();
+  }, []);
+
   // Handle place selection from Google Places
   const handlePlaceSelect = (place: PlaceData) => {
-    // Check if pub exists in MOCK_PUBS
-    const existingPub = MOCK_PUBS.find(p => p.id === place.place_id);
+    // Check if pub exists in fetched pubs
+    const existingPub = pubs.find(p => p.id === place.place_id);
 
     if (existingPub) {
       // Navigate to existing pub
@@ -64,7 +88,7 @@ const Locals: React.FC = () => {
   };
 
   // Calculate distances and sort pubs
-  const pubsWithDistance = MOCK_PUBS.map(pub => ({
+  const pubsWithDistance = pubs.map(pub => ({
     ...pub,
     distance: userLocation
       ? calculateDistance(userLocation.lat, userLocation.lng, pub.lat, pub.lng)

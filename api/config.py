@@ -24,6 +24,15 @@ class Config:
     # CORS settings
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')
 
+    # Database settings
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///gsplit.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_size': 10,
+        'pool_recycle': 3600,
+        'pool_pre_ping': True,
+    }
+
     # Vision processor settings
     MIN_IMAGE_SIZE = 200  # Minimum width/height in pixels
     MAX_IMAGE_SIZE = 4000  # Maximum width/height in pixels

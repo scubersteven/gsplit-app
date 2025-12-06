@@ -203,6 +203,45 @@ const PintSurvey = () => {
       }
       // Survey-only: NO savePint() call
 
+      // Save rating to backend API (both G-Split and survey-only flows)
+      try {
+        // Generate anonymous ID if not exists
+        let anonymousId = localStorage.getItem('anonymous_id');
+        if (!anonymousId) {
+          anonymousId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          localStorage.setItem('anonymous_id', anonymousId);
+        }
+
+        // POST rating to backend
+        const apiResponse = await fetch(
+          `https://g-split-judge-production.up.railway.app/api/pubs/${selectedPlace.place_id}/ratings`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              overall_rating: overallRating,
+              taste: taste,
+              temperature: temperature,
+              head: head,
+              price: price ? parseFloat(price) : null,
+              roast: roast,
+              anonymous_id: anonymousId,
+              pub_name: selectedPlace.name,
+              pub_address: selectedPlace.address,
+              pub_lat: selectedPlace.lat,
+              pub_lng: selectedPlace.lng,
+            })
+          }
+        );
+
+        if (apiResponse.ok) {
+          console.log("✅ Rating synced to backend");
+        }
+      } catch (error) {
+        console.error('Failed to sync rating to backend:', error);
+        // Don't block user flow
+      }
+
       toast.success("Rating saved");
 
       // Redirect to pub detail page if place_id exists and is valid, otherwise to log

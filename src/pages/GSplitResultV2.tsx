@@ -133,6 +133,49 @@ const GSplitResultV2 = () => {
           await savePint(newEntry);
           console.log("✅ [DEBUG] Pint saved to IndexedDB");
 
+          // Step 4.5: Also save to backend API
+          try {
+            // Generate anonymous ID if not exists
+            let anonymousId = localStorage.getItem('anonymous_id');
+            if (!anonymousId) {
+              anonymousId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+              localStorage.setItem('anonymous_id', anonymousId);
+            }
+
+            // Get pub data from sessionStorage
+            const selectedPubStr = sessionStorage.getItem('selectedPub');
+            if (selectedPubStr) {
+              const selectedPub = JSON.parse(selectedPubStr);
+
+              // POST score to backend
+              const apiResponse = await fetch(
+                `https://g-split-judge-production.up.railway.app/api/pubs/${selectedPub.place_id}/scores`,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    score: score,
+                    anonymous_id: anonymousId,
+                    split_detected: splitDetected,
+                    feedback: feedback,
+                    ranking: `Top ${mockPercentile}% this week`,
+                    pub_name: selectedPub.name,
+                    pub_address: selectedPub.address,
+                    pub_lat: selectedPub.lat,
+                    pub_lng: selectedPub.lng,
+                  })
+                }
+              );
+
+              if (apiResponse.ok) {
+                console.log("✅ [DEBUG] Score synced to backend");
+              }
+            }
+          } catch (error) {
+            console.error('Failed to sync score to backend:', error);
+            // Don't block user flow - IndexedDB save succeeded
+          }
+
           // Step 5: Store pintId for survey flow
           sessionStorage.setItem("currentPintId", pintId.toString());
           console.log("🔑 [DEBUG] Stored pintId in sessionStorage:", pintId);

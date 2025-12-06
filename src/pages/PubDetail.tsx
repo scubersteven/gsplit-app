@@ -11,8 +11,35 @@ const PubDetail: React.FC = () => {
   const location = useLocation();
   const { pub: dynamicPub } = location.state || {};
 
-  // Try to find pub in MOCK_PUBS, fall back to dynamicPub from navigation state
-  const pub = MOCK_PUBS.find(p => p.id === id) || dynamicPub;
+  const [pub, setPub] = React.useState<typeof dynamicPub | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  // Fetch pub data from API
+  React.useEffect(() => {
+    const fetchPub = async () => {
+      try {
+        const response = await fetch(`https://g-split-judge-production.up.railway.app/api/pubs/${id}`);
+
+        if (response.ok) {
+          const data = await response.json();
+          setPub(data);
+        } else {
+          // Pub not in database, try MOCK_PUBS or dynamicPub
+          const mockPub = MOCK_PUBS.find(p => p.id === id);
+          setPub(mockPub || dynamicPub || null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch pub:', error);
+        // Fallback to MOCK_PUBS or dynamicPub
+        const mockPub = MOCK_PUBS.find(p => p.id === id);
+        setPub(mockPub || dynamicPub || null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPub();
+  }, [id, dynamicPub]);
 
   if (!pub) {
     return (
