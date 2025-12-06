@@ -6,7 +6,7 @@ interface PubLeaderboardProps {
 }
 
 const PubLeaderboard: React.FC<PubLeaderboardProps> = ({ entries }) => {
-  const displayedEntries = entries.slice(0, 5);
+  const displayedEntries = entries?.slice(0, 5) || [];
   const hasEntries = displayedEntries.length > 0;
 
   return (
@@ -38,7 +38,7 @@ const PubLeaderboard: React.FC<PubLeaderboardProps> = ({ entries }) => {
             </div>
           ))}
           
-          {entries.length > 5 && (
+          {(entries?.length || 0) > 5 && (
             <div className="pt-2 text-right">
               <button className="text-[#f8d548] text-sm hover:underline">
                 See all →

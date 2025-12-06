@@ -210,12 +210,26 @@ const PintSurvey = () => {
           selectedPlace.place_id !== 'null' &&
           selectedPlace.place_id !== 'undefined' &&
           selectedPlace.place_id !== '') {
+        // Construct proper Pub object from selectedPlace
+        const pubObject = {
+          id: selectedPlace.place_id,
+          name: selectedPlace.name,
+          address: selectedPlace.address,
+          lat: selectedPlace.lat,
+          lng: selectedPlace.lng,
+          topSplit: null,
+          qualityRating: null,
+          pintsLogged: 0,
+          avgPrice: null,
+          leaderboard: [],
+        };
+
         navigate(`/locals/${selectedPlace.place_id}`, {
           state: {
             splitScore: isGSplitFlow ? splitScore : null,
             splitImage: isGSplitFlow ? splitImage : null,
             overallRating,
-            pub: selectedPlace.name,
+            pub: pubObject,
             roast,
             isSurveyOnly: !isGSplitFlow,
           },
