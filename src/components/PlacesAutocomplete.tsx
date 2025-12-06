@@ -62,6 +62,11 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
     }
   }, [isLoaded, onChange]);
 
+  // Sync value prop to inputValue state when value changes
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
