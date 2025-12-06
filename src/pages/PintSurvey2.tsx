@@ -147,7 +147,7 @@ const PintSurvey = () => {
 
     // DETECTION: Check if G-Split flow or Survey-only
     // If pintLogId exists, it's updating an existing pint (G-Split)
-    const isGSplitFlow = pintLogId || (splitImage && splitImage.length > 0);
+    const isGSplitFlow = pintLogId || (typeof splitImage === 'string' && splitImage.length > 0);
 
     setIsGeneratingRoast(true);
 
