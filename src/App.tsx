@@ -13,6 +13,8 @@ import Results from './pages/Results';
 import PintLog from './pages/PintLog';
 import Pintlog2 from './pages/Pintlog2';
 import Map from './pages/Map';
+import Locals from './pages/Locals';
+import PubDetail from './pages/PubDetail';
 import NotFound from './pages/NotFound';
 import { savePint } from './utils/db';
 import './App.css';
@@ -103,6 +105,8 @@ function App() {
           <Route path="/log" element={<Pintlog2 />} />
           <Route path="/log-old" element={<PintLog />} />
           <Route path="/map" element={<Map />} />
+          <Route path="/locals" element={<Locals />} />
+          <Route path="/locals/:id" element={<PubDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

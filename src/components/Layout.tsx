@@ -57,15 +57,15 @@ const Layout = ({ children }: LayoutProps) => {
                 </Button>
               </Link>
 
-              <Link to="/map">
+              <Link to="/locals">
                 <Button
                   variant="ghost"
                   size="sm"
                   className={`gap-2 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--cream-dark))] ${
-                    isActive("/map") ? "bg-[hsl(var(--cream-dark))]" : ""
+                    isActive("/locals") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="font-ui font-semibold">Pubs</span>
+                  <span className="font-ui font-semibold">Locals</span>
                 </Button>
               </Link>
             </nav>
