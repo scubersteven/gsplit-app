@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import DisplayStars from "@/components/DisplayStars";
 
 interface PintCardProps {
@@ -116,18 +115,17 @@ const PintCard = ({
             )}
           </div>
 
-          {/* Complete Rating Button */}
+          {/* Complete Rating Link */}
           {!surveyComplete && (
-            <Button
-              variant="outline"
+            <div
               onClick={(e) => {
                 e.stopPropagation();
                 handleCompleteRating();
               }}
-              className="mt-3 bg-[#FFF8E7] border-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-inter text-xs font-medium px-3 py-1.5 h-auto"
+              className="mt-3 text-[#9CA3AF] hover:text-[#E8E8DD] font-inter text-sm font-medium cursor-pointer transition-colors duration-200 inline-block"
             >
-              Rate this Pint
-            </Button>
+              Rate this Pint →
+            </div>
           )}
         </div>
       </div>
