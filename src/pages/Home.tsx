@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Upload, Star } from "lucide-react";
+import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import GuidedCamera from "@/components/GuidedCamera";
 import PubSelectModal from "@/components/PubSelectModal";
@@ -220,12 +220,9 @@ const Home = () => {
       <div className="max-w-3xl mx-auto">
         <Link to="/survey">
           <div className="group bg-card border-2 border-border hover:border-gold p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-4 bg-secondary/50 rounded-lg group-hover:bg-gold/20 transition-colors duration-300">
-                <Star className="w-8 h-8 text-primary" />
-              </div>
+            <div className="mb-4">
               <h2 className="text-2xl md:text-3xl font-display font-bold text-primary">
-                Rate Your Guinness
+                Rate it
               </h2>
             </div>
             <p className="text-base text-muted-foreground mb-4">
