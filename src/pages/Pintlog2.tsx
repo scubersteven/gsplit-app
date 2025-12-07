@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PintCard from "@/components/PintCard";
-import MasteryBadge from "@/components/MasteryBadge";
+import TierProgress from "@/components/TierProgress";
 import MasteryLevelsModal from "@/components/MasteryLevelsModal";
 import PintReceiptModal from "@/components/PintReceiptModal";
 import PintCardModal from "@/components/PintCardModal";
@@ -121,27 +121,29 @@ const Index = () => {
       {/* Header */}
       <header className="bg-background px-4 md:px-8 py-10 md:py-20">
         <div className="max-w-[900px] mx-auto">
-          {/* Row 1: Header Row */}
-          <div className="flex justify-between items-center">
-            <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white">
-              My Pints
-            </h1>
-            <MasteryBadge
-              tierName={currentTier.name}
-              emoji={currentTier.icon}
-              progress={progress.percentage}
-              onClick={() => setIsMasteryModalOpen(true)}
-            />
-          </div>
+          {/* ROW 1: Title */}
+          <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white">
+            My Pints
+          </h1>
 
-          {/* Row 2: Stats Line */}
+          {/* ROW 2: Stats Line */}
           <div className="mt-1">
             <p className="text-sm text-foreground/60">
               {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • {stats.bestScore.toFixed(1)}% best
             </p>
           </div>
 
-          {/* Row 3: Filter Tabs */}
+          {/* ROW 3: Tier Progress Bar */}
+          <div className="mt-4">
+            <TierProgress
+              tier={currentTier.name}
+              emoji={currentTier.icon}
+              progress={progress.percentage}
+              onTap={() => setIsMasteryModalOpen(true)}
+            />
+          </div>
+
+          {/* ROW 4: Filter Tabs */}
           <div className="flex gap-2 flex-wrap mt-4">
             <button
               onClick={() => setActiveFilter("all")}
