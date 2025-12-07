@@ -225,7 +225,7 @@ const Home = () => {
                 Rate Your Guinness
               </h2>
             </div>
-            <div className="text-primary font-medium group-hover:translate-x-2 transition-transform duration-300">
+            <div className="text-muted-foreground font-medium group-hover:translate-x-2 transition-transform duration-300">
               The full verdict →
             </div>
           </div>
