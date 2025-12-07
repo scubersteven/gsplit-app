@@ -15,6 +15,7 @@ export const COLORS = {
 export const MOCK_PUBS: Pub[] = [
   {
     id: '1',
+    place_id: '1',
     name: "McGillin's Olde Ale House",
     address: "1310 Drury St, Philadelphia, PA",
     lat: 39.9504,
@@ -38,6 +39,7 @@ export const MOCK_PUBS: Pub[] = [
   },
   {
     id: '2',
+    place_id: '2',
     name: "Fergie's Pub",
     address: "1214 Sansom St, Philadelphia, PA",
     lat: 39.9508,
@@ -58,6 +60,7 @@ export const MOCK_PUBS: Pub[] = [
   },
   {
     id: '3',
+    place_id: '3',
     name: "The Irish Pub",
     address: "2007 Walnut St, Philadelphia, PA",
     lat: 39.9502,
@@ -70,6 +73,7 @@ export const MOCK_PUBS: Pub[] = [
   },
   {
     id: '4',
+    place_id: '4',
     name: "Fado Irish Pub",
     address: "1500 Locust St, Philadelphia, PA",
     lat: 39.9490,

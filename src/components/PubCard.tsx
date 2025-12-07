@@ -13,7 +13,7 @@ const PubCard: React.FC<PubCardProps> = ({ pub }) => {
 
   return (
     <div
-      onClick={() => navigate(`/locals/${pub.place_id}`)}
+      onClick={() => navigate(`/locals/${pub.place_id}`, { state: { pub } })}
       className="bg-[#1A1A1A] border border-[#F7D447]/10 rounded-xl p-5 mb-4 cursor-pointer transition-all duration-200 ease-out hover:border-[#F7D447] group"
     >
       {/* Header Row */}
