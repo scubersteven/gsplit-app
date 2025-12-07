@@ -23,17 +23,36 @@ export async function fetchNearbyPlaces(
     const request = {
       location: new google.maps.LatLng(options.location.lat, options.location.lng),
       radius: options.radius,
-      type: 'bar',
-      keyword: 'pub guinness irish'
+      keyword: 'bar pub restaurant' // Broad keyword, no type restriction
     };
 
+    // Debug logging
+    console.log('🍺 Fetching nearby pubs:', {
+      location: options.location,
+      radius: options.radius,
+      radiusMiles: (options.radius / 1609.34).toFixed(1)
+    });
+
     service.nearbySearch(request, (results, status) => {
+      console.log('🍺 Google Places API response:', {
+        status,
+        resultCount: results?.length || 0,
+        results: results?.slice(0, 5).map(p => ({ // Log first 5 for debugging
+          name: p.name,
+          types: p.types,
+          vicinity: p.vicinity
+        }))
+      });
+
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         const pubs = results.map(transformGooglePlaceToPub);
+        console.log(`✅ Returning ${pubs.length} nearby pubs`);
         resolve(pubs);
       } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+        console.log('⚠️ No nearby pubs found');
         resolve([]); // No nearby pubs - not an error
       } else {
+        console.error('❌ Places API error:', status);
         reject(new Error(`Places API error: ${status}`));
       }
     });
