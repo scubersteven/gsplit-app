@@ -41,7 +41,7 @@ const Layout = ({ children }: LayoutProps) => {
                     isActive("/") ? "bg-[hsl(var(--cream-dark))]" : ""
                   }`}
                 >
-                  <span className="font-ui font-semibold">Bar</span>
+                  <span className="font-ui font-semibold">Split</span>
                 </Button>
               </Link>
 
