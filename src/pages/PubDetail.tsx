@@ -11,7 +11,7 @@ const PubDetail: React.FC = () => {
   const location = useLocation();
   const { pub: dynamicPub } = location.state || {};
 
-  const [pub, setPub] = React.useState<typeof dynamicPub | null>(null);
+  const [pub, setPub] = React.useState<typeof dynamicPub | null>(dynamicPub || null);
   const [loading, setLoading] = React.useState(true);
 
   // Fetch pub data from API
