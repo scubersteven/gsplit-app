@@ -5,6 +5,7 @@ import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { MOCK_PUBS } from '../constants';
 import { Pub } from '../type/locals';
 import { requestUserLocation, calculateDistance } from '@/utils/geolocation';
+import { fetchNearbyPlaces } from '../utils/googlePlaces';
 
 interface PlaceData {
   place_id: string;
@@ -21,6 +22,8 @@ const Locals: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [pubs, setPubs] = useState<Pub[]>([]);
   const [loading, setLoading] = useState(true);
+  const [nearbyGooglePubs, setNearbyGooglePubs] = useState<Pub[]>([]);
+  const [loadingNearby, setLoadingNearby] = useState(false);
 
   // Request location on mount
   useEffect(() => {
@@ -59,6 +62,31 @@ const Locals: React.FC = () => {
     fetchPubs();
   }, []);
 
+  // Fetch nearby pubs from Google Places
+  useEffect(() => {
+    // Wait for user location and Google Maps to be loaded
+    if (!userLocation || !window.google?.maps?.places) return;
+
+    const fetchNearby = async () => {
+      setLoadingNearby(true);
+      try {
+        const googlePubs = await fetchNearbyPlaces({
+          location: userLocation,
+          radius: 8047 // 5 miles in meters
+        });
+        setNearbyGooglePubs(googlePubs);
+      } catch (error) {
+        console.error('Failed to fetch nearby places:', error);
+        // Don't show error to user - gracefully degrade to database pubs only
+        setNearbyGooglePubs([]);
+      } finally {
+        setLoadingNearby(false);
+      }
+    };
+
+    fetchNearby();
+  }, [userLocation]);
+
   // Handle place selection from Google Places
   const handlePlaceSelect = (place: PlaceData) => {
     // Check if pub exists in fetched pubs
@@ -87,15 +115,34 @@ const Locals: React.FC = () => {
     }
   };
 
-  // Calculate distances and sort pubs
-  const pubsWithDistance = pubs.map(pub => ({
+  // Merge database pubs with Google Places results
+  const mergedPubs = React.useMemo(() => {
+    const pubMap = new Map<string, Pub>();
+
+    // Priority 1: Database pubs (have real scores/ratings)
+    pubs.forEach(pub => {
+      pubMap.set(pub.place_id, pub);
+    });
+
+    // Priority 2: Google Places pubs (only if not already in database)
+    nearbyGooglePubs.forEach(googlePub => {
+      if (!pubMap.has(googlePub.place_id)) {
+        pubMap.set(googlePub.place_id, googlePub);
+      }
+    });
+
+    return Array.from(pubMap.values());
+  }, [pubs, nearbyGooglePubs]);
+
+  // Calculate distances for all pubs
+  const pubsWithDistance = mergedPubs.map(pub => ({
     ...pub,
     distance: userLocation
       ? calculateDistance(userLocation.lat, userLocation.lng, pub.lat, pub.lng)
       : null,
   }));
 
-  // Sort by distance if user location available
+  // Sort by distance (closest first, no filter needed - Google already limited to 5mi)
   const sortedPubs = userLocation
     ? pubsWithDistance.sort((a, b) => (a.distance || 999) - (b.distance || 999))
     : pubsWithDistance;
@@ -144,9 +191,15 @@ const Locals: React.FC = () => {
 
         {/* List - Increased vertical gap */}
         <div className="space-y-6">
-          {filteredPubs.length > 0 ? (
+          {loading || loadingNearby ? (
+            <div className="text-center py-10">
+              <p className="text-[#9CA3AF] text-sm">
+                {loadingNearby ? 'Finding nearby pubs...' : 'Loading...'}
+              </p>
+            </div>
+          ) : filteredPubs.length > 0 ? (
             filteredPubs.map(pub => (
-              <PubCard key={pub.id} pub={pub} />
+              <PubCard key={pub.place_id} pub={pub} />
             ))
           ) : (
              <div className="text-center py-20 px-4">
