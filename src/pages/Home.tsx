@@ -222,14 +222,11 @@ const Home = () => {
           <div className="group bg-card border-2 border-border hover:border-gold p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer">
             <div className="mb-4">
               <h2 className="text-2xl md:text-3xl font-display font-bold text-primary">
-                Rate it
+                Rate Your Guinness
               </h2>
             </div>
-            <p className="text-base text-muted-foreground mb-4">
-              The full verdict
-            </p>
             <div className="text-primary font-medium group-hover:translate-x-2 transition-transform duration-300">
-              Begin Evaluation →
+              The full verdict →
             </div>
           </div>
         </Link>
