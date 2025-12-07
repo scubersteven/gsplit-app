@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DisplayStars from "@/components/DisplayStars";
 
 interface PintCardProps {
   id: number;
@@ -86,20 +85,23 @@ const PintCard = ({
 
         {/* Content Section */}
         <div className="flex-1 min-w-0">
-          {/* Score */}
-          <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
-            {score}%
-          </div>
-
-          {/* Star Rating - show when overallRating exists */}
-          {overallRating && (
-            <div className="flex items-center gap-2 mt-2">
-              <DisplayStars value={overallRating} maxStars={5} size={20} />
-              <span className="text-lg font-bold text-foreground">
-                {overallRating.toFixed(1)}
-              </span>
+          {/* Header Row: Score + Badge */}
+          <div className="flex items-start justify-between gap-3">
+            {/* Score */}
+            <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
+              {score}%
             </div>
-          )}
+
+            {/* Star Rating Badge - top right */}
+            {overallRating && (
+              <div className="flex-shrink-0 flex items-center bg-[#252525] px-2 py-1.5 rounded-lg border border-[#333]">
+                <span className="text-[10px] mr-1.5 leading-none">⭐</span>
+                <span className="text-xs font-bold text-[#F5F5F0] leading-none pt-0.5">
+                  {overallRating.toFixed(1)}
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* Feedback Quote */}
           <p className="mt-2 font-inter text-base md:text-lg italic text-foreground">
