@@ -55,10 +55,11 @@ export const generateShareImageV2 = async (
             width: 1080,
             height: 1920,
             scale: 1,
-            backgroundColor: '#1C1410',
+            backgroundColor: '#FFF8E7',
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            imageTimeout: 15000 // Wait up to 15s for external images
           });
 
           // Convert canvas to blob
@@ -80,7 +81,7 @@ export const generateShareImageV2 = async (
           document.body.removeChild(container);
           reject(error);
         }
-      }, 500); // Wait 500ms for fonts/images to load
+      }, 2000); // Wait 2s for fonts/images to load (baroque frame needs time)
 
     } catch (error) {
       reject(error);
