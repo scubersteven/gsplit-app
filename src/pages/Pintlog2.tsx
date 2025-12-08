@@ -127,14 +127,14 @@ const Index = () => {
           </h1>
 
           {/* ROW 2: Stats Line */}
-          <div className="mt-1">
+          <div className="mt-2">
             <p className="text-sm text-foreground/60">
               {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • {stats.bestScore.toFixed(1)}% best
             </p>
           </div>
 
           {/* ROW 3: Tier Progress Bar */}
-          <div className="mt-4">
+          <div className="mt-4 mb-4">
             <TierProgress
               tier={currentTier.name}
               emoji={currentTier.icon}
@@ -147,7 +147,7 @@ const Index = () => {
           <div className="flex gap-2 flex-wrap mt-4">
             <button
               onClick={() => setActiveFilter("all")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
+              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
                 activeFilter === "all"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -157,7 +157,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("excellent")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
+              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
                 activeFilter === "excellent"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -167,7 +167,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("good")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
+              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
                 activeFilter === "good"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -177,7 +177,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("poor")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-lg transition-all ${
+              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
                 activeFilter === "poor"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
