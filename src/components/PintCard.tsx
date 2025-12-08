@@ -61,7 +61,7 @@ const PintCard = ({
   return (
     <div
       onClick={onClick}
-      className="bg-card border border-harp-gold/20 rounded-xl p-4 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-harp-gold/40 cursor-pointer"
+      className="group bg-card border border-harp-gold/20 rounded-xl p-4 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-harp-gold/40 cursor-pointer"
     >
       <div className="flex gap-4">
         {/* Photo Section */}
@@ -72,7 +72,7 @@ const PintCard = ({
                 src={image}
                 alt="Guinness pint"
                 loading="lazy"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 onError={() => setImageError(true)}
               />
             ) : (
