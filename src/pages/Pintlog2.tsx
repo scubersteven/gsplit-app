@@ -144,7 +144,7 @@ const Index = () => {
           </div>
 
           {/* ROW 4: Filter Tabs */}
-          <div className="flex gap-2 flex-wrap mt-4">
+          <div className="flex gap-2 overflow-x-auto mt-4">
             <button
               onClick={() => setActiveFilter("all")}
               className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
