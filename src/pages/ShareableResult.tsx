@@ -142,12 +142,13 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
+          paddingTop: '80px',
           padding: '0 48px',
         }}
       >
         {/* 1. SCORE */}
-        <div style={{ marginBottom: '24px' }}>
+        <div style={{ marginTop: '60px', marginBottom: '48px' }}>
           <span
             style={{
               fontFamily: 'Playfair Display, serif',
@@ -168,7 +169,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
           style={{
             marginBottom: '40px',
             textAlign: 'center',
-            maxWidth: '900px',
+            maxWidth: '950px',
           }}
         >
           <p
@@ -199,7 +200,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
           }}
         >
           <span>🔥 {streakText}</span>
-          {location && (
+          {location && location.length > 1 && (
             <>
               <span style={{ opacity: 0.5 }}>•</span>
               <span>📍 {location}</span>
@@ -210,7 +211,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
         </div>
 
         {/* Spacer */}
-        <div style={{ height: '80px' }}></div>
+        <div style={{ height: '40px' }}></div>
 
         {/* 4. FOOTER */}
         <div style={{ opacity: 0.8 }}>
