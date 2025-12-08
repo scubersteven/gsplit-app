@@ -144,10 +144,10 @@ const Index = () => {
           </div>
 
           {/* ROW 4: Filter Tabs */}
-          <div className="flex gap-2 overflow-x-auto mt-4">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 mt-4">
             <button
               onClick={() => setActiveFilter("all")}
-              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "all"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -157,7 +157,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("excellent")}
-              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "excellent"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -167,7 +167,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("good")}
-              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "good"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -177,7 +177,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("poor")}
-              className={`font-inter text-sm font-semibold px-6 py-2 rounded-sm transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "poor"
                   ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
