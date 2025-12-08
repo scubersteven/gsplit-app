@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas';
 import { createRoot } from 'react-dom/client';
+import { createElement } from 'react';
 import ShareableResult from '@/pages/ShareableResult';
 
 interface ShareImageV2Options {
@@ -41,7 +42,7 @@ export const generateShareImageV2 = async (
       // Render the component
       try {
         root.render(
-          ShareableResult({
+          createElement(ShareableResult, {
             score,
             splitDetected,
             comment: feedback,
