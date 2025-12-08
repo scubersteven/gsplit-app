@@ -50,12 +50,8 @@ const PintCard = ({
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const month = months[date.getMonth()];
     const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    const displayHours = hours % 12 || 12;
-    
-    return `${month} ${day}, ${displayHours}:${minutes}${ampm}`;
+
+    return `${month} ${day}`;
   };
 
   return (
@@ -109,9 +105,9 @@ const PintCard = ({
           </p>
 
           {/* Metadata */}
-          <div className="mt-2 font-inter text-sm font-semibold text-foreground/60">
+          <div className="mt-2 font-inter text-xs font-semibold text-foreground/60">
             {location ? (
-              <><span className="text-xs opacity-70">📍</span> {location} • {formatDate(date)}</>
+              <><span className="text-xs">📍</span> {location} • {formatDate(date)}</>
             ) : (
               formatDate(date)
             )}
