@@ -37,7 +37,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
 
   // Fallback values
   const displayComment = comment || "Nice pour";
-  const displayLocation = location || "Local pub";
+  const displayLocation = location;
   const displayStreakDays = streakDays || 1;
   const rankNumber = getRankNumber(ranking);
 
@@ -52,11 +52,11 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
   return (
     <div className="w-[1080px] h-[1920px] flex flex-col relative overflow-hidden">
 
-        {/* --- TOP SECTION: CREAM (64%) --- */}
-        <div className="h-[64%] w-full bg-[#FFF8E7] flex flex-col items-center justify-start relative overflow-hidden pt-3">
+        {/* --- TOP SECTION: CREAM (58%) --- */}
+        <div className="h-[58%] w-full bg-[#FFF8E7] flex flex-col items-center justify-start relative overflow-hidden pt-8">
 
             {/* THE MASTERPIECE FRAME */}
-            <div className="relative h-[98%] aspect-[5/6] drop-shadow-2xl">
+            <div className="relative h-[92%] aspect-[5/6] drop-shadow-2xl">
 
                 {/* A. The Gold Frame (Top Layer - z-20) */}
                 <div className="relative z-20 w-full h-full">
@@ -77,9 +77,9 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
                     <img
                         src={pintImage}
                         alt="Pint"
-                        className="w-full h-full object-cover opacity-90"
+                        className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)] pointer-events-none"></div>
+                    <div className="absolute inset-0 shadow-[inset_0_0_8px_rgba(0,0,0,0.25)] pointer-events-none"></div>
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
             {/* SCORE */}
             <div className="relative z-30 mb-3">
                 <span
-                    className="font-serif font-bold text-[120px] leading-none tracking-tighter drop-shadow-lg"
+                    className="font-serif font-bold text-[140px] leading-none tracking-tighter drop-shadow-lg"
                     style={{ color: scoreColor }}
                 >
                     {score}%
@@ -99,25 +99,27 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
 
             {/* ROAST QUOTE */}
             <div className="text-center mb-3 max-w-[95%]">
-                <p className="font-serif italic font-normal text-[#E8E8DD] text-[36px] leading-snug">
+                <p className="font-serif italic font-normal text-[#E8E8DD] text-[42px] leading-snug">
                     "{displayComment}"
                 </p>
             </div>
 
             {/* CONTEXT LINE */}
-            <div className="flex items-center justify-center gap-4 text-[#9CA3AF] font-sans text-[24px] font-medium tracking-wide w-full">
+            <div className="flex items-center justify-center gap-4 text-[#9CA3AF] font-sans text-[28px] font-medium tracking-wide w-full">
                 <span className="whitespace-nowrap">🔥 {streakText}</span>
-                <span className="text-[20px]">•</span>
-                <span className="truncate max-w-[400px]">📍 {displayLocation}</span>
-                <span className="text-[20px]">•</span>
+                {displayLocation && (
+                    <>
+                        <span className="text-[24px]">•</span>
+                        <span className="truncate max-w-[400px]">📍 {displayLocation}</span>
+                    </>
+                )}
+                <span className="text-[24px]">•</span>
                 <span className="whitespace-nowrap">Top {rankNumber}%</span>
             </div>
 
-            <div className="flex-grow"></div>
-
             {/* FOOTER */}
             <div className="pb-10 pt-4">
-                <span className="font-sans text-[24px] font-medium tracking-wide text-[#F5F5F0]">
+                <span className="font-sans text-[28px] font-medium tracking-wide text-[#F5F5F0]">
                     GSplit.app
                 </span>
             </div>
