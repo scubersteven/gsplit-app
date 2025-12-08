@@ -1,133 +1,127 @@
-import logo from "@/assets/g-split-logo.png";
+import React, { useState } from 'react';
 
 interface ShareableResultProps {
   score: number;
-  splitDetected: boolean;
+  pintImage: string;
   comment?: string;
   location?: string;
-  ranking?: string;
+  ranking?: string | number;
+  streakDays?: number;
+  splitDetected?: boolean;
   mode?: 'share' | 'challenge';
   challengeTo?: string;
-  pintImage: string; // Required - always passed from shareImageV2
 }
 
-const ShareableResult = ({
-  score = 86.9,
-  splitDetected = true,
-  comment = "Decent pour",
-  location = "Temple Bar",
-  ranking = "Top 11% this week",
-  mode = 'share',
-  challengeTo,
-  pintImage
-}: ShareableResultProps) => {
+const ShareableResult: React.FC<ShareableResultProps> = ({
+  score,
+  pintImage,
+  comment,
+  location,
+  ranking,
+  streakDays,
+  splitDetected,
+  mode,
+  challengeTo
+}) => {
+  const [frameError, setFrameError] = useState(false);
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "#36B37E"; // Irish green - vibrant!
-    if (score >= 60) return "#E8A849"; // Softer amber
-    return "#C45C4B"; // Softer red
+  // Parse ranking to number
+  const getRankNumber = (ranking?: string | number): number => {
+    if (typeof ranking === 'number') return ranking;
+    if (typeof ranking === 'string') {
+      const match = ranking.match(/\d+/);
+      return match ? parseInt(match[0]) : 35;
+    }
+    return 35;
   };
 
+  // Fallback values
+  const displayComment = comment || "Nice pour";
+  const displayLocation = location || "Local pub";
+  const displayStreakDays = streakDays || 1;
+  const rankNumber = getRankNumber(ranking);
+
+  // Streak pluralization
+  const streakText = displayStreakDays === 1 ? '1 day' : `${displayStreakDays} days`;
+
+  // Color Logic: <60 Red, 60-84 Gold, 85+ Green
+  let scoreColor = '#F59E0B'; // Gold (Default/Middle)
+  if (score < 60) scoreColor = '#EF4444'; // Red
+  else if (score >= 85) scoreColor = '#10B981'; // Green
+
   return (
-    <div className="w-[1080px] h-[1920px] flex flex-col relative bg-[#1C1410]">
+    <div className="w-[1080px] h-[1920px] flex flex-col relative overflow-hidden">
 
-      {/* Foam Header - "The Verdict" */}
-      <div className="w-full mb-0 relative overflow-hidden">
-        <div className="bg-[#fdecd0] pt-20 pb-16 flex flex-col justify-center items-center gap-6">
-          <h1 className="text-[#1C1410] text-[160px] font-display font-bold tracking-wide leading-none">
-            The Verdict
-          </h1>
-          {comment && (
-            <p className="text-[#1C1410]/70 text-6xl font-body italic font-normal text-center px-12">
-              "{comment}"
-            </p>
-          )}
-        </div>
-      </div>
+        {/* --- TOP SECTION: CREAM (64%) --- */}
+        <div className="h-[64%] w-full bg-[#FFF8E7] flex flex-col items-center justify-start relative overflow-hidden pt-3">
 
-      {/* Content Container */}
-      <div className="w-full relative z-10 flex flex-col items-center px-4 py-4">
+            {/* THE MASTERPIECE FRAME */}
+            <div className="relative h-[98%] aspect-[5/6] drop-shadow-2xl">
 
-        {/* Pint Photo Container */}
-        <div className="w-full max-w-[900px] h-[1050px] rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-black/10">
-          <img
-            src={pintImage}
-            alt="Pint analysis"
-            className="w-full h-full object-contain"
-          />
-        </div>
-
-        {/* Stats Box */}
-        <div className="w-full max-w-[900px] mt-6">
-          <div className="border-2 border-[#D4AF37] rounded-lg p-10 w-full flex flex-col min-h-[600px]"
-            style={{
-              background: 'linear-gradient(135deg, #2A2A2A 0%, #242220 100%)',
-              boxShadow: '0 6px 12px rgba(44, 24, 16, 0.5), 0 2px 4px rgba(44, 24, 16, 0.3), 0 0 20px rgba(212, 175, 55, 0.15)'
-            }}>
-
-            <div className="space-y-8 flex flex-col items-center justify-center h-full py-8">
-
-              {/* Score - Bigger */}
-              <div className="text-center">
-                <div
-                  className="text-[100px] font-body font-black leading-none"
-                  style={{
-                    color: getScoreColor(score),
-                    letterSpacing: '-0.02em',
-                    textShadow: '0 4px 12px rgba(44, 24, 16, 0.4)'
-                  }}
-                >
-                  {score.toFixed(1)}%
-                </div>
-              </div>
-
-              {/* Centered stats */}
-              <div className="space-y-6 text-center w-full">
-                {/* Ranking */}
-                {ranking && (
-                  <div>
-                    <span className="text-[#D4AF37] text-4xl font-body font-semibold">
-                      Rank: {ranking}
-                    </span>
-                  </div>
-                )}
-
-                {/* Split Status */}
-                <div>
-                  <span className="text-[#FFF8E7] text-3xl font-body font-semibold">
-                    Split detected: {splitDetected ? '✅' : '❌'}
-                  </span>
+                {/* A. The Gold Frame (Top Layer - z-20) */}
+                <div className="relative z-20 w-full h-full">
+                    {!frameError ? (
+                        <img
+                            src="https://i.imgur.com/1DEGVvK.png"
+                            alt="Baroque Frame"
+                            className="w-full h-full object-fill pointer-events-none"
+                            onError={() => setFrameError(true)}
+                        />
+                    ) : (
+                        <div className="w-full h-full border-[6px] border-[#F59E0B] rounded-lg" />
+                    )}
                 </div>
 
-                {/* Location */}
-                {location && (
-                  <div>
-                    <span className="text-[#FFF8E7] text-3xl font-body font-semibold">
-                      Location 📍: {location}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Challenge Mode Callout */}
-              {mode === 'challenge' && (
-                <div className="text-[#FFF8E7] text-xs font-ui font-semibold tracking-wider text-center pt-1">
-                  CAN YOU BEAT THIS?
+                {/* B. The User Photo (Bottom Layer - z-10) */}
+                <div className="absolute top-[15%] left-[17%] w-[66%] h-[70%] z-10 bg-black rounded-lg overflow-hidden">
+                    <img
+                        src={pintImage}
+                        alt="Pint"
+                        className="w-full h-full object-cover opacity-90"
+                    />
+                    <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.6)] pointer-events-none"></div>
                 </div>
-              )}
             </div>
-          </div>
         </div>
 
-        {/* Logo watermark */}
-        <div className="absolute bottom-4 right-6 flex items-center gap-2">
-          <img
-            src={logo}
-            alt="Gsplit"
-            className="h-8 w-auto opacity-60"
-          />
+        {/* --- BOTTOM SECTION: BLACK (36%) --- */}
+        <div className="flex-1 w-full bg-[#1A1A1A] flex flex-col items-center px-6 pt-4">
+
+            {/* SCORE */}
+            <div className="relative z-30 mb-3">
+                <span
+                    className="font-serif font-bold text-[120px] leading-none tracking-tighter drop-shadow-lg"
+                    style={{ color: scoreColor }}
+                >
+                    {score}%
+                </span>
+            </div>
+
+            {/* ROAST QUOTE */}
+            <div className="text-center mb-3 max-w-[95%]">
+                <p className="font-serif italic font-normal text-[#E8E8DD] text-[36px] leading-snug">
+                    "{displayComment}"
+                </p>
+            </div>
+
+            {/* CONTEXT LINE */}
+            <div className="flex items-center justify-center gap-4 text-[#9CA3AF] font-sans text-[24px] font-medium tracking-wide w-full">
+                <span className="whitespace-nowrap">🔥 {streakText}</span>
+                <span className="text-[20px]">•</span>
+                <span className="truncate max-w-[400px]">📍 {displayLocation}</span>
+                <span className="text-[20px]">•</span>
+                <span className="whitespace-nowrap">Top {rankNumber}%</span>
+            </div>
+
+            <div className="flex-grow"></div>
+
+            {/* FOOTER */}
+            <div className="pb-10 pt-4">
+                <span className="font-sans text-[24px] font-medium tracking-wide text-[#F5F5F0]">
+                    GSplit.app
+                </span>
+            </div>
         </div>
-      </div>
     </div>
   );
 };
