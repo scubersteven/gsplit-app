@@ -111,7 +111,7 @@ const PintCard = ({
           {/* Metadata */}
           <div className="mt-2 font-inter text-sm font-semibold text-foreground/60">
             {location ? (
-              <>📍 {location} • {formatDate(date)}</>
+              <><span className="text-xs opacity-70">📍</span> {location} • {formatDate(date)}</>
             ) : (
               formatDate(date)
             )}
