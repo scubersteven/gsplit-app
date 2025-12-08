@@ -62,7 +62,7 @@ const PintCard = ({
       <div className="flex gap-4">
         {/* Photo Section */}
         <div className="flex-shrink-0 self-stretch">
-          <div className="w-[100px] md:w-[140px] h-[160px] md:h-[180px] rounded-lg overflow-hidden border border-harp-gold/10">
+          <div className="w-[100px] md:w-[140px] self-stretch rounded-lg overflow-hidden border border-harp-gold/10">
             {!imageError ? (
               <img
                 src={image}
@@ -82,7 +82,7 @@ const PintCard = ({
         {/* Content Section */}
         <div className="flex-1 min-w-0">
           {/* Header Row: Score + Badge */}
-          <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-start justify-between gap-3">
             {/* Score */}
             <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
               {score}%
@@ -100,7 +100,7 @@ const PintCard = ({
           </div>
 
           {/* Feedback Quote */}
-          <p className="mt-2 mb-3 font-inter text-base md:text-lg italic text-foreground">
+          <p className="mt-2 font-inter text-base md:text-lg italic text-foreground">
             "{feedback}"
           </p>
 
