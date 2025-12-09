@@ -2,23 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import PubCard from '../components/PubCard';
-import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { MOCK_PUBS } from '../constants';
 import { Pub } from '../type/locals';
 import { requestUserLocation, calculateDistance } from '@/utils/geolocation';
 import { fetchNearbyPlaces } from '../utils/googlePlaces';
 
-interface PlaceData {
-  place_id: string;
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-}
-
 const Locals: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [pubs, setPubs] = useState<Pub[]>([]);
@@ -89,34 +79,6 @@ const Locals: React.FC = () => {
     fetchNearby();
   }, [userLocation]);
 
-  // Handle place selection from Google Places
-  const handlePlaceSelect = (place: PlaceData) => {
-    // Check if pub exists in fetched pubs
-    const existingPub = pubs.find(p => p.id === place.place_id);
-
-    if (existingPub) {
-      // Navigate to existing pub
-      navigate(`/locals/${existingPub.id}`);
-    } else {
-      // Create dynamic Pub object from Google data
-      const newPub: Pub = {
-        id: place.place_id,
-        name: place.name,
-        address: place.address,
-        lat: place.lat,
-        lng: place.lng,
-        topSplit: null,
-        qualityRating: null,
-        pintsLogged: 0,
-        avgPrice: null,
-        leaderboard: [],
-      };
-
-      // Navigate to pub detail with state
-      navigate(`/locals/${place.place_id}`, { state: { pub: newPub } });
-    }
-  };
-
   // Merge database pubs with Google Places results
   const mergedPubs = React.useMemo(() => {
     const pubMap = new Map<string, Pub>();
@@ -144,24 +106,13 @@ const Locals: React.FC = () => {
       : null,
   }));
 
-  // Sort by distance (closest first, no filter needed - Google already limited to 5mi)
+  // Sort by distance (closest first)
   const sortedPubs = userLocation
     ? pubsWithDistance.sort((a, b) => (a.distance || 999) - (b.distance || 999))
     : pubsWithDistance;
 
-  // Apply place-based filter if place selected
-  const placeFilteredPubs = selectedPlace
-    ? sortedPubs.filter(pub => {
-        const distance = calculateDistance(
-          selectedPlace.lat, selectedPlace.lng,
-          pub.lat, pub.lng
-        );
-        return distance <= 5; // Within 5 miles of search
-      })
-    : sortedPubs;
-
   // Apply name-based search filter
-  const filteredPubs = placeFilteredPubs.filter(pub =>
+  const filteredPubs = sortedPubs.filter(pub =>
     pub.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -172,21 +123,7 @@ const Locals: React.FC = () => {
         <h1 className="text-4xl font-serif font-bold text-white mb-2">
           The Local Hunt
         </h1>
-        <p className="text-[#E8E8DD] text-sm mb-8 font-light tracking-wide">Find where the black stuff flows best.</p>
-
-        {/* Google Places Search */}
-        <div className="mb-8">
-          <PlacesAutocomplete
-            value={selectedPlace?.name || ''}
-            onChange={(place) => {
-              setSelectedPlace(place);
-              if (place) {
-                handlePlaceSelect(place);
-              }
-            }}
-            placeholder="Search pubs..."
-          />
-        </div>
+        <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide">Find where the black stuff flows best.</p>
 
         {/* Search Bar - Cleaner, less boxy */}
         <div className="relative mb-8 group">
@@ -228,9 +165,9 @@ const Locals: React.FC = () => {
           ) : (
              <div className="text-center py-20 px-4">
                <p className="text-[#9CA3AF] font-serif italic text-xl mb-2">Dry as a bone.</p>
-               <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your criteria.</p>
+               <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your search.</p>
                <button
-                 onClick={() => setSelectedPlace(null)}
+                 onClick={() => setSearchQuery('')}
                  className="mt-6 text-[#DDC9B4] text-sm hover:underline"
                >
                  Clear search
