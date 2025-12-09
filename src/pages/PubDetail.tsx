@@ -103,7 +103,7 @@ const PubDetail: React.FC = () => {
 
       {/* Pub Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-[#DDC9B4] mb-2 leading-tight">
+        <h1 className="text-4xl font-playfair font-bold text-white mb-2 leading-tight">
           {pub.name}
         </h1>
         <p className="text-[#9CA3AF] text-sm">

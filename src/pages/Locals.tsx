@@ -138,7 +138,7 @@ const Locals: React.FC = () => {
     <div className="pb-32 px-4 animate-in fade-in duration-500">
       {/* Header Section */}
       <div className="mb-8 pt-8">
-        <h1 className="text-4xl font-serif font-bold text-white mb-2">
+        <h1 className="text-4xl font-playfair font-bold text-white mb-2">
           The Local Hunt
         </h1>
         <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide">Find where the black stuff flows best.</p>

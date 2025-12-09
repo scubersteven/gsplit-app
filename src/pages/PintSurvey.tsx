@@ -84,7 +84,7 @@ const PintSurvey = () => {
         </Button>
 
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
+          <h1 className="text-4xl font-playfair font-bold text-white mb-2 tracking-tight">
             Rate Your Guinness
           </h1>
           <p className="text-base text-muted-foreground">

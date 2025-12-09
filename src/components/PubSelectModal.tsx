@@ -100,16 +100,16 @@ const PubSelectModal: React.FC<PubSelectModalProps> = ({ isOpen, onClose, onSave
         <div className="p-6 pt-0 flex gap-3">
           <button
             onClick={handleSkip}
-            className="w-1/3 py-4 rounded-xl text-sm text-[#9CA3AF] font-medium border border-[#2a2a2a] hover:bg-[#1A1A1A] hover:text-[#F5F5F0] transition-all"
+            className="w-1/3 py-4 rounded text-sm text-[#9CA3AF] font-medium border border-[#2a2a2a] hover:bg-[#1A1A1A] hover:text-[#F5F5F0] transition-all"
           >
             Skip
           </button>
           <button
             onClick={handleSave}
             disabled={isSaveDisabled}
-            className={`flex-1 py-4 rounded-xl text-sm font-bold text-[#0A0A0A] transition-all duration-200
-              ${isSaveDisabled 
-                ? 'bg-[#2a2a2a] text-[#4B5563] cursor-not-allowed' 
+            className={`flex-1 py-4 rounded text-sm font-bold text-[#0A0A0A] transition-all duration-200
+              ${isSaveDisabled
+                ? 'bg-[#2a2a2a] text-[#4B5563] cursor-not-allowed'
                 : 'bg-[#F5F5F0] hover:bg-[#ffffff]'
               }`}
           >

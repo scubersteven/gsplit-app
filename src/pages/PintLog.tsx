@@ -50,7 +50,7 @@ const PintLog = () => {
         </Button>
 
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
+          <h1 className="text-4xl font-playfair font-bold text-white mb-2 tracking-tight">
             Pint Log
           </h1>
           <p className="text-base text-muted-foreground">
@@ -166,7 +166,7 @@ const PintLog = () => {
                         </p>
                       </div>
                       {entry.price && (
-                        <div className="text-base font-body font-semibold" style={{ color: '#FFD700' }}>
+                        <div className="text-base font-body font-semibold" style={{ color: '#F7D447' }}>
                           {entry.price}
                         </div>
                       )}

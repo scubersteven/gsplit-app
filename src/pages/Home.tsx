@@ -115,7 +115,7 @@ const Home = () => {
       {/* Hero Upload Zone */}
       <div className="max-w-3xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-display font-bold text-primary mb-2 tracking-wide">
+          <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2 tracking-wide">
             The Stout Standard
           </h1>
           <p className="text-lg text-muted-foreground mb-8">

@@ -299,7 +299,7 @@ const PintSurvey = () => {
       <div className="md:max-w-[480px] md:mx-auto">
         {/* Header */}
         <div className="mb-3">
-          <h1 className="font-display text-[32px] font-bold text-foreground tracking-tight">
+          <h1 className="font-playfair text-4xl font-bold text-white tracking-tight">
             How Was She?
           </h1>
           <p className="text-sm text-foreground/85 mt-1">
@@ -383,7 +383,7 @@ const PintSurvey = () => {
           <Button
             onClick={handleSubmit}
             disabled={isGeneratingRoast}
-            className="w-full h-[52px] bg-foreground hover:bg-foreground/90 text-background font-semibold text-base rounded-lg mt-8 active:bg-foreground/80"
+            className="w-full h-[52px] bg-foreground hover:bg-foreground/90 text-background font-semibold text-base rounded mt-8 active:bg-foreground/80"
           >
             {isGeneratingRoast ? "Brewing roast..." : "Lock It In"}
           </Button>

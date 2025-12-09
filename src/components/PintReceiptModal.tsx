@@ -35,9 +35,9 @@ const PintReceiptModal = ({
   const isGSplitMode = !isSurveyOnly && splitImage && splitImage.length > 0;
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-[#00B140]";
-    if (score >= 60) return "text-[#FFA500]";
-    return "text-[#D40003]";
+    if (score >= 80) return "text-[#10B981]";
+    if (score >= 60) return "text-[#F59E0B]";
+    return "text-[#EF4444]";
   };
 
   const handleShare = () => {

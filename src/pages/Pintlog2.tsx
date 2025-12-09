@@ -239,7 +239,7 @@ const Index = () => {
               </h2>
               <button
                 onClick={() => navigate('/')}
-                className="bg-harp-gold text-stout-black font-inter text-base font-semibold px-6 py-3 rounded-lg h-auto hover:bg-harp-gold/90 transition-all"
+                className="bg-harp-gold text-stout-black font-inter text-base font-semibold px-6 py-3 rounded h-auto hover:bg-harp-gold/90 transition-all"
               >
                 Split the G
               </button>

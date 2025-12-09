@@ -13,9 +13,9 @@ import { savePint } from "@/utils/db";
  * Get score color
  */
 const getScoreColor = (score: number): string => {
-  if (score >= 80) return "#00B140"; // Bright green
-  if (score >= 60) return "#FFA500"; // Orange
-  return "#D40003"; // Red
+  if (score >= 80) return "#10B981"; // Bright green
+  if (score >= 60) return "#F59E0B"; // Orange
+  return "#EF4444"; // Red
 };
 
 const GSplitResultV2 = () => {
@@ -313,7 +313,7 @@ const GSplitResultV2 = () => {
         <Button
           onClick={handleInstagramShare}
           disabled={isGeneratingImage}
-          className="w-full h-12 text-base font-body font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] rounded-lg mb-3 animate-fade-in"
+          className="w-full h-12 text-base font-body font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] rounded mb-3 animate-fade-in"
           style={{ animationDelay: '1s', animationFillMode: 'both' }}
         >
           {isGeneratingImage ? "Generating..." : "📸 Share to Instagram"}
@@ -336,7 +336,7 @@ const GSplitResultV2 = () => {
               toast.error("Failed to load survey.");
             }
           }}
-          className="w-full h-12 text-base font-body font-semibold bg-transparent border-2 border-[#F7D447] text-[#F5F5F0] hover:bg-[#F7D447]/10 rounded-lg mb-3 animate-fade-in"
+          className="w-full h-12 text-base font-body font-semibold bg-transparent border-2 border-[#F7D447] text-[#F5F5F0] hover:bg-[#F7D447]/10 rounded mb-3 animate-fade-in"
           style={{ animationDelay: '1.1s', animationFillMode: 'both' }}
         >
           Rate This Pint
