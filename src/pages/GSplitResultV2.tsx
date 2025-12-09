@@ -346,7 +346,7 @@ const GSplitResultV2 = () => {
           <img
             src={image}
             alt="Your pint"
-            className="w-full h-full object-cover"
+            className="w-full object-contain"
           />
         </div>
 
