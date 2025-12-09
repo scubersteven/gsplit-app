@@ -8,7 +8,7 @@ import PintCardModal from "@/components/PintCardModal";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getTotalPoints, getTierFromPoints, getProgressToNextTier, TIERS } from "@/lib/gamification";
-import { getAllPints, getPintStats } from "@/utils/db";
+import { getAllPints, getPintStats, deletePint } from "@/utils/db";
 
 interface Pint {
   id: number;
@@ -88,6 +88,23 @@ const Index = () => {
   const handlePintClick = (pint: Pint) => {
     setSelectedPint(pint);
     setIsPintModalOpen(true);
+  };
+
+  const handleDeletePint = async (id: number) => {
+    try {
+      await deletePint(id);
+      await loadPints();
+      toast({
+        title: "Pint deleted",
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('Failed to delete pint:', error);
+      toast({
+        title: "Failed to delete pint",
+        duration: 3000,
+      });
+    }
   };
 
   const totalPints = stats.totalPints;
@@ -270,6 +287,7 @@ const Index = () => {
         open={isPintModalOpen}
         onOpenChange={setIsPintModalOpen}
         pintData={selectedPint}
+        onDelete={handleDeletePint}
       />
     </div>
   );

@@ -1,9 +1,6 @@
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { X, MapPin } from "lucide-react";
+import { X } from "lucide-react";
 import { toast } from "sonner";
-import DisplayStars from "@/components/DisplayStars";
 import { generatePintShareImage } from "@/utils/sharePintImage";
 
 interface PintCardModalProps {
@@ -19,21 +16,24 @@ interface PintCardModalProps {
     date: string;
     overallRating?: number | null;
   } | null;
+  onDelete?: (id: number) => void;
 }
 
 /**
- * Get score color class based on thresholds
+ * Format date to readable string (just date, no time)
  */
-const getScoreColor = (score: number): string => {
-  if (score >= 80) return "text-score-excellent";
-  if (score >= 60) return "text-score-good";
-  return "text-score-poor";
+const formatDateOnly = (dateString: string): string => {
+  const date = new Date(dateString);
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = months[date.getMonth()];
+  const day = date.getDate();
+  return `${month} ${day}`;
 };
 
 /**
- * Format date to readable string
+ * Format date with time for share image
  */
-const formatDate = (dateString: string): string => {
+const formatDateTime = (dateString: string): string => {
   const date = new Date(dateString);
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const month = months[date.getMonth()];
@@ -45,11 +45,24 @@ const formatDate = (dateString: string): string => {
   return `${month} ${day}, ${displayHours}:${minutes}${ampm}`;
 };
 
-const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => {
+const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModalProps) => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
-  if (!pintData) return null;
+  if (!open || !pintData) return null;
 
+  // Color Logic
+  let scoreColor = '#F59E0B'; // Gold
+  if (pintData.score < 60) scoreColor = '#EF4444'; // Red
+  else if (pintData.score >= 85) scoreColor = '#10B981'; // Green
+
+  // Context Logic
+  const dateOnly = formatDateOnly(pintData.date);
+  const hasLocation = pintData.location && pintData.location.length > 2;
+  const contextText = hasLocation
+    ? `📍 ${pintData.location} • ${dateOnly}`
+    : dateOnly;
+
+  // Share Handler (preserved from original)
   const handleShare = async () => {
     setIsGeneratingImage(true);
     try {
@@ -60,7 +73,7 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
         rating: pintData.overallRating || 0,
         feedback: pintData.feedback,
         location: pintData.location || '',
-        date: formatDate(pintData.date),
+        date: formatDateTime(pintData.date),
       });
 
       // Try native share (mobile)
@@ -96,74 +109,94 @@ const PintCardModal = ({ open, onOpenChange, pintData }: PintCardModalProps) => 
     }
   };
 
+  // Delete Handler
+  const handleDelete = () => {
+    if (onDelete && pintData) {
+      onDelete(pintData.id);
+      onOpenChange(false);
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-[380px] [&>button]:hidden">
-        <div className="relative w-[95%] max-w-[380px] max-h-[70vh] overflow-y-auto bg-deep-black border-2 border-harp-gold rounded-2xl p-6 animate-scale-in">
-          {/* Close Button - Top Right */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+        onClick={() => onOpenChange(false)}
+      />
+
+      {/* Modal Card */}
+      <div className="relative w-full max-w-[320px] bg-[#1A1A1A] rounded-2xl pt-6 px-4 pb-4 flex flex-col items-center animate-in zoom-in-95 duration-200 shadow-2xl border border-[#2a2a2a]">
+        {/* Close Button */}
+        <div className="w-full flex justify-end mb-2 -mt-2">
           <button
             onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 z-10 text-foreground/60 hover:text-foreground transition-colors"
+            className="text-[#525252] hover:text-[#F5F5F0] transition-colors p-1 rounded-full hover:bg-[#2a2a2a]"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
+        </div>
 
-          {/* Vertical Compact Layout */}
-          <div className="flex flex-col gap-4 mt-8">
-            {/* Pint Image */}
+        {/* Pint Image */}
+        <div className="w-full mb-4 flex justify-center">
+          <div className="rounded-lg overflow-hidden shadow-lg border border-[#2a2a2a]">
             <img
               src={pintData.image}
-              alt="Pint"
-              className="w-full h-[280px] rounded-xl object-cover border-2 border-harp-gold/30"
+              alt="Pint Detail"
+              className="w-auto h-auto max-w-full max-h-[280px] object-contain transition-transform duration-300 hover:scale-105 block"
             />
-
-            {/* Content */}
-            <div className="flex flex-col gap-4">
-              {/* Score */}
-              <div className={`score-display font-display text-5xl font-black tracking-tight ${getScoreColor(pintData.score)}`}>
-                {pintData.score}%
-              </div>
-
-              {/* Star Rating */}
-              {pintData.overallRating && pintData.overallRating > 0 && (
-                <div>
-                  <DisplayStars value={pintData.overallRating} size={28} />
-                </div>
-              )}
-
-              {/* Feedback */}
-              {pintData.feedback && (
-                <p className="text-lg italic text-foreground/90 leading-relaxed">
-                  "{pintData.feedback}"
-                </p>
-              )}
-
-              {/* Location & Date */}
-              <div className="space-y-2 text-base text-foreground/60">
-                {pintData.location && (
-                  <div className="flex items-center gap-2">
-                    <MapPin size={20} className="flex-shrink-0 text-[#D40003]" />
-                    <span>{pintData.location}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <span>{formatDate(pintData.date)}</span>
-                </div>
-              </div>
-            </div>
           </div>
+        </div>
 
-          {/* Share Button - Bottom */}
-          <Button
+        {/* Score */}
+        <div className="mb-1.5">
+          <span
+            className="font-serif font-bold leading-none tracking-tighter"
+            style={{ fontSize: '56px', color: scoreColor }}
+          >
+            {pintData.score}%
+          </span>
+        </div>
+
+        {/* Feedback Quote */}
+        <div className="mb-2.5 text-center w-full px-1">
+          <p className="font-serif italic text-[16px] text-[#E8E8DD] leading-tight line-clamp-2">
+            "{pintData.feedback}"
+          </p>
+        </div>
+
+        {/* Context (Location + Date) */}
+        <div className="mb-4 text-center">
+          <p className="font-sans text-[13px] font-medium text-[#9CA3AF] tracking-wide">
+            {contextText}
+          </p>
+        </div>
+
+        {/* Buttons */}
+        <div className="w-full space-y-3">
+          {/* Share Button */}
+          <button
             onClick={handleShare}
             disabled={isGeneratingImage}
-            className="w-full mt-6 h-12 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold rounded-lg transition-colors active:bg-[#FFF8E7]/80"
+            className="w-full bg-[#2A2A2A] hover:bg-[#333333] border border-[#444] text-[#F5F5F0] font-bold py-3 rounded-lg text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isGeneratingImage ? "Generating..." : "Share Pint"}
-          </Button>
+            {isGeneratingImage ? "Generating..." : "Share"}
+          </button>
+
+          {/* Delete Button */}
+          {onDelete && (
+            <div className="text-center">
+              <button
+                onClick={handleDelete}
+                className="text-[#EF4444] text-xs font-medium hover:text-[#ff6b6b] transition-colors opacity-80 hover:opacity-100"
+              >
+                Delete
+              </button>
+            </div>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 
