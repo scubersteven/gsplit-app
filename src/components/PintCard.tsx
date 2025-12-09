@@ -62,7 +62,7 @@ const PintCard = ({
       <div className="flex gap-4">
         {/* Photo Section */}
         <div className="flex-shrink-0 self-stretch">
-          <div className="w-[100px] md:w-[140px] self-stretch rounded-lg overflow-hidden border border-harp-gold/10">
+          <div className="w-[100px] md:w-[140px] h-full rounded-lg overflow-hidden border border-harp-gold/10">
             {!imageError ? (
               <img
                 src={image}
