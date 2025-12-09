@@ -235,33 +235,6 @@ const GSplitResultV2 = () => {
     return null;
   }
 
-  const handleShare = async () => {
-    const shareText = `I just scored ${score}% on Gsplit! ${feedback} 🍺`;
-    const shareUrl = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "My Gsplit Score",
-          text: shareText,
-          url: shareUrl,
-        });
-        toast.success("Shared successfully!");
-      } catch (error) {
-        if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Error sharing:", error);
-        }
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-        toast.success("Link copied to clipboard!");
-      } catch (error) {
-        toast.error("Failed to copy link");
-      }
-    }
-  };
-
   const handleInstagramShare = async () => {
     setIsGeneratingImage(true);
 
@@ -279,7 +252,7 @@ const GSplitResultV2 = () => {
       toast.success("Image ready to share!");
     } catch (error) {
       console.error("Error generating share image:", error);
-      toast.error("Failed to generate share image");
+      toast.error("Failed to generate share image.");
     } finally {
       setIsGeneratingImage(false);
     }
@@ -340,47 +313,40 @@ const GSplitResultV2 = () => {
         <Button
           onClick={handleInstagramShare}
           disabled={isGeneratingImage}
-          className="w-full h-12 text-base font-body font-semibold bg-[#00B140] hover:bg-[#00B140]/90 text-white rounded-lg mb-3 animate-fade-in"
+          className="w-full h-12 text-base font-body font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] rounded-lg mb-3 animate-fade-in"
           style={{ animationDelay: '1s', animationFillMode: 'both' }}
         >
-          {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
+          {isGeneratingImage ? "Generating..." : "📸 Share to Instagram"}
         </Button>
 
-        {/* Secondary Button: Challenge a Mate */}
+        {/* Secondary Button: Rate This Pint */}
         <Button
-          onClick={handleShare}
-          className="w-full h-12 text-base font-body font-semibold bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-[#0A0A0A] rounded-lg mb-3 animate-fade-in"
+          onClick={() => {
+            try {
+              const pintId = sessionStorage.getItem("currentPintId");
+              navigate("/survey", {
+                state: {
+                  pintLogId: pintId ? parseInt(pintId) : null,
+                  splitScore: score,
+                  splitImage: image
+                }
+              });
+            } catch (error) {
+              console.error("Failed to navigate to survey:", error);
+              toast.error("Failed to load survey.");
+            }
+          }}
+          className="w-full h-12 text-base font-body font-semibold bg-transparent border-2 border-[#F7D447] text-[#F5F5F0] hover:bg-[#F7D447]/10 rounded-lg mb-3 animate-fade-in"
           style={{ animationDelay: '1.1s', animationFillMode: 'both' }}
         >
-          Challenge a Mate ⚔️
+          Rate This Pint
         </Button>
 
-        {/* Text Links */}
-        <div className="flex items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: '1.2s', animationFillMode: 'both' }}>
-          <button
-            onClick={() => {
-              try {
-                const pintId = sessionStorage.getItem("currentPintId");
-                navigate("/survey", {
-                  state: {
-                    pintLogId: pintId ? parseInt(pintId) : null,
-                    splitScore: score,
-                    splitImage: image
-                  }
-                });
-              } catch (error) {
-                console.error("Failed to navigate to survey:", error);
-                toast.error("Failed to load survey");
-              }
-            }}
-            className="text-[#E8E8DD] text-sm font-body underline hover:text-[#D4AF37] transition-colors"
-          >
-            Rate this Pint
-          </button>
-          <span className="text-[#E8E8DD]/50 text-sm">•</span>
+        {/* Text Link: Try Again */}
+        <div className="text-center animate-fade-in" style={{ animationDelay: '1.2s', animationFillMode: 'both' }}>
           <button
             onClick={() => navigate("/")}
-            className="text-[#E8E8DD] text-sm font-body underline hover:text-[#D4AF37] transition-colors"
+            className="text-[#E8E8DD] text-sm font-body hover:underline hover:text-[#F5F5F0] transition-colors"
           >
             Try Again
           </button>

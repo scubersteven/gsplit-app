@@ -50,7 +50,7 @@ const Results = () => {
           });
           toast.success("Pint rating updated!");
         } else {
-          toast.error("Pint not found");
+          toast.error("Pint not found.");
           return;
         }
       } else {
@@ -76,16 +76,16 @@ const Results = () => {
           ].filter(Boolean)
         };
         await savePint(newEntry);
-        toast.success("Saved to Pint Log");
+        toast.success("Saved to Pint Log!");
       }
 
       setTimeout(() => navigate("/log"), 1000);
     } catch (error: any) {
       console.error("Failed to save pint log:", error);
       if (error.message?.includes('quota')) {
-        toast.error("Storage full - please delete old pints");
+        toast.error("Storage full - please delete old pints.");
       } else {
-        toast.error("Failed to save rating");
+        toast.error("Failed to save rating.");
       }
     }
   };
@@ -104,7 +104,7 @@ const Results = () => {
 
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
-            complete evaluation
+            Complete Evaluation
           </h1>
         </div>
 
@@ -183,14 +183,14 @@ const Results = () => {
         {/* Detailed Breakdown */}
         <div className="bg-card border border-border rounded-lg p-8 mb-8">
           <h2 className="text-xl font-bold text-foreground mb-6 uppercase tracking-wider">
-            detailed breakdown
+            Detailed Breakdown
           </h2>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             {/* Taste Profile */}
             <div>
               <h3 className="text-sm text-muted-foreground mb-4 uppercase tracking-wider">
-                taste profile
+                Taste Profile
               </h3>
               <div className="space-y-4">
                 {[
@@ -218,7 +218,7 @@ const Results = () => {
             {/* Pour Technique */}
             <div>
               <h3 className="text-sm text-muted-foreground mb-4 uppercase tracking-wider">
-                pour technique
+                Pour Technique
               </h3>
               <div className="space-y-3">
                 {[

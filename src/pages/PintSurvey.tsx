@@ -42,7 +42,7 @@ const PintSurvey = () => {
 
   const handleSubmit = () => {
     if (!surveyData.location) {
-      toast.error("Please enter the pub location!");
+      toast.error("Please enter the pub location.");
       return;
     }
 
@@ -85,10 +85,10 @@ const PintSurvey = () => {
 
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
-            rate your guinness
+            Rate Your Guinness
           </h1>
           <p className="text-base text-muted-foreground">
-            comprehensive pint evaluation
+            Comprehensive pint evaluation
           </p>
         </div>
 
@@ -246,7 +246,7 @@ const PintSurvey = () => {
                 size="lg"
                 className="w-full"
               >
-                complete evaluation
+                Complete Evaluation
               </Button>
             </div>
           </div>

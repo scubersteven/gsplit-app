@@ -74,7 +74,7 @@ const GSplitResult = () => {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         toast.success("Link copied to clipboard!");
       } catch (error) {
-        toast.error("Failed to copy link");
+        toast.error("Failed to copy link.");
       }
     }
   };
@@ -97,7 +97,7 @@ const GSplitResult = () => {
       toast.success("Image ready to share!");
     } catch (error) {
       console.error("Error generating share image:", error);
-      toast.error("Failed to generate share image");
+      toast.error("Failed to generate share image.");
     } finally {
       setIsGeneratingImage(false);
     }
@@ -190,7 +190,7 @@ const GSplitResult = () => {
           size="lg"
           className="w-full py-6 text-lg font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] transition-transform hover:scale-[1.02]"
         >
-          {isGeneratingImage ? "Generating..." : "Share to Instagram 📸"}
+          {isGeneratingImage ? "Generating..." : "📸 Share to Instagram"}
         </Button>
 
         {/* Challenge Friend - Secondary (Gold Border) */}
@@ -200,7 +200,7 @@ const GSplitResult = () => {
           variant="outline"
           className="w-full py-6 text-lg font-semibold border-2 border-[#D4AF37] text-[#F5F5F0] hover:bg-[#D4AF37]/10 transition-transform hover:scale-[1.02]"
         >
-          Challenge Friend ⚔️
+          ⚔️ Challenge Friend
         </Button>
 
         {/* Try Again - Ghost */}
@@ -210,7 +210,7 @@ const GSplitResult = () => {
           variant="ghost"
           className="w-full py-6 text-lg font-semibold text-[#E8E8DD] hover:bg-[#1a1a1a] transition-transform hover:scale-[1.02]"
         >
-          Try Again 🔄
+          🔄 Try Again
         </Button>
       </div>
     </div>

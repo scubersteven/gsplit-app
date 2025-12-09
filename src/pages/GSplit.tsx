@@ -59,10 +59,10 @@ const GSplit = () => {
     if (pubName.trim()) {
       localStorage.setItem('userPubName', pubName.trim());
       sessionStorage.setItem('locationModalSeen', 'true');
-      toast.success(`Saved: ${pubName.trim()}`);
+      toast.success(`Saved: ${pubName.trim()}!`);
       setShowLocationModal(false);
     } else {
-      toast.error("Please enter your pub's name");
+      toast.error("Please enter your pub's name.");
     }
   };
 
@@ -73,7 +73,7 @@ const GSplit = () => {
 
   const handleAnalyze = async () => {
     if (!selectedImage || !selectedFile) {
-      toast.error("Please upload a photo first");
+      toast.error("Please upload a photo first.");
       return;
     }
 

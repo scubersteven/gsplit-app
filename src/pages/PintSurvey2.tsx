@@ -242,7 +242,7 @@ const PintSurvey = () => {
         // Don't block user flow
       }
 
-      toast.success("Rating saved");
+      toast.success("Rating saved!");
 
       // Redirect to pub detail page if place_id exists and is valid, otherwise to log
       if (selectedPlace.place_id &&

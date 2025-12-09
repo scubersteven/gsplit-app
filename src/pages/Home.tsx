@@ -45,7 +45,7 @@ const Home = () => {
       if (username) {
         sessionStorage.setItem('gsplit_username', username);
       }
-      toast.success(`Pub selected: ${place.name}`);
+      toast.success(`Pub selected: ${place.name}!`);
     } else {
       // Clear pub data if skipped (including persisted localStorage)
       sessionStorage.removeItem('selectedPub');
@@ -66,7 +66,7 @@ const Home = () => {
 
   const handleAnalyze = async () => {
     if (!selectedImage || !selectedFile) {
-      toast.error("Please upload a photo first");
+      toast.error("Please upload a photo first.");
       return;
     }
 
@@ -119,7 +119,7 @@ const Home = () => {
             The Stout Standard
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
-            The digital barman never lies.
+            The digital barman never lies
           </p>
         </div>
 

@@ -49,7 +49,7 @@ const PubSelectModal: React.FC<PubSelectModalProps> = ({ isOpen, onClose, onSave
         <div className="p-6 pb-2 flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-serif font-bold text-[#F5F5F0] mb-1">Where are you?</h2>
-            <p className="text-sm text-[#9CA3AF]">Pinpoint the pint.</p>
+            <p className="text-sm text-[#9CA3AF]">Pinpoint the pint</p>
           </div>
           <button 
             onClick={onClose}

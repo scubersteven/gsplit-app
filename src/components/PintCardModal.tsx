@@ -73,7 +73,7 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
 
     } catch (error) {
       console.error('Share failed:', error);
-      toast.error("Failed to share image");
+      toast.error("Failed to share image.");
     } finally {
       setIsGeneratingImage(false);
     }

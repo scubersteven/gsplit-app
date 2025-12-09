@@ -49,7 +49,7 @@ const Map = () => {
       setInitialApiKey(apiKey);
       toast.success("API key set! Loading map...");
     } else {
-      toast.error("Please enter a valid API key");
+      toast.error("Please enter a valid API key.");
     }
   };
 
@@ -94,7 +94,7 @@ const Map = () => {
           toast.success("Location found!");
         },
         () => {
-          toast.error("Unable to get your location");
+          toast.error("Unable to get your location.");
         }
       );
     }

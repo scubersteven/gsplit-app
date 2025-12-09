@@ -128,10 +128,10 @@ const PintLog = () => {
         {pintLog.length === 0 ? (
           <div className="bg-card border border-border rounded-lg p-12 text-center">
             <p className="text-lg text-muted-foreground mb-6">
-              no pints logged yet
+              No pints logged yet
             </p>
             <Button onClick={() => navigate("/split")} size="lg">
-              rate your first pint
+              Rate Your First Pint
             </Button>
           </div>
         ) : (
