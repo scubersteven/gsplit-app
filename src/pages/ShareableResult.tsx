@@ -148,7 +148,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
         }}
       >
         {/* 1. SCORE */}
-        <div style={{ marginTop: '60px', marginBottom: '48px' }}>
+        <div style={{ marginTop: '60px', marginBottom: '80px' }}>
           <span
             style={{
               fontFamily: 'Playfair Display, serif',
