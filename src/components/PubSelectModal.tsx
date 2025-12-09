@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, User } from 'lucide-react';
 import PlacesAutocomplete from './PlacesAutocomplete';
 
 interface PlaceData {
@@ -78,13 +78,21 @@ const PubSelectModal: React.FC<PubSelectModalProps> = ({ isOpen, onClose, onSave
             <label className="text-[#F5F5F0] text-sm font-semibold">
               Your Handle <span className="text-[#525252] font-normal">(optional)</span>
             </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="For the leaderboard"
-              className="w-full bg-[#121212] border border-[#2a2a2a] text-[#F5F5F0] text-base rounded-lg py-4 px-4 placeholder-[#525252] focus:outline-none focus:border-[#f8d548] focus:ring-1 focus:ring-[#f8d548] transition-all duration-200"
-            />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-0 flex items-center pointer-events-none">
+                <User
+                  className="text-[#525252] group-focus-within:text-[#DDC9B4] transition-colors duration-300"
+                  size={20}
+                />
+              </div>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Your name (optional)"
+                className="w-full bg-transparent border-b border-[#2a2a2a] text-[#DDC9B4] text-base py-3 pl-8 pr-4 placeholder-[#525252] focus:outline-none focus:border-[#DDC9B4] transition-all duration-300 rounded-none"
+              />
+            </div>
           </div>
         </div>
 

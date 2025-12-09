@@ -102,7 +102,7 @@ const PintCard = ({
             </div>
 
             {/* Feedback Quote */}
-            <p className="mt-2 font-inter text-base md:text-lg italic text-foreground">
+            <p className="mt-2 font-serif text-base md:text-lg italic text-foreground">
               "{feedback}"
             </p>
 

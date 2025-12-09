@@ -324,7 +324,7 @@ const GSplitResultV2 = () => {
         {/* Feedback Quote */}
         {feedback && (
           <div className="text-center mb-4 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
-            <p className="text-[#E8E8DD] text-lg font-body italic">
+            <p className="text-[#E8E8DD] text-lg font-serif italic">
               "{feedback}"
             </p>
           </div>
