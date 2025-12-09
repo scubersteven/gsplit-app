@@ -18,7 +18,7 @@ const RatingSlider = ({
   return (
     <div className="border-l-2 border-gold pl-4 pr-2">
       {/* Section Label */}
-      <h3 className="text-lg font-bold text-foreground mb-3">{label}</h3>
+      <h3 className="text-lg font-playfair font-bold text-foreground mb-3">{label}</h3>
 
       {/* Stars + Score Row */}
       <div className="flex items-center justify-center gap-3">
