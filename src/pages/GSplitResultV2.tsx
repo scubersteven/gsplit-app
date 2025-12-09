@@ -29,7 +29,6 @@ const GSplitResultV2 = () => {
   };
 
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [showSavedBanner, setShowSavedBanner] = useState(false);
   const displayedScore = useCountUp(score, 2000, 400); // Animate score countup
   const hasSaved = useRef(false); // Track if pint has been saved
 
@@ -184,22 +183,14 @@ const GSplitResultV2 = () => {
           sessionStorage.setItem("currentPintId", pintId.toString());
           console.log("🔑 [DEBUG] Stored pintId in sessionStorage:", pintId);
 
-          // Step 6: Show visible banner AND toast
+          // Step 6: Show toast notification
           setTimeout(() => {
             if (cancelled) return;
-            console.log("🍞 [DEBUG] Showing saved banner...");
-            setShowSavedBanner(true);
-            toast.success("🍺 Pint saved to your log!", {
-              description: "View all your pints in the Log tab",
-              duration: 6000,
+            console.log("🍞 [DEBUG] Showing saved toast...");
+            toast.success("Pint saved!", {
+              duration: 4000,
               position: "top-center",
             });
-
-            // Hide banner after 4 seconds
-            setTimeout(() => {
-              if (cancelled) return;
-              setShowSavedBanner(false);
-            }, 4000);
           }, 2000); // Wait 2 seconds for page to fully load
 
         } catch (error: any) {
@@ -294,16 +285,6 @@ const GSplitResultV2 = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
-
-      {/* Saved Banner */}
-      {showSavedBanner && (
-        <div className="fixed top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] animate-fade-in-opacity">
-          <div className="bg-white text-black px-3 py-1.5 rounded shadow-sm flex items-center gap-1.5 border border-black/10">
-            <span className="text-sm">📁</span>
-            <div className="font-normal text-xs">Pint Saved</div>
-          </div>
-        </div>
-      )}
 
       {/* Responsive Container */}
       <div className="mx-auto max-w-[360px] md:max-w-[500px] px-6 flex flex-col pt-6 pb-8">
