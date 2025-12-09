@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-import { generatePintShareImage } from "@/utils/sharePintImage";
+import { generateShareImageV2, shareToInstagramV2 } from "@/utils/shareImageV2";
 
 interface PintCardModalProps {
   open: boolean;
@@ -30,21 +30,6 @@ const formatDateOnly = (dateString: string): string => {
   return `${month} ${day}`;
 };
 
-/**
- * Format date with time for share image
- */
-const formatDateTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const month = months[date.getMonth()];
-  const day = date.getDate();
-  const hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  const displayHours = hours % 12 || 12;
-  return `${month} ${day}, ${displayHours}:${minutes}${ampm}`;
-};
-
 const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModalProps) => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
@@ -62,45 +47,30 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
     ? `📍 ${pintData.location} • ${dateOnly}`
     : dateOnly;
 
-  // Share Handler (preserved from original)
+  // Share Handler - using baroque frame design (ShareableResult)
   const handleShare = async () => {
     setIsGeneratingImage(true);
     try {
-      // Generate canvas image with pint data
-      const imageBlob = await generatePintShareImage({
-        pintImage: pintData.image,
+      // Generate ranking based on score
+      const mockPercentile = pintData.score >= 85
+        ? Math.floor(Math.random() * 15) + 1
+        : pintData.score >= 60
+          ? Math.floor(Math.random() * 20) + 15
+          : Math.floor(Math.random() * 50) + 50;
+
+      // Generate baroque frame image using ShareableResult
+      const imageBlob = await generateShareImageV2({
         score: pintData.score,
-        rating: pintData.overallRating || 0,
+        splitDetected: pintData.splitDetected,
         feedback: pintData.feedback,
-        location: pintData.location || '',
-        date: formatDateTime(pintData.date),
+        location: pintData.location || undefined,
+        ranking: `Top ${mockPercentile}% this week`,
+        pintImage: pintData.image,
       });
 
-      // Try native share (mobile)
-      if (navigator.share && navigator.canShare) {
-        const file = new File([imageBlob], 'my-pint.png', { type: 'image/png' });
+      // Share using shareToInstagramV2 (handles mobile/desktop)
+      await shareToInstagramV2(imageBlob, pintData.score);
 
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: 'My GSPLIT Score',
-            text: `I scored ${pintData.score}% on the Split the G!`,
-          });
-          toast.success("Share successful!");
-          return;
-        }
-      }
-
-      // Fallback: Download image (desktop)
-      const url = URL.createObjectURL(imageBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'my-pint.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success("Image downloaded!");
     } catch (error) {
       console.error('Share failed:', error);
       toast.error("Failed to share image");
