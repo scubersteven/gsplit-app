@@ -80,40 +80,43 @@ const PintCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 min-w-0">
-          {/* Header Row: Score + Badge */}
-          <div className="flex items-start justify-between gap-3">
-            {/* Score */}
-            <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
-              {score}%
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
+          {/* Top Section - Score, Feedback, Metadata */}
+          <div>
+            {/* Header Row: Score + Badge */}
+            <div className="flex items-start justify-between gap-3">
+              {/* Score */}
+              <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
+                {score}%
+              </div>
+
+              {/* Star Rating Badge - top right */}
+              {overallRating && (
+                <div className="flex-shrink-0 flex items-center bg-[#252525] px-2 py-1.5 rounded-lg border border-[#333]">
+                  <span className="text-[10px] mr-1.5 leading-none">⭐</span>
+                  <span className="text-xs font-bold text-[#F5F5F0] leading-none pt-0.5">
+                    {overallRating.toFixed(1)}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Star Rating Badge - top right */}
-            {overallRating && (
-              <div className="flex-shrink-0 flex items-center bg-[#252525] px-2 py-1.5 rounded-lg border border-[#333]">
-                <span className="text-[10px] mr-1.5 leading-none">⭐</span>
-                <span className="text-xs font-bold text-[#F5F5F0] leading-none pt-0.5">
-                  {overallRating.toFixed(1)}
-                </span>
-              </div>
-            )}
+            {/* Feedback Quote */}
+            <p className="mt-2 font-inter text-base md:text-lg italic text-foreground">
+              "{feedback}"
+            </p>
+
+            {/* Metadata */}
+            <div className="mt-2 font-inter text-xs font-semibold text-foreground/60">
+              {location ? (
+                <><span className="text-xs">📍</span> {location} • {formatDate(date)}</>
+              ) : (
+                formatDate(date)
+              )}
+            </div>
           </div>
 
-          {/* Feedback Quote */}
-          <p className="mt-2 font-inter text-base md:text-lg italic text-foreground">
-            "{feedback}"
-          </p>
-
-          {/* Metadata */}
-          <div className="mt-2 font-inter text-xs font-semibold text-foreground/60">
-            {location ? (
-              <><span className="text-xs">📍</span> {location} • {formatDate(date)}</>
-            ) : (
-              formatDate(date)
-            )}
-          </div>
-
-          {/* Complete Rating Link */}
+          {/* Bottom Section - Rate this Pint (pinned to bottom) */}
           {!surveyComplete && (
             <div
               onClick={(e) => {
