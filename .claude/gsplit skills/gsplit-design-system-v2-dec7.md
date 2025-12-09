@@ -1,5 +1,5 @@
 # G-Split Design System
-**Single Source of Truth — v1.0**
+**Single Source of Truth — v2.0 | December 7, 2024**
 
 "The Stout Standard"
 
@@ -25,6 +25,58 @@ The clever regular at the pub who's chronically online, knows the score, and isn
 
 ---
 
+## Design Philosophy: Sharp, Not Soft
+
+**We are tech-forward, not playful.**
+
+| Rounded (NOT us) | Square (US) |
+|------------------|-------------|
+| Duolingo | Linear |
+| Headspace | Stripe |
+| Fitness apps | Fintech dashboards |
+| Playful | Precise |
+| Friendly | Authoritative |
+| Fun | Serious tool |
+
+**Why sharp fits G-Split:**
+- "The digital barman never lies" — precision, not warmth
+- AI-powered scoring — tech, not toy
+- Internet-native — sharp memes, not soft vibes
+- Pub culture — honest, direct, no bullshit
+
+### Border Radius Scale
+
+| Token | Value | Tailwind | Usage |
+|-------|-------|----------|-------|
+| `radius-none` | 0px | `rounded-none` | Never use |
+| `radius-sm` | 2px | `rounded-sm` | Progress bars, badges, small elements |
+| `radius-base` | 4px | `rounded` | Buttons, inputs, chips |
+| `radius-md` | 6px | `rounded-md` | Cards, modals, containers |
+| `radius-lg` | 8px | `rounded-lg` | Maximum — large cards only |
+
+**The rule:** Nothing rounder than `rounded-lg` (8px). Default to `rounded-sm` or `rounded`.
+
+### Element-Specific Radii
+
+| Element | Radius | Tailwind |
+|---------|--------|----------|
+| Progress bars | 2px | `rounded-sm` |
+| Badges/chips | 2px | `rounded-sm` |
+| Buttons | 4px | `rounded` |
+| Inputs | 4px | `rounded` |
+| Filter pills | 4px | `rounded` |
+| Cards | 6px | `rounded-md` |
+| Modals | 8px | `rounded-lg` |
+| Images in cards | 4px | `rounded` |
+
+**❌ NEVER USE:**
+- `rounded-full` on UI elements (only avatars/profile pics)
+- `rounded-xl` (12px)
+- `rounded-2xl` (16px)
+- `rounded-3xl` (24px)
+
+---
+
 ## The Pint UI
 
 The app IS a Guinness pint — stout black body, foam cream header, gold accents like the harp logo.
@@ -43,7 +95,7 @@ The app IS a Guinness pint — stout black body, foam cream header, gold accents
 └─────────────────────────────┘
 
 ACCENTS:
-🥇 Gold: #FFD700 (like the harp logo)
+🥇 Gold: #F7D447 (like the harp logo)
 ✅ Green: #10B981 (good pours 85%+)
 🟠 Amber: #F59E0B (mid pours 60-84%)
 ❌ Red: #EF4444 (bad pours <60%)
@@ -68,7 +120,7 @@ ACCENTS:
 
 | Name | Hex | Usage |
 |------|-----|-------|
-| **Harp Gold** | `#FFD700` | Premium accents, borders, icons |
+| **Harp Gold** | `#F7D447` | Premium accents, borders, icons |
 | **Burnished Gold** | `#D4AF37` | Gold hover states, subtle borders |
 
 ### Score Colors (NON-NEGOTIABLE)
@@ -88,7 +140,7 @@ ACCENTS:
 
 **Backgrounds:**
 - Main pages: `#0A0A0A` (deep black)
-- Cards/panels: `#1A1A1A` (stout black) with subtle gold border `rgba(255, 215, 0, 0.2)`
+- Cards/panels: `#1A1A1A` (stout black) with subtle gold border `rgba(247, 212, 71, 0.2)`
 - Elevated elements: `#2A2A2A` (charcoal)
 
 **Text:**
@@ -97,7 +149,7 @@ ACCENTS:
 - Labels: `#9CA3AF` (muted grey), uppercase, tracking-wide
 
 **Accents:**
-- Premium borders: `#FFD700` or `rgba(255, 215, 0, 0.2)` for subtle
+- Premium borders: `#F7D447` or `rgba(247, 212, 71, 0.2)` for subtle
 - Interactive hover: Gold tint
 - Special badges: Foam cream background, dark text
 
@@ -199,15 +251,15 @@ ACCENTS:
 ```css
 /* Standard Card */
 background: #1A1A1A;
-border: 1px solid rgba(255, 215, 0, 0.2);
-border-radius: 12px;
+border: 1px solid rgba(247, 212, 71, 0.2);
+border-radius: 6px;
 padding: 24px;
 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 
 /* Premium Card (scores, important content) */
 background: #1A1A1A;
-border: 2px solid #FFD700;
-border-radius: 12px;
+border: 2px solid #F7D447;
+border-radius: 6px;
 padding: 32px;
 box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 ```
@@ -219,7 +271,7 @@ box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 background: #10B981;
 color: #0A0A0A;
 padding: 12px 24px;
-border-radius: 8px;
+border-radius: 4px;
 font-weight: 600;
 font-size: 16px;
 
@@ -232,13 +284,13 @@ box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 ```css
 background: transparent;
 color: #FFF8E7;
-border: 2px solid #FFD700;
+border: 2px solid #F7D447;
 padding: 12px 24px;
-border-radius: 8px;
+border-radius: 4px;
 font-weight: 600;
 
 /* Hover */
-background: rgba(255, 215, 0, 0.1);
+background: rgba(247, 212, 71, 0.1);
 ```
 
 **Ghost (tertiary — text links):**
@@ -247,7 +299,7 @@ background: transparent;
 color: #E8E8DD;
 padding: 12px 24px;
 border: 1px solid rgba(255, 255, 255, 0.2);
-border-radius: 8px;
+border-radius: 4px;
 
 /* Hover */
 background: rgba(255, 255, 255, 0.05);
@@ -257,16 +309,16 @@ background: rgba(255, 255, 255, 0.05);
 
 ```css
 background: #2A2A2A;
-border: 1px solid rgba(255, 215, 0, 0.3);
-border-radius: 8px;
+border: 1px solid rgba(247, 212, 71, 0.3);
+border-radius: 4px;
 padding: 12px 16px;
 color: #FFF8E7;
 font-size: 16px;
 
 /* Focus */
-border-color: #FFD700;
+border-color: #F7D447;
 outline: none;
-box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+box-shadow: 0 0 0 3px rgba(247, 212, 71, 0.1);
 ```
 
 ---
@@ -389,8 +441,8 @@ box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
 
 ```css
 /* Top 3 (podium) */
-background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05));
-border: 2px solid #FFD700;
+background: linear-gradient(135deg, rgba(247, 212, 71, 0.2), rgba(247, 212, 71, 0.05));
+border: 2px solid #F7D447;
 
 /* Regular entries */
 background: #1A1A1A;
@@ -443,7 +495,9 @@ border: 2px solid #10B981;
 - ❌ Pure white (#FFFFFF) for body text — use soft cream
 - ❌ Mid-tone greys — high contrast only
 - ❌ Bouncy/playful animations
-- ❌ Rounded corners > 16px
+- ❌ Rounded corners > 8px (`rounded-lg` is max)
+- ❌ `rounded-full` on UI elements (only avatars)
+- ❌ `rounded-xl`, `rounded-2xl`, `rounded-3xl` — too soft
 - ❌ Multiple fonts beyond Playfair + Inter
 - ❌ Gradients on text
 - ❌ Box-shadows > 40px blur
@@ -470,7 +524,7 @@ Charcoal:       #2A2A2A
 Foam Cream:     #FFF8E7
 Soft Cream:     #E8E8DD
 Muted Grey:     #9CA3AF
-Harp Gold:      #FFD700
+Harp Gold:      #F7D447
 Burnished Gold: #D4AF37
 Score Green:    #10B981
 Score Amber:    #F59E0B
@@ -495,4 +549,4 @@ Score Red:      #EF4444
 
 **Remember: We're designing a premium Irish pub experience in app form. Sophisticated, confident, timeless. The Stout Standard.**
 
-*Last updated: December 2024*
+*Last updated: December 7, 2024*

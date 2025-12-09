@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
 import PubCard from '../components/PubCard';
+import PlacesAutocomplete from '../components/PlacesAutocomplete';
 import { MOCK_PUBS } from '../constants';
 import { Pub } from '../type/locals';
 import { requestUserLocation, calculateDistance } from '@/utils/geolocation';
 import { fetchNearbyPlaces } from '../utils/googlePlaces';
+
+interface PlaceData {
+  place_id: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
 
 const Locals: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +23,7 @@ const Locals: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [nearbyGooglePubs, setNearbyGooglePubs] = useState<Pub[]>([]);
   const [loadingNearby, setLoadingNearby] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(null);
 
   // Request location on mount
   useEffect(() => {
@@ -111,10 +119,20 @@ const Locals: React.FC = () => {
     ? pubsWithDistance.sort((a, b) => (a.distance || 999) - (b.distance || 999))
     : pubsWithDistance;
 
-  // Apply name-based search filter
-  const filteredPubs = sortedPubs.filter(pub =>
-    pub.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Handle place selection
+  const handlePlaceSelect = (place: PlaceData | null) => {
+    setSelectedPlace(place);
+  };
+
+  // Apply place-based filter
+  const filteredPubs = React.useMemo(() => {
+    if (!selectedPlace) return sortedPubs;
+
+    return sortedPubs.filter(pub =>
+      pub.place_id === selectedPlace.place_id ||
+      pub.name.toLowerCase().includes(selectedPlace.name.toLowerCase())
+    );
+  }, [sortedPubs, selectedPlace]);
 
   return (
     <div className="pb-32 px-4 animate-in fade-in duration-500">
@@ -125,20 +143,12 @@ const Locals: React.FC = () => {
         </h1>
         <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide">Find where the black stuff flows best.</p>
 
-        {/* Search Bar - Cleaner, less boxy */}
-        <div className="relative mb-8 group">
-          <div className="absolute inset-y-0 left-0 pl-0 flex items-center pointer-events-none">
-            <Search
-              className="text-[#525252] group-focus-within:text-[#DDC9B4] transition-colors duration-300"
-              size={20}
-            />
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+        {/* Google Places Search Bar */}
+        <div className="mb-8">
+          <PlacesAutocomplete
+            value={selectedPlace?.name || ''}
+            onChange={handlePlaceSelect}
             placeholder="Search pubs"
-            className="w-full bg-transparent border-b border-[#2a2a2a] text-[#DDC9B4] text-base py-3 pl-8 pr-4 placeholder-[#525252] focus:outline-none focus:border-[#DDC9B4] transition-all duration-300 rounded-none"
           />
         </div>
 
@@ -167,7 +177,7 @@ const Locals: React.FC = () => {
                <p className="text-[#9CA3AF] font-serif italic text-xl mb-2">Dry as a bone.</p>
                <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your search.</p>
                <button
-                 onClick={() => setSearchQuery('')}
+                 onClick={() => setSelectedPlace(null)}
                  className="mt-6 text-[#DDC9B4] text-sm hover:underline"
                >
                  Clear search

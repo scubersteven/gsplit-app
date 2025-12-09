@@ -102,15 +102,23 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
   }
 
   return (
-    <input
-      ref={inputRef}
-      type="text"
-      value={inputValue}
-      onChange={handleInputChange}
-      placeholder={placeholder}
-      autoFocus={autoFocus}
-      className="w-full bg-[#121212] border border-[#2a2a2a] text-[#F5F5F0] text-base rounded-lg py-4 px-4 placeholder-[#525252] focus:outline-none focus:border-[#f8d548] focus:ring-1 focus:ring-[#f8d548] transition-all duration-200"
-    />
+    <div className="relative group">
+      <div className="absolute inset-y-0 left-0 pl-0 flex items-center pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#525252] group-focus-within:text-[#DDC9B4] transition-colors duration-300">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+      </div>
+      <input
+        ref={inputRef}
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        className="w-full bg-transparent border-b border-[#2a2a2a] text-[#DDC9B4] text-base py-3 pl-8 pr-4 placeholder-[#525252] focus:outline-none focus:border-[#DDC9B4] transition-all duration-300 rounded-none"
+      />
+    </div>
   );
 };
 
