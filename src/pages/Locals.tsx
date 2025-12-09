@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import PubCard from '../components/PubCard';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { MOCK_PUBS } from '../constants';
@@ -24,6 +25,7 @@ const Locals: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [nearbyGooglePubs, setNearbyGooglePubs] = useState<Pub[]>([]);
   const [loadingNearby, setLoadingNearby] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Request location on mount
   useEffect(() => {
@@ -147,8 +149,8 @@ const Locals: React.FC = () => {
     ? pubsWithDistance.sort((a, b) => (a.distance || 999) - (b.distance || 999))
     : pubsWithDistance;
 
-  // Apply search filter if place selected
-  const filteredPubs = selectedPlace
+  // Apply place-based filter if place selected
+  const placeFilteredPubs = selectedPlace
     ? sortedPubs.filter(pub => {
         const distance = calculateDistance(
           selectedPlace.lat, selectedPlace.lng,
@@ -157,6 +159,11 @@ const Locals: React.FC = () => {
         return distance <= 5; // Within 5 miles of search
       })
     : sortedPubs;
+
+  // Apply name-based search filter
+  const filteredPubs = placeFilteredPubs.filter(pub =>
+    pub.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="pb-32 px-4 animate-in fade-in duration-500">
@@ -178,6 +185,23 @@ const Locals: React.FC = () => {
               }
             }}
             placeholder="Search pubs..."
+          />
+        </div>
+
+        {/* Search Bar - Cleaner, less boxy */}
+        <div className="relative mb-8 group">
+          <div className="absolute inset-y-0 left-0 pl-0 flex items-center pointer-events-none">
+            <Search
+              className="text-[#525252] group-focus-within:text-[#DDC9B4] transition-colors duration-300"
+              size={20}
+            />
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search pubs"
+            className="w-full bg-transparent border-b border-[#2a2a2a] text-[#DDC9B4] text-base py-3 pl-8 pr-4 placeholder-[#525252] focus:outline-none focus:border-[#DDC9B4] transition-all duration-300 rounded-none"
           />
         </div>
 
