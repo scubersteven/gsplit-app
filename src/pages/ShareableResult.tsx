@@ -143,12 +143,12 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          paddingTop: '10px',
+          paddingTop: '0px',
           padding: '0 48px',
         }}
       >
         {/* 1. SCORE */}
-        <div style={{ marginTop: '0px', marginBottom: '60px' }}>
+        <div style={{ marginTop: '0px', marginBottom: '100px' }}>
           <span
             style={{
               fontFamily: 'Playfair Display, serif',
