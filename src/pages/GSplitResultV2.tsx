@@ -323,7 +323,7 @@ const GSplitResultV2 = () => {
         </div>
 
         {/* Pint Photo */}
-        <div className="w-full max-h-[45vh] mb-6 rounded-xl overflow-hidden animate-fade-in" style={{ animationDelay: '0.8s', animationFillMode: 'both' }}>
+        <div className="w-full max-h-[65vh] mb-6 rounded-xl overflow-hidden animate-fade-in" style={{ animationDelay: '0.8s', animationFillMode: 'both' }}>
           <img
             src={image}
             alt="Your pint"
