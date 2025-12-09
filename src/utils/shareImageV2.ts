@@ -71,7 +71,7 @@ export const generateShareImageV2 = async (
             width: 1080,
             height: 1920,
             scale: 1,
-            backgroundColor: '#FFF8E7',
+            backgroundColor: '#F5E6D3',
             logging: true, // Enable logging to see what's happening
             useCORS: true,
             allowTaint: true,

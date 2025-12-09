@@ -55,7 +55,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
         style={{
           width: '100%',
           height: '1100px',
-          backgroundColor: '#FFF8E7',
+          backgroundColor: '#F5E6D3',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -138,22 +138,22 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
         style={{
           width: '100%',
           height: '820px',
-          backgroundColor: '#1A1A1A',
+          backgroundColor: '#0A0A0A',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          paddingTop: '80px',
+          paddingTop: '30px',
           padding: '0 48px',
         }}
       >
         {/* 1. SCORE */}
-        <div style={{ marginTop: '60px', marginBottom: '80px' }}>
+        <div style={{ marginTop: '60px', marginBottom: '60px' }}>
           <span
             style={{
               fontFamily: 'Playfair Display, serif',
               fontWeight: 'bold',
-              fontSize: '160px',
+              fontSize: '200px',
               lineHeight: 1,
               letterSpacing: '-0.02em',
               color: scoreColor,
@@ -167,7 +167,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
         {/* 2. ROAST QUOTE */}
         <div
           style={{
-            marginBottom: '40px',
+            marginBottom: '50px',
             textAlign: 'center',
             maxWidth: '950px',
           }}
@@ -177,7 +177,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
               fontFamily: 'Playfair Display, serif',
               fontStyle: 'italic',
               fontWeight: 400,
-              fontSize: '48px',
+              fontSize: '60px',
               lineHeight: 1.3,
               color: '#E8E8DD',
             }}
@@ -193,7 +193,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: '16px',
-            fontSize: '32px',
+            fontSize: '40px',
             fontFamily: 'Inter, sans-serif',
             fontWeight: 500,
             color: '#9CA3AF',
@@ -211,7 +211,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
         </div>
 
         {/* Spacer */}
-        <div style={{ height: '40px' }}></div>
+        <div style={{ height: '60px' }}></div>
 
         {/* 4. FOOTER */}
         <div style={{ opacity: 0.8 }}>
@@ -219,7 +219,7 @@ const ShareableResult: React.FC<ShareableResultProps> = ({
             style={{
               fontFamily: 'Inter, sans-serif',
               fontWeight: 500,
-              fontSize: '32px',
+              fontSize: '40px',
               color: '#F5F5F0',
             }}
           >
