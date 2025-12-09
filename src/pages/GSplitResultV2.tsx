@@ -110,7 +110,7 @@ const GSplitResultV2 = () => {
             splitImage: compressedImage,
             splitDetected: splitDetected ?? false,
             feedback: feedback || "That's a pour",
-            location: userPubName || null,
+            location: userPubName && userPubName.length > 2 ? userPubName : null,
             ranking: `Top ${mockPercentile}% this week`,
             // Survey data (null until completed)
             overallRating: null,

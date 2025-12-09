@@ -47,9 +47,10 @@ const Home = () => {
       }
       toast.success(`Pub selected: ${place.name}`);
     } else {
-      // Clear pub data if skipped
+      // Clear pub data if skipped (including persisted localStorage)
       sessionStorage.removeItem('selectedPub');
       sessionStorage.removeItem('gsplit_username');
+      localStorage.removeItem('userPubName');
     }
 
     setShowPubModal(false);
