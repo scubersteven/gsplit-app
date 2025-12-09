@@ -57,6 +57,11 @@ const GSplitResultV2 = () => {
     Math.floor(Math.random() * 50) + 50
   );
 
+  // Scroll to top on mount to show score animation
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   useEffect(() => {
     // Prevent multiple saves
     if (hasSaved.current) {
