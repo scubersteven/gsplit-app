@@ -166,7 +166,7 @@ const Index = () => {
               onClick={() => setActiveFilter("all")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "all"
-                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
@@ -176,7 +176,7 @@ const Index = () => {
               onClick={() => setActiveFilter("excellent")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "excellent"
-                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
@@ -186,7 +186,7 @@ const Index = () => {
               onClick={() => setActiveFilter("good")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "good"
-                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
@@ -196,7 +196,7 @@ const Index = () => {
               onClick={() => setActiveFilter("poor")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "poor"
-                  ? "bg-harp-gold/20 text-harp-gold border border-harp-gold/40"
+                  ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
               }`}
             >
