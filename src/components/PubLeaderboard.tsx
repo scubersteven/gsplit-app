@@ -24,13 +24,17 @@ const PubLeaderboard: React.FC<PubLeaderboardProps> = ({ entries, onSplitClick }
       </div>
       
       {!hasEntries ? (
-        <div className="p-4 rounded-lg border border-dashed border-[#2a2a2a] text-center">
-          <p className="text-[#F5F5F0] font-medium">Uncharted</p>
-          <p className="text-[#9CA3AF] text-sm mt-1 mb-4">Be the first to claim it.</p>
+        <div className="flex flex-col items-center justify-center text-center p-8 rounded-lg bg-[#2A2A2A]">
+          <h3 className="text-lg font-bold mb-1 text-[#FFF8E7]">
+            🏝️ Virgin territory
+          </h3>
+          <p className="text-sm mb-4 text-[#9CA3AF]">
+            No one's split here yet
+          </p>
           {onSplitClick && (
             <button
               onClick={onSplitClick}
-              className="bg-[#f8d548] text-[#121212] font-bold text-sm py-2 px-6 rounded-lg hover:bg-[#DDC9B4] transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg border transition-opacity hover:opacity-80 bg-[#1A1A1A] text-[#FFF8E7] border-[#F7D447]"
             >
               Split the G
             </button>

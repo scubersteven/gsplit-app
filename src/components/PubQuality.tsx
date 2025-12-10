@@ -40,13 +40,17 @@ const PubQuality: React.FC<PubQualityProps> = ({ rating, count, stats, onRateCli
       </div>
 
       {!rating ? (
-        <div className="p-4 rounded-lg border border-dashed border-[#2a2a2a] text-center">
-          <p className="text-[#F5F5F0] font-medium">Jury's still out</p>
-          {count > 0 && <p className="text-[#9CA3AF] text-sm mt-1">{count} pints logged</p>}
+        <div className="flex flex-col items-center justify-center text-center p-8 rounded-lg bg-[#2A2A2A]">
+          <h3 className="text-lg font-bold mb-1 text-[#FFF8E7]">
+            ⚖️ Unrated
+          </h3>
+          <p className="text-sm mb-4 text-[#9CA3AF]">
+            How's the pour?
+          </p>
           {onRateClick && (
             <button
               onClick={onRateClick}
-              className="bg-[#f8d548] text-[#121212] font-bold text-sm py-2 px-6 rounded-lg hover:bg-[#DDC9B4] transition-colors mt-4"
+              className="px-4 py-2 text-sm font-semibold rounded-lg border transition-opacity hover:opacity-80 bg-[#1A1A1A] text-[#FFF8E7] border-[#F7D447]"
             >
               Rate Your Pint
             </button>
