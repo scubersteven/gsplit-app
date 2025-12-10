@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import MasteryLevelsModal from "./MasteryLevelsModal";
+import { MasteryLevelsModal } from "./MasteryLevelsModal";
 
 interface TierProgressCardProps {
   currentTier: string;

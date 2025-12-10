@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PintCard from "@/components/PintCard";
 import TierProgress from "@/components/TierProgress";
-import MasteryLevelsModal from "@/components/MasteryLevelsModal";
+import { MasteryLevelsModal } from "@/components/MasteryLevelsModal";
 import PintReceiptModal from "@/components/PintReceiptModal";
 import PintCardModal from "@/components/PintCardModal";
 import { Button } from "@/components/ui/button";
