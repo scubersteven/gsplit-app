@@ -12,7 +12,7 @@ import traceback
 from pathlib import Path
 
 from vision_processor import GuinnessVisionProcessor
-from models import db, Pub, Score, PubRating
+from models import db, Pub, Score, PubRating, TwitterSubmission
 from config import Config
 
 app = Flask(__name__)
@@ -454,6 +454,21 @@ def submit_rating(place_id):
         db.session.rollback()
         app.logger.error(f"Error submitting rating: {str(e)}")
         return jsonify({'error': 'Failed to submit rating'}), 500
+
+
+@app.route('/api/twitter/<submission_id>', methods=['GET'])
+def get_twitter_submission(submission_id):
+    """Get a Twitter submission by ID for the public results page."""
+    try:
+        submission = TwitterSubmission.query.filter_by(id=submission_id).first()
+
+        if not submission:
+            return jsonify({'error': 'Submission not found'}), 404
+
+        return jsonify(submission.to_dict()), 200
+    except Exception as e:
+        app.logger.error(f"Error fetching submission: {str(e)}")
+        return jsonify({'error': 'Failed to fetch submission'}), 500
 
 
 @app.errorhandler(413)
