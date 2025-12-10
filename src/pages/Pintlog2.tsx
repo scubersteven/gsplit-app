@@ -272,7 +272,6 @@ const Index = () => {
       <MasteryLevelsModal
         open={isMasteryModalOpen}
         onOpenChange={setIsMasteryModalOpen}
-        currentTier={currentTier.name}
       />
 
       {/* Receipt Modal */}

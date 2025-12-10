@@ -105,7 +105,6 @@ const TierProgressCard = ({
       <MasteryLevelsModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        currentTier={currentTier}
       />
     </div>
   );
