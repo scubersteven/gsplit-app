@@ -49,10 +49,23 @@ const PintCard = ({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    const now = new Date();
+
+    // Reset time components for accurate day comparison
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const diffTime = nowOnly.getTime() - dateOnly.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays <= 3) return `${diffDays} days ago`;
+
+    // 3+ days: show actual date
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const month = months[date.getMonth()];
     const day = date.getDate();
-
     return `${month} ${day}`;
   };
 
@@ -121,7 +134,7 @@ const PintCard = ({
             {/* Metadata */}
             <div className="mt-2 font-inter text-xs font-semibold text-foreground/60">
               {location && location.length > 2 ? (
-                <><span className="text-xs">📍</span> {location} • {formatDate(date)}</>
+                <>{location} • {formatDate(date)}</>
               ) : (
                 formatDate(date)
               )}
