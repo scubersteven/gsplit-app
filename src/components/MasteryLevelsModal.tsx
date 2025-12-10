@@ -38,7 +38,7 @@ export function MasteryLevelsModal({ open, onOpenChange }: MasteryLevelsModalPro
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="flex max-h-[85vh] max-w-md flex-col border-0 bg-[#FFF8E7] p-0 shadow-2xl sm:max-w-lg"
+        className="flex max-h-[70vh] max-w-sm flex-col border-0 bg-[#FFF8E7] p-0 shadow-2xl mx-4 mt-16 rounded-xl"
         showCloseButton={false}
       >
         {/* Header */}
