@@ -248,7 +248,7 @@ const GSplitResultV2 = () => {
         pintImage: image // User's actual pint photo
       });
 
-      await shareToInstagramV2(imageBlob, score);
+      await shareToInstagramV2(imageBlob, score, feedback);
       toast.success("Image ready to share!");
     } catch (error) {
       console.error("Error generating share image:", error);

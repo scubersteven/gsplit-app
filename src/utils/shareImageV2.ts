@@ -117,7 +117,8 @@ export const generateShareImageV2 = async (
  */
 export const shareToInstagramV2 = async (
   imageBlob: Blob,
-  score: number
+  score: number,
+  feedback?: string
 ): Promise<void> => {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -125,10 +126,14 @@ export const shareToInstagramV2 = async (
     try {
       const file = new File([imageBlob], 'gsplit-score.jpg', { type: 'image/jpeg' });
 
+      const shareText = feedback
+        ? `${score}%. ${feedback}\ngsplit.app`
+        : `${score}%\ngsplit.app`;
+
       await navigator.share({
         files: [file],
         title: `Gsplit Score: ${score}%`,
-        text: `I scored ${score}% on Gsplit! 🍺`
+        text: shareText
       });
     } catch (error) {
       console.log('Share cancelled or failed:', error);

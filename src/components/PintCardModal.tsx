@@ -69,7 +69,7 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
       });
 
       // Share using shareToInstagramV2 (handles mobile/desktop)
-      await shareToInstagramV2(imageBlob, pintData.score);
+      await shareToInstagramV2(imageBlob, pintData.score, pintData.feedback);
 
     } catch (error) {
       console.error('Share failed:', error);
