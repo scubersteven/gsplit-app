@@ -12,6 +12,7 @@ from typing import Dict
 import logging
 from datetime import datetime
 import os
+from roast_bank import get_roast, get_ai_prompt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,112 +25,6 @@ class GuinnessVisionProcessor:
     ROBOFLOW_API_KEY = "bYmwUIskucEFjoL01NF5"
     WORKSPACE_NAME = "gsplit-shaffer"
     WORKFLOW_ID = "shaffer"
-
-    # Feedback library for 80% pre-written responses
-    FEEDBACK_LIBRARY = {
-        (95, 100): [
-            "Perfect split. Absolute cinema 🎯",
-            "GG. You actually did it ⚡",
-            "That's the one",
-            "Now that's a pour",
-            "Can't argue with perfection 💯"
-        ],
-        (90, 94): [
-            "Close but no cigar. Story of your life? 🎪",
-            "Almost had it. Almost",
-            "So close it hurts",
-            "Nearly perfect. Nearly",
-            "Just shy of greatness"
-        ],
-        (85, 89): [
-            "Mid. But respectable mid 👍",
-            "Decent. Nothing to write home about",
-            "Not bad for a first attempt",
-            "You're learning. Slowly",
-            "Fair effort"
-        ],
-        (78, 84): [
-            "Getting there. Emphasis on 'getting' 💡",
-            "Room for improvement is an understatement 📝",
-            "You tried. Gold star",
-            "Better than nothing",
-            "Keep at it"
-        ],
-        (73, 77): [
-            "Bold of you to call that a split",
-            "Swing and a miss, chief 📉",
-            "Were you even looking? 🤔",
-            "That's... one way to do it",
-            "Points for confidence"
-        ],
-        (70, 72): [
-            "Yikes. Just yikes 😬",
-            "That's rough, mate",
-            "Were you distracted?",
-            "Practice. Lots of practice needed ⏰",
-            "Bold attempt. Very bold"
-        ],
-        (45, 69): [
-            "Were you aiming for the harp? 🔍",
-            "No split visible. Try again",
-            "That's not even close",
-            "Maybe next time",
-            "Did you aim at all?"
-        ],
-        (20, 44): [
-            "This needs work. Serious work",
-            "Have you considered practicing?",
-            "Back to basics",
-            "We all start somewhere. You started here",
-            "Rough attempt"
-        ],
-        (0, 19): [
-            "What just happened?",
-            "Did you close your eyes?",
-            "Unserious behavior",
-            "Try again. Actually try this time",
-            "That's certainly a choice"
-        ]
-    }
-
-    # Pub roast library for 80% pre-written responses
-    PUB_ROAST_LIBRARY = {
-        'top': [
-            "Found your local",
-            "Tell no one about this place",
-            "This pub gets it",
-            "Marry the barman",
-            "Certified haunt 🏠",
-        ],
-        'solid': [
-            "Decent spot",
-            "Would drink again",
-            "No complaints",
-            "Gets the job done",
-            "Safe bet 👍",
-        ],
-        'mid': [
-            "It's a pub",
-            "Meh",
-            "Nothing to write home about",
-            "You've had better",
-            "Mid tier establishment",
-        ],
-        'rough': [
-            "Questionable choices were made",
-            "Why did you stay",
-            "Tourist trap energy",
-            "Your standards have dropped",
-            "That's on you",
-        ],
-        'bottom': [
-            "Never again",
-            "Report this establishment",
-            "A crime scene",
-            "Who recommended this",
-            "Arthur weeps",
-        ],
-    }
 
     def __init__(self):
         """Initialize the vision processor."""
@@ -597,17 +492,6 @@ class GuinnessVisionProcessor:
         print(f'🎲 FEEDBACK GENERATION: Rolling for AI vs Pre-written')
         print(f'   Score: {score}%, Distance: {distance_mm:.1f}mm, Split: {split_detected}')
 
-        # Find appropriate feedback range
-        feedback_options = []
-        for (min_score, max_score), messages in self.FEEDBACK_LIBRARY.items():
-            if min_score <= score <= max_score:
-                feedback_options = messages
-                break
-
-        # Default if no range found
-        if not feedback_options:
-            feedback_options = ["That's a pour"]
-
         # 20% chance: Call Claude API for fresh roast
         roll = random.random()
         print(f'   Random roll: {roll:.4f} (need < 0.2 for AI)')
@@ -627,15 +511,15 @@ class GuinnessVisionProcessor:
                 import traceback
                 traceback.print_exc()
 
-        # 80% chance: Use pre-written feedback
-        selected = random.choice(feedback_options)
-        print(f'📝 Using pre-written feedback: "{selected}"')
+        # 80% chance: Use pre-written feedback from roast bank
+        roast = get_roast(score, distance_mm)
+        print(f'📝 Using pre-written feedback: "{roast}"')
         print(f'{"─"*80}\n')
-        return selected
+        return roast
 
     def _generate_ai_feedback(self, score: float, distance_mm: float, split_detected: bool) -> str:
         """
-        Call Claude API for dynamic feedback generation.
+        Call Claude API for dynamic feedback generation using new roast bank prompt.
         """
         print(f'\n   🔑 _generate_ai_feedback() called')
 
@@ -659,21 +543,8 @@ class GuinnessVisionProcessor:
             print(f'   ✅ API key found, initializing Anthropic client...')
             client = anthropic.Anthropic(api_key=api_key)
 
-            prompt = f"""You're The Digital Barman - sharp, witty, internet-savvy. Judge this Guinness pour:
-
-Score: {score}%
-Distance from G-bar: {distance_mm:.1f}mm
-Split detected: {split_detected}
-
-Generate ONE punchy roast/compliment (max 12 words). Be sharp and clever, not try-hard. Use an emoji only if it makes sense with what you said.
-
-Examples of your style:
-- "Perfect split. Absolute cinema 🎯"
-- "Close but no cigar. Story of your life?"
-- "Were you even looking? 🤔"
-- "Yikes. Just yikes 😬"
-
-Your response:"""
+            # Use centralized prompt from roast bank
+            prompt = get_ai_prompt(score, distance_mm, split_detected)
 
             print(f'   📡 Calling Claude Sonnet 4 API...')
             message = client.messages.create(
