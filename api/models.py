@@ -85,3 +85,29 @@ class PubRating(db.Model):
             'roast': self.roast,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
+
+class TwitterSubmission(db.Model):
+    __tablename__ = 'twitter_submissions'
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    tweet_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    twitter_handle = db.Column(db.String(50), nullable=False)
+    image_url = db.Column(db.Text, nullable=False)
+    score = db.Column(db.Numeric(5, 2), nullable=False)
+    distance_mm = db.Column(db.Numeric(6, 2))
+    roast = db.Column(db.Text, nullable=False)
+    reply_tweet_id = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'tweet_id': self.tweet_id,
+            'twitter_handle': self.twitter_handle,
+            'image_url': self.image_url,
+            'score': float(self.score),
+            'distance_mm': float(self.distance_mm) if self.distance_mm else None,
+            'roast': self.roast,
+            'reply_tweet_id': self.reply_tweet_id,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
