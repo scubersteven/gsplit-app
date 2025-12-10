@@ -59,8 +59,28 @@ const PintCard = ({
   return (
     <div
       onClick={onClick}
-      className="group bg-card border border-[#2A2A2A] rounded-xl p-5 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-[#F7D447] cursor-pointer"
+      className="relative group bg-card border border-[#2A2A2A] rounded-xl p-5 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-[#F7D447] cursor-pointer"
     >
+      {/* Star Rating Badge OR Unrated Badge - absolute top right */}
+      {overallRating ? (
+        <div className="absolute top-3 right-3 flex-shrink-0 flex items-center bg-[#252525] px-2 py-1.5 rounded-lg border border-[#333]">
+          <span className="text-[10px] mr-1.5 leading-none">⭐</span>
+          <span className="text-xs font-bold text-[#F5F5F0] leading-none pt-0.5">
+            {overallRating.toFixed(1)}
+          </span>
+        </div>
+      ) : (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCompleteRating();
+          }}
+          className="absolute top-3 right-3 flex-shrink-0 text-xs text-[#9CA3AF] cursor-pointer hover:text-[#F7D447] transition-colors"
+        >
+          Unrated
+        </div>
+      )}
+
       <div className="flex gap-4">
         {/* Photo Section */}
         <div className="flex-shrink-0 self-stretch">
@@ -85,32 +105,12 @@ const PintCard = ({
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           {/* Top Section - Score, Feedback, Metadata */}
           <div>
-            {/* Header Row: Score + Badge */}
-            <div className="flex items-start justify-between gap-3">
+            {/* Header Row: Score */}
+            <div className="flex items-start gap-3">
               {/* Score */}
               <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
                 {isPersonalBest && "🏆 "}{score}%
               </div>
-
-              {/* Star Rating Badge OR Unrated Badge - top right */}
-              {overallRating ? (
-                <div className="flex-shrink-0 flex items-center bg-[#252525] px-2 py-1.5 rounded-lg border border-[#333]">
-                  <span className="text-[10px] mr-1.5 leading-none">⭐</span>
-                  <span className="text-xs font-bold text-[#F5F5F0] leading-none pt-0.5">
-                    {overallRating.toFixed(1)}
-                  </span>
-                </div>
-              ) : (
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCompleteRating();
-                  }}
-                  className="flex-shrink-0 text-xs text-[#F7D447] border border-[#F7D447] rounded px-2 py-0.5 bg-transparent cursor-pointer hover:bg-[#F7D447]/10 transition-colors"
-                >
-                  Unrated
-                </div>
-              )}
             </div>
 
             {/* Feedback Quote */}

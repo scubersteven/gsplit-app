@@ -20,6 +20,7 @@ interface Pint {
   date: string;
   surveyComplete: boolean;
   overallRating?: number | null;
+  isPersonalBest?: boolean;
 }
 
 type FilterType = "all" | "excellent" | "good" | "poor";
@@ -70,6 +71,7 @@ const Index = () => {
         date: entry.date,
         surveyComplete: !!entry.overallRating,
         overallRating: entry.overallRating || null,
+        isPersonalBest: entry.splitScore === pintStats.bestScore,
       }));
 
       setPints(transformedPints);
