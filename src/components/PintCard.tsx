@@ -12,6 +12,7 @@ interface PintCardProps {
   surveyComplete: boolean;
   overallRating?: number | null;
   onClick?: () => void;
+  isPersonalBest?: boolean;
 }
 
 const PintCard = ({
@@ -25,6 +26,7 @@ const PintCard = ({
   surveyComplete,
   overallRating,
   onClick,
+  isPersonalBest,
 }: PintCardProps) => {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -87,16 +89,26 @@ const PintCard = ({
             <div className="flex items-start justify-between gap-3">
               {/* Score */}
               <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
-                {score}%
+                {isPersonalBest && "🏆 "}{score}%
               </div>
 
-              {/* Star Rating Badge - top right */}
-              {overallRating && (
+              {/* Star Rating Badge OR Unrated Badge - top right */}
+              {overallRating ? (
                 <div className="flex-shrink-0 flex items-center bg-[#252525] px-2 py-1.5 rounded-lg border border-[#333]">
                   <span className="text-[10px] mr-1.5 leading-none">⭐</span>
                   <span className="text-xs font-bold text-[#F5F5F0] leading-none pt-0.5">
                     {overallRating.toFixed(1)}
                   </span>
+                </div>
+              ) : (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCompleteRating();
+                  }}
+                  className="flex-shrink-0 text-xs text-[#F7D447] border border-[#F7D447] rounded px-2 py-0.5 bg-transparent cursor-pointer hover:bg-[#F7D447]/10 transition-colors"
+                >
+                  Unrated
                 </div>
               )}
             </div>
@@ -115,19 +127,6 @@ const PintCard = ({
               )}
             </div>
           </div>
-
-          {/* Bottom Section - Rate this Pint (pinned to bottom) */}
-          {!surveyComplete && (
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCompleteRating();
-              }}
-              className="mt-3 text-[#9CA3AF] hover:text-[#E8E8DD] font-inter text-sm font-medium cursor-pointer transition-colors duration-200 inline-block"
-            >
-              Rate this Pint →
-            </div>
-          )}
         </div>
       </div>
     </div>
