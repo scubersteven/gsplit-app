@@ -50,7 +50,7 @@ const GSplitResult = () => {
   }
 
   const handleShare = async () => {
-    const shareText = `I just scored ${score}% on my G-Split! ${feedback} 🍺`;
+    const shareText = `${score}%. ${feedback}\ngsplit.app`;
     const shareUrl = window.location.href;
 
     // Try native share API first (mobile)
