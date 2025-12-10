@@ -135,31 +135,41 @@ class GSplitTwitterBot:
 
             # Generate roast using roast bank
             roast = get_roast(score, distance_mm)
-            twitter_reply = format_twitter_reply(score, distance_mm, roast)
-
-            print(f'      💬 Reply: "{twitter_reply}"')
 
             # Get author username
             author = next((u for u in includes.get('users', []) if u.id == tweet.author_id), None)
             author_handle = f'@{author.username}' if author else '@unknown'
 
+            # Save to database FIRST to get submission ID
+            submission = self.save_submission(
+                tweet_id=str(tweet.id),
+                handle=author_handle,
+                image_url=image_url,
+                score=score,
+                distance=distance_mm,
+                roast=roast,
+                reply_id=None
+            )
+
+            if not submission:
+                print(f'      ❌ Failed to save to database')
+                return
+
+            print(f'      💾 Saved to database with ID: {submission.id}')
+
+            # Build reply with link to submission
+            reply_text = f"{score:.0f}%. {roast}\ngsplit.app/p/{submission.id}"
+            print(f'      💬 Reply: "{reply_text}"')
+
             # Reply to tweet
-            reply_id = self.reply_to_tweet(tweet.id, twitter_reply)
+            reply_id = self.reply_to_tweet(tweet.id, reply_text)
 
             if reply_id:
                 print(f'      📤 Replied with tweet {reply_id}')
 
-                # Save to database
-                self.save_submission(
-                    tweet_id=str(tweet.id),
-                    handle=author_handle,
-                    image_url=image_url,
-                    score=score,
-                    distance=distance_mm,
-                    roast=roast,
-                    reply_id=str(reply_id)
-                )
-                print(f'      💾 Saved to database')
+                # Update submission with reply_tweet_id
+                self.update_submission_reply(submission.id, str(reply_id))
+                print(f'      ✅ Updated submission with reply ID')
             else:
                 print(f'      ❌ Failed to reply')
 
@@ -215,7 +225,7 @@ class GSplitTwitterBot:
             return None
 
     def save_submission(self, tweet_id, handle, image_url, score, distance, roast, reply_id):
-        """Save to TwitterSubmission table."""
+        """Save to TwitterSubmission table. Returns the submission object."""
         try:
             with app.app_context():
                 submission = TwitterSubmission(
@@ -230,8 +240,26 @@ class GSplitTwitterBot:
                 db.session.add(submission)
                 db.session.commit()
 
+                # Return the submission object
+                return submission
+
         except Exception as e:
             print(f'         Error saving to database: {e}')
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def update_submission_reply(self, submission_id, reply_id):
+        """Update submission with reply tweet ID."""
+        try:
+            with app.app_context():
+                submission = TwitterSubmission.query.get(submission_id)
+                if submission:
+                    submission.reply_tweet_id = reply_id
+                    db.session.commit()
+
+        except Exception as e:
+            print(f'         Error updating submission: {e}')
             import traceback
             traceback.print_exc()
 
