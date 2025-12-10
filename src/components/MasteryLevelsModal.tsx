@@ -1,202 +1,168 @@
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
-import { TIERS as GAMIFICATION_TIERS, getTotalPoints, getProgressToNextTier } from "@/lib/gamification";
+"use client"
+
+import * as React from "react"
+import { X, ChevronDown, ChevronUp } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { cn } from "@/lib/utils"
+import { TIERS, getTotalPoints, getProgressToNextTier, getTierFromPoints } from "@/lib/gamification"
+
+// Point earning breakdown
+const pointsBreakdown = [
+  { label: "Your score = base points", example: "86% = 86 pts" },
+  { label: "First pour today", value: "+10 pts" },
+  { label: "Score 90%+", value: "+20 bonus" },
+  { label: "7-day streak", value: "+100 bonus" },
+  { label: "Share to Instagram", value: "+10 pts" },
+  { label: "Survey complete", value: "+5 pts" },
+]
 
 interface MasteryLevelsModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  currentTier: string;
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-// Transform gamification TIERS to match local format
-const TIERS = GAMIFICATION_TIERS.map(tier => ({
-  name: tier.name,
-  emoji: tier.icon,
-  color: tier.color,
-  min: tier.minPoints,
-  max: tier.maxPoints,
-  tagline: tier.tagline,
-}));
+function formatPoints(points: number) {
+  return points.toLocaleString()
+}
 
-const MasteryLevelsModal = ({
-  open,
-  onOpenChange,
-  currentTier,
-}: MasteryLevelsModalProps) => {
-  const [isPointsOpen, setIsPointsOpen] = useState(false);
-
-  // Calculate progress to next tier
-  const totalPoints = getTotalPoints();
-  const progress = getProgressToNextTier(totalPoints);
-  const currentTierIndex = TIERS.findIndex(t => t.name === currentTier);
-  const currentTierInfo = TIERS[currentTierIndex];
-  const nextTierInfo = currentTierIndex < TIERS.length - 1 ? TIERS[currentTierIndex + 1] : null;
+export function MasteryLevelsModal({ open, onOpenChange }: MasteryLevelsModalProps) {
+  const [howPointsOpen, setHowPointsOpen] = React.useState(false)
+  
+  const totalPoints = getTotalPoints()
+  const currentTier = getTierFromPoints(totalPoints)
+  const currentIndex = TIERS.findIndex(t => t.name === currentTier.name)
+  const nextTier = currentIndex < TIERS.length - 1 ? TIERS[currentIndex + 1] : null
+  const progress = getProgressToNextTier(totalPoints)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-foam-cream max-w-[600px] max-h-[90vh] overflow-y-auto rounded-2xl p-8 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
-        <DialogClose className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center text-xl font-semibold text-stout-black hover:opacity-70 transition-opacity cursor-pointer z-10">
-          ✕
-        </DialogClose>
-        <DialogHeader>
-          <DialogTitle className="font-playfair text-3xl font-bold text-stout-black">
-            Mastery Levels
-          </DialogTitle>
+      <DialogContent
+        className="flex max-h-[85vh] max-w-md flex-col border-0 bg-[#FFF8E7] p-0 shadow-2xl sm:max-w-lg"
+        showCloseButton={false}
+      >
+        {/* Header */}
+        <DialogHeader className="flex shrink-0 flex-row items-center justify-between px-6 pt-6">
+          <DialogTitle className="font-serif text-3xl font-bold text-[#1A1A1A]">Mastery Levels</DialogTitle>
+          <DialogClose className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#F7D447] focus:ring-offset-2">
+            <X className="h-5 w-5 text-[#1A1A1A]" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
         </DialogHeader>
 
-        {/* Progress Bar Section */}
-        <div className="bg-stout-black border border-harp-gold/20 rounded-xl p-6 shadow-[0_4px_6px_rgba(0,0,0,0.3)] mb-4">
-          {/* Current Tier */}
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-3xl">{currentTierInfo.emoji}</span>
-            <div>
-              <div className="font-inter text-xl font-bold" style={{ color: currentTierInfo.color }}>
-                {currentTier}
-              </div>
-              <div className="font-inter text-sm italic text-white/70">
-                {currentTierInfo.tagline}
+        {/* Scrollable Content */}
+        <div className="flex-1 space-y-4 overflow-y-auto px-6 pb-6">
+          {/* Current Level Card */}
+          <div className="rounded-xl bg-[#2A2A2A] p-5">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">{currentTier.icon}</span>
+              <div className="flex-1">
+                <h3 className="font-serif text-xl font-bold text-[#FFF8E7]">{currentTier.name}</h3>
+                <p className="text-sm italic text-[#9CA3AF]">{currentTier.tagline}</p>
               </div>
             </div>
-          </div>
 
-          {/* Progress Bar */}
-          <div className="relative w-full h-3 bg-white/10 rounded-full overflow-hidden mb-3">
-            <div
-              className="absolute top-0 left-0 h-full bg-harp-gold rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${progress.percentage}%` }}
-            />
-          </div>
-
-          {/* Progress Text */}
-          <div className="flex justify-between items-center">
-            <div className="font-inter text-sm text-white/80">
-              {progress.current.toLocaleString()} / {progress.total.toLocaleString()} pts
-            </div>
-            {nextTierInfo && (
-              <div className="font-inter text-sm font-semibold text-harp-gold">
-                Next: {nextTierInfo.emoji} {nextTierInfo.name}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mastery Levels Content - All in one compact box */}
-        <div className="bg-stout-black border border-harp-gold/20 rounded-xl p-6 shadow-[0_4px_6px_rgba(0,0,0,0.3)]">
-
-          {/* How Points Work Section */}
-          <div className="mb-6">
-            <Collapsible open={isPointsOpen} onOpenChange={setIsPointsOpen}>
-              <CollapsibleTrigger className="flex justify-between items-center w-full p-4 hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
-                <span className="font-inter text-base font-semibold text-white">
-                  How Points Work
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-white transition-transform duration-300 ${
-                    isPointsOpen ? "rotate-180" : ""
-                  }`}
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[#3A3A3A]">
+                <div
+                  className="h-full rounded-full bg-[#F7D447] transition-all duration-500"
+                  style={{ width: `${progress.percentage}%` }}
                 />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-sm">
+                <span className="font-sans text-[#FFF8E7]">
+                  {formatPoints(progress.current)} / {formatPoints(progress.total)} pts
+                </span>
+                {nextTier && (
+                  <span className="flex items-center gap-1.5 text-[#F7D447]">
+                    Next: <span>{nextTier.icon}</span> {nextTier.name}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* How Points Work + Tier List Card */}
+          <div className="rounded-xl bg-[#2A2A2A]">
+            {/* How Points Work - Collapsible */}
+            <Collapsible open={howPointsOpen} onOpenChange={setHowPointsOpen}>
+              <CollapsibleTrigger className="flex w-full items-center justify-between px-5 py-4 text-left">
+                <span className="font-sans text-base font-semibold text-[#FFF8E7]">How Points Work</span>
+                {howPointsOpen ? (
+                  <ChevronUp className="h-5 w-5 text-[#FFF8E7]" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-[#FFF8E7]" />
+                )}
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
-                <div className="bg-white/5 rounded-lg p-4 space-y-2">
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    Your score = base points (86% = 86 pts)
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    ✅ Split detected: +25 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    ⭐ Survey complete: +15 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    🔥 First pour today: +10 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    📸 Share to Instagram: +10 pts
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    💯 Score 90%+: +20 bonus
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80">
-                    🔥 7-day streak: +100 bonus
-                  </p>
-                  <p className="font-inter text-sm font-normal text-white/80 mt-4 pt-2 border-t border-white/10">
+              <CollapsibleContent>
+                <div className="border-t border-[#3A3A3A] px-5 py-4">
+                  <ul className="space-y-2 text-sm text-[#FFF8E7]">
+                    {pointsBreakdown.map((item, i) => (
+                      <li key={i} className="flex items-center justify-between">
+                        <span>
+                          {item.label}
+                          {item.example && <span className="ml-1 text-[#9CA3AF]">({item.example})</span>}
+                        </span>
+                        {item.value && <span className="text-[#F7D447]">{item.value}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4 border-t border-[#3A3A3A] pt-3 text-sm text-[#9CA3AF]">
                     Daily limit: 1,000 points max
-                  </p>
+                  </div>
                 </div>
               </CollapsibleContent>
             </Collapsible>
-          </div>
 
-          {/* Tier List */}
-          <div className="space-y-0 border-t border-white/10 pt-4">
-            <h3 className="font-inter text-base font-semibold text-white mb-4">
-              Tier Levels
-            </h3>
-            {TIERS.map((tier, index) => {
-              const isCurrent = tier.name === currentTier;
-              const rangeText =
-                tier.max === Infinity
-                  ? `${tier.min.toLocaleString()}+`
-                  : `${tier.min.toLocaleString()} → ${tier.max.toLocaleString()}`;
+            {/* Divider */}
+            <div className="border-t border-[#3A3A3A]" />
 
-              return (
-                <div
-                  key={tier.name}
-                  className={`flex items-center gap-4 p-4 transition-colors ${
-                    index < TIERS.length - 1 ? "border-b border-white/10" : ""
-                  } ${
-                    isCurrent
-                      ? "bg-harp-gold/10"
-                      : "hover:bg-white/5"
-                  }`}
-                >
-                  <div className="text-3xl">{tier.emoji}</div>
-                  <div className="flex-1">
+            {/* Tier Levels */}
+            <div className="px-5 py-4">
+              <h4 className="mb-4 font-sans text-base font-semibold text-[#FFF8E7]">Tier Levels</h4>
+              <div className="space-y-1">
+                {TIERS.map((tier, index) => {
+                  const isCurrentTier = index === currentIndex
+
+                  return (
                     <div
-                      className="font-inter text-lg font-bold"
-                      style={{ color: tier.color }}
+                      key={tier.name}
+                      className={cn(
+                        "relative flex items-start gap-4 rounded-lg px-4 py-3 transition-colors",
+                        isCurrentTier && "bg-[#252525]",
+                      )}
                     >
-                      {tier.name}
+                      {/* Gold left border for current tier */}
+                      {isCurrentTier && (
+                        <div className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-[#F7D447]" />
+                      )}
+
+                      <span className="mt-0.5 text-xl">{tier.icon}</span>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-3">
+                          <h5 className="font-serif text-base font-bold text-[#FFF8E7]">{tier.name}</h5>
+                          {isCurrentTier && (
+                            <span className="rounded-md border border-[#F7D447]/30 bg-[#F7D447]/10 px-2 py-0.5 text-xs font-medium text-[#F7D447]">
+                              Your level
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-[#9CA3AF]">
+                          {formatPoints(tier.minPoints)} →{" "}
+                          {tier.maxPoints === Infinity ? "∞" : formatPoints(tier.maxPoints)}
+                        </p>
+                        <p className="text-sm italic text-[#9CA3AF]">{tier.tagline}</p>
+                      </div>
                     </div>
-                    <div className="font-inter text-sm font-semibold text-white/60">
-                      {rangeText}
-                    </div>
-                    <div className="font-inter text-sm italic text-white/70">
-                      {tier.tagline}
-                    </div>
-                  </div>
-                  {isCurrent && (
-                    <div
-                      className="font-inter text-xs font-semibold px-2 py-1 rounded"
-                      style={{
-                        color: tier.color,
-                        backgroundColor: "rgba(245, 158, 11, 0.2)",
-                      }}
-                    >
-                      Your level
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
-
-export default MasteryLevelsModal;
-
+  )
+}

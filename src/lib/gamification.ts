@@ -8,12 +8,12 @@ export interface TierInfo {
 }
 
 export const TIERS: TierInfo[] = [
-  { name: 'Tourist', minPoints: 0, maxPoints: 999, color: '#9CA3AF', icon: '📸', tagline: "You're clearly not from here" },
-  { name: 'Regular', minPoints: 1000, maxPoints: 4999, color: '#F59E0B', icon: '🍀', tagline: "Bartender's starting to recognize you" },
-  { name: 'Local', minPoints: 5000, maxPoints: 14999, color: '#10B981', icon: '🪑', tagline: "You've got your seat" },
-  { name: 'Barman', minPoints: 15000, maxPoints: 29999, color: '#3B82F6', icon: '🎯', tagline: 'Pours are respected' },
-  { name: 'Publican', minPoints: 30000, maxPoints: 49999, color: '#8B5CF6', icon: '🔑', tagline: 'You own the place' },
-  { name: 'Legend', minPoints: 50000, maxPoints: Infinity, color: '#9333EA', icon: '🏆', tagline: 'Stories are told about you' },
+  { name: 'Tourist', minPoints: 0, maxPoints: 999, color: '#FFF8E7', icon: '📸', tagline: "Still learning where the G is" },
+  { name: 'Apprentice', minPoints: 1000, maxPoints: 4999, color: '#FFF8E7', icon: '🪄', tagline: "The line's starting to make sense" },
+  { name: 'Local', minPoints: 5000, maxPoints: 14999, color: '#FFF8E7', icon: '🪑', tagline: "You drink with intent" },
+  { name: 'Craftsman', minPoints: 15000, maxPoints: 29999, color: '#FFF8E7', icon: '⚒️', tagline: "The foam fears you" },
+  { name: 'Master', minPoints: 30000, maxPoints: 49999, color: '#FFF8E7', icon: '🎯', tagline: "Precision is routine" },
+  { name: 'Legend', minPoints: 50000, maxPoints: Infinity, color: '#FFF8E7', icon: '🐐', tagline: "The G splits itself for you" },
 ];
 
 export const getTierFromPoints = (points: number): TierInfo => {
