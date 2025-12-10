@@ -15,6 +15,7 @@ import Pintlog2 from './pages/Pintlog2';
 import Map from './pages/Map';
 import Locals from './pages/Locals';
 import PubDetail from './pages/PubDetail';
+import TwitterResult from './pages/TwitterResult';
 import NotFound from './pages/NotFound';
 import { savePint } from './utils/db';
 import './App.css';
@@ -107,6 +108,7 @@ function App() {
           <Route path="/map" element={<Map />} />
           <Route path="/locals" element={<Locals />} />
           <Route path="/locals/:id" element={<PubDetail />} />
+          <Route path="/p/:id" element={<TwitterResult />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
