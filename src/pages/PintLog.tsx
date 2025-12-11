@@ -75,7 +75,7 @@ const PintLog = () => {
               className={`h-full transition-all duration-300 ${
                 storageUsed >= 28 ? 'bg-amber-500' :
                 storageUsed >= 20 ? 'bg-blue-500' :
-                'bg-green-500'
+                'bg-[#10B981]'
               }`}
               style={{ width: `${(storageUsed / storageLimit) * 100}%` }}
             />
