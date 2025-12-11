@@ -399,21 +399,81 @@ class GuinnessVisionProcessor:
                 'g_logo_height': g_logo_height_full
             }
         else:
-            # Model 2 failed - return 25%
-            return {
-                'score': 25.0,
-                'distance_mm': 50.0,
-                'split_detected': False,
-                'model2_available': False,
-                'model3_fallback_used': False,
-                'beer_line_in_zone': False,
-                'beer_line_y': None,
-                'g_bar_y': None,
-                'g_curve_y': None,
-                'debug_crop_path': None,
-                'g_logo_width': g_logo_width,
-                'g_logo_height': g_logo_height_full
-            }
+            # Model 2 failed - try Model 1 beer detection fallback
+            print(f"  [Model 2 Failed] Attempting Model 1 beer detection fallback...")
+
+            # Check if Model 1 detected both "beer" and "g-logo"
+            beer_model1 = next((p for p in pint_predictions if p.get('class') == 'beer'), None)
+
+            if beer_model1 and g_logo_model1:
+                # Both beer and g-logo detected by Model 1 - calculate fallback score
+                print(f"  [Model 1 Fallback] Both 'beer' and 'g-logo' detected!")
+
+                # Get full image dimensions
+                img_height = pint_results['image']['height']
+                img_width = pint_results['image']['width']
+
+                # Extract positions (all in full image coordinates)
+                beer_y_top = beer_model1['y'] - (beer_model1['height'] / 2)  # Top edge of beer
+                g_logo_center_y = g_logo_model1['y']  # Center of G-logo
+                g_logo_height = g_logo_model1['height']
+
+                # Calculate distance from beer line to g-logo center
+                distance_pixels = abs(beer_y_top - g_logo_center_y)
+
+                # Normalize by g-logo height
+                distance_normalized = distance_pixels / g_logo_height
+
+                # Scoring zones based on distance
+                if distance_normalized < 0.5:
+                    # Close to center - score 40-49%
+                    score = 49 - (distance_normalized * 20)
+                elif distance_normalized < 1.0:
+                    # Medium distance - score 30-39%
+                    score = 39 - ((distance_normalized - 0.5) * 20)
+                else:
+                    # Far from center - score 15-29%
+                    score = max(15, 29 - ((distance_normalized - 1.0) * 10))
+
+                score = round(score, 1)
+
+                print(f"  [Model 1 Fallback] Beer at y={beer_y_top:.1f}, G-logo at y={g_logo_center_y:.1f}")
+                print(f"  [Model 1 Fallback] Distance: {distance_normalized:.2f}x g-logo height")
+                print(f"  [Model 1 Fallback] Score: {score:.1f}%")
+
+                return {
+                    'score': score,
+                    'distance_mm': round(distance_normalized * 100, 2),
+                    'split_detected': False,  # Still a failure case
+                    'model2_available': False,
+                    'model3_fallback_used': True,  # Repurposed for Model 1 fallback indicator
+                    'beer_line_in_zone': (distance_normalized < 0.5),
+                    'beer_line_y': beer_y_top / img_height,  # Normalized
+                    'g_bar_y': g_logo_center_y / img_height,
+                    'g_curve_y': None,
+                    'debug_crop_path': None,
+                    'g_logo_width': g_logo_width,
+                    'g_logo_height': g_logo_height_full
+                }
+            else:
+                # Model 1 also failed - ultimate fallback to 25%
+                print(f"  [Model 1 Fallback] Failed - beer={bool(beer_model1)}, g-logo={bool(g_logo_model1)}")
+                print(f"  [Ultimate Fallback] Returning hardcoded 25%")
+
+                return {
+                    'score': 25.0,
+                    'distance_mm': 50.0,
+                    'split_detected': False,
+                    'model2_available': False,
+                    'model3_fallback_used': False,
+                    'beer_line_in_zone': False,
+                    'beer_line_y': None,
+                    'g_bar_y': None,
+                    'g_curve_y': None,
+                    'debug_crop_path': None,
+                    'g_logo_width': g_logo_width,
+                    'g_logo_height': g_logo_height_full
+                }
 
     def _save_debug_visualization(self, crop_image: np.ndarray, beer_line_y: float,
                                   g_bar_y: float, g_curve_y: float, distance_mm: float, img_height: int,
