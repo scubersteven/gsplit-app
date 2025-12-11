@@ -16,13 +16,15 @@ interface PlacesAutocompleteProps {
   onChange: (place: PlaceData | null) => void;
   placeholder?: string;
   autoFocus?: boolean;
+  userLocation?: { lat: number; lng: number } | null;
 }
 
 const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
   value,
   onChange,
   placeholder = "Search for a pub...",
-  autoFocus = false
+  autoFocus = false,
+  userLocation = null
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -37,18 +39,20 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
   useEffect(() => {
     if (isLoaded && inputRef.current && !autocompleteRef.current) {
       // Initialize autocomplete with bar/restaurant focus
-      autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, {
+      const autocompleteOptions: google.maps.places.AutocompleteOptions = {
         types: ['bar', 'restaurant', 'night_club', 'cafe'],
-        fields: ['place_id', 'name', 'formatted_address', 'geometry'],
-        // Enable global search - remove location bias
-        bounds: {
-          north: 85,
-          south: -85,
-          east: 180,
-          west: -180
-        },
-        strictBounds: false
-      });
+        fields: ['place_id', 'name', 'formatted_address', 'geometry']
+      };
+
+      // Add location bias if user location is available (prefers nearby, allows worldwide)
+      if (userLocation) {
+        autocompleteOptions.locationBias = {
+          center: { lat: userLocation.lat, lng: userLocation.lng },
+          radius: 50000 // 50km preference radius (not a hard restriction)
+        };
+      }
+
+      autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, autocompleteOptions);
 
       // Listen for place selection
       autocompleteRef.current.addListener('place_changed', () => {

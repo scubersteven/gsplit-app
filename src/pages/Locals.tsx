@@ -124,15 +124,41 @@ const Locals: React.FC = () => {
     setSelectedPlace(place);
   };
 
-  // Apply place-based filter
-  const filteredPubs = React.useMemo(() => {
-    if (!selectedPlace) return sortedPubs;
+  // Convert selected place to Pub format for display
+  const selectedPubForDisplay = React.useMemo(() => {
+    if (!selectedPlace || !selectedPlace.place_id) return null;
 
-    return sortedPubs.filter(pub =>
-      pub.place_id === selectedPlace.place_id ||
-      pub.name.toLowerCase().includes(selectedPlace.name.toLowerCase())
-    );
-  }, [sortedPubs, selectedPlace]);
+    // Check if selected pub already exists in our data
+    const existingPub = mergedPubs.find(pub => pub.place_id === selectedPlace.place_id);
+    if (existingPub) {
+      return {
+        ...existingPub,
+        distance: userLocation
+          ? calculateDistance(userLocation.lat, userLocation.lng, existingPub.lat, existingPub.lng)
+          : null,
+      };
+    }
+
+    // Create new pub object for display (not in database yet)
+    const newPub: Pub & { distance?: number | null } = {
+      id: selectedPlace.place_id,
+      place_id: selectedPlace.place_id,
+      name: selectedPlace.name,
+      address: selectedPlace.address || '',
+      lat: selectedPlace.lat || 0,
+      lng: selectedPlace.lng || 0,
+      topSplit: null,
+      qualityRating: null,
+      pintsLogged: 0,
+      avgPrice: null,
+      leaderboard: [],
+      distance: userLocation && selectedPlace.lat && selectedPlace.lng
+        ? calculateDistance(userLocation.lat, userLocation.lng, selectedPlace.lat, selectedPlace.lng)
+        : null,
+    };
+
+    return newPub;
+  }, [selectedPlace, mergedPubs, userLocation]);
 
   return (
     <div className="pb-32 px-4 pt-10 md:pt-20 animate-in fade-in duration-500">
@@ -151,15 +177,36 @@ const Locals: React.FC = () => {
               value={selectedPlace?.name || ''}
               onChange={handlePlaceSelect}
               placeholder="Search pubs"
+              userLocation={userLocation}
             />
           </div>
 
-          {/* Section Label */}
+          {/* Search Result Section - Shows selected pub from search */}
+          {selectedPubForDisplay && (
+            <>
+              <div className="flex items-center justify-between mb-4 px-1">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#525252] font-bold">
+                  SEARCH RESULT
+                </div>
+                <button
+                  onClick={() => setSelectedPlace(null)}
+                  className="text-[10px] text-[#DDC9B4] hover:underline"
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="mb-8">
+                <PubCard pub={selectedPubForDisplay} />
+              </div>
+            </>
+          )}
+
+          {/* Round the Corner Section - Shows nearby pubs */}
           <div className="flex items-center justify-between mb-6 px-1 mt-6">
             <div className="text-[10px] uppercase tracking-[0.2em] text-[#525252] font-bold">
               ROUND THE CORNER
             </div>
-            <span className="text-[10px] text-[#525252] font-mono opacity-50">{filteredPubs.length} Nearby</span>
+            <span className="text-[10px] text-[#525252] font-mono opacity-50">{sortedPubs.length} Nearby</span>
           </div>
 
           {/* List - Increased vertical gap */}
@@ -170,20 +217,14 @@ const Locals: React.FC = () => {
                   {loadingNearby ? 'Finding nearby pubs...' : 'Loading...'}
                 </p>
               </div>
-            ) : filteredPubs.length > 0 ? (
-              filteredPubs.map(pub => (
+            ) : sortedPubs.length > 0 ? (
+              sortedPubs.map((pub: Pub & { distance?: number | null }) => (
                 <PubCard key={pub.place_id} pub={pub} />
               ))
             ) : (
                <div className="text-center py-20 px-4">
                  <p className="text-[#9CA3AF] font-serif italic text-xl mb-2">Dry as a bone.</p>
-                 <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your search.</p>
-                 <button
-                   onClick={() => setSelectedPlace(null)}
-                   className="mt-6 text-[#DDC9B4] text-sm hover:underline"
-                 >
-                   Clear search
-                 </button>
+                 <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs nearby.</p>
                </div>
             )}
           </div>
