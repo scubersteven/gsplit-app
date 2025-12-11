@@ -14,12 +14,12 @@ const PubCard: React.FC<PubCardProps> = ({ pub }) => {
   return (
     <div
       onClick={() => navigate(`/locals/${pub.place_id}`, { state: { pub } })}
-      className="bg-[#1A1A1A] border border-[#F7D447]/10 rounded-xl p-5 mb-4 cursor-pointer transition-all duration-200 ease-out hover:border-[#F7D447] group"
+      className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-5 mb-4 cursor-pointer transition-all duration-200 ease-out hover:border-[#F7D447] group"
     >
       {/* Header Row */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 pr-3">
-          <h3 className="text-xl font-bold font-serif text-white leading-tight mb-1.5 group-hover:text-[#f8d548] transition-colors">
+          <h3 className="text-xl font-bold font-serif text-white leading-tight mb-1.5">
             {pub.name}
           </h3>
           <div className="flex items-center text-[#525252]">
