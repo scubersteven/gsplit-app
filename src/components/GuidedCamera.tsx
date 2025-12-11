@@ -10,7 +10,7 @@ interface GuidedCameraProps {
   onClose?: () => void;
 }
 
-type CameraState = 'loading' | 'no-g' | 'capturing' | 'captured';
+type CameraState = 'loading' | 'no-g' | 'locked' | 'capturing' | 'captured';
 const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -62,7 +62,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
 
   // Real-time detection loop (visual feedback only)
   useEffect(() => {
-    if (cameraState === 'loading' || cameraState === 'capturing') {
+    if (cameraState === 'loading' || cameraState === 'locked' || cameraState === 'capturing') {
       return;
     }
 
@@ -86,17 +86,27 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             bbox: d.bbox
           })));
 
-          // G-logo only detection logic - instant snap at 60%+
+          // G-logo only detection logic - lock feedback then snap
           const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.6);
 
           if (!gLogo) {
             setCameraState('no-g');
             console.log('🔍 Scanning for G...');
           } else {
-            // G LOCKED - INSTANT SNAP
-            console.log(`📸 G locked at ${(gLogo.confidence * 100).toFixed(0)}% - SNAP`);
-            setCameraState('capturing');
-            capturePhoto();
+            // G DETECTED - trigger lock sequence
+            console.log(`🎯 G locked at ${(gLogo.confidence * 100).toFixed(0)}% - triggering snap in 300ms`);
+            setCameraState('locked');
+
+            // Haptic buzz
+            if ('vibrate' in navigator) {
+              navigator.vibrate(100);
+            }
+
+            // Wait 300ms then snap
+            setTimeout(() => {
+              capturePhoto();
+            }, 300);
+
             return;
           }
 
@@ -237,9 +247,10 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             Cancel
           </button>
           
-          <div className="text-white text-xs uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full font-mono">
+          <div className="text-white text-xs uppercase tracking-widest bg-black/50 px-4 py-2 rounded-full font-mono">
             {cameraState === 'loading' && 'INITIALIZING...'}
             {cameraState === 'no-g' && 'SCANNING...'}
+            {cameraState === 'locked' && 'LOCKED'}
             {cameraState === 'capturing' && 'CAPTURING...'}
             {cameraState === 'captured' && 'CAPTURED'}
           </div>
@@ -261,7 +272,23 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             </motion.div>
           )}
         </AnimatePresence>
-        
+
+        {/* Green lock flash when G detected */}
+        <AnimatePresence>
+          {cameraState === 'locked' && (
+            <motion.div
+              key="lock-flash"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                boxShadow: 'inset 0 0 60px 20px rgba(0, 255, 135, 0.6)'
+              }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Shutter flash effect */}
         <AnimatePresence>
           {cameraState === 'capturing' && (
