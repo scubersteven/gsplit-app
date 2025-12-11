@@ -9,6 +9,29 @@ export interface Detection {
   confidence: number;
 }
 
+// Helper function to resize image before encoding (module level to avoid recreation)
+const resizeImage = (canvas: HTMLCanvasElement, maxWidth: number = 640): HTMLCanvasElement => {
+  const aspectRatio = canvas.height / canvas.width;
+
+  if (canvas.width <= maxWidth) {
+    return canvas; // Already small enough
+  }
+
+  const resizedCanvas = document.createElement('canvas');
+  resizedCanvas.width = maxWidth;
+  resizedCanvas.height = Math.round(maxWidth * aspectRatio);
+
+  const ctx = resizedCanvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  // Use high-quality downscaling
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
+
+  return resizedCanvas;
+};
+
 interface RoboflowConfig {
   apiKey: string;
   model: string;
@@ -18,20 +41,20 @@ interface RoboflowConfig {
 export const useRoboflowDetection = (config: RoboflowConfig) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const lastCallTime = useRef<number>(0);
-  const THROTTLE_MS = 300; // Limit to ~3 FPS to avoid rate limits
+  const THROTTLE_MS = 100; // Target 10 FPS - still safe for API limits
 
   const detectFrame = useCallback(async (
     videoElement: HTMLVideoElement
-  ): Promise<Detection[]> => {
+  ): Promise<Detection[] | null> => {  // CHANGED: Return null when throttled
     // Throttle API calls
     const now = Date.now();
     if (now - lastCallTime.current < THROTTLE_MS) {
-      return [];
+      return null;  // CHANGED: null = "no new data, keep current state"
     }
     lastCallTime.current = now;
 
     if (isProcessing) {
-      return [];
+      return null;  // Already processing, keep current state
     }
 
     setIsProcessing(true);
@@ -48,15 +71,19 @@ export const useRoboflowDetection = (config: RoboflowConfig) => {
       }
       
       ctx.drawImage(videoElement, 0, 0);
-      
+
+      // Resize to 640px width for faster encoding and smaller payload
+      const resizedCanvas = resizeImage(canvas, 640);
+
       // Convert to base64
-      const base64Image = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+      const base64Image = resizedCanvas.toDataURL('image/jpeg', 0.5).split(',')[1];
 
       // Call Roboflow API
       console.log('🔍 Calling Roboflow API:', {
         url: `https://detect.roboflow.com/${config.model}/${config.version}`,
         timestamp: new Date().toISOString(),
-        imageSize: Math.round(base64Image.length / 1024) + ' KB'
+        imageSize: Math.round(base64Image.length / 1024) + ' KB',
+        resolution: `${resizedCanvas.width}x${resizedCanvas.height}`
       });
 
       const response = await fetch(

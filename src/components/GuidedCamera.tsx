@@ -68,18 +68,17 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
     }
 
     let animationFrameId: number;
-    let lastDetectionTime = 0;
-    const DETECTION_FPS = 3; // 3 FPS for API calls (avoid rate limits)
-    const DETECTION_INTERVAL = 1000 / DETECTION_FPS;
 
     const runDetection = async () => {
-      const now = Date.now();
-
-      if (now - lastDetectionTime >= DETECTION_INTERVAL && videoRef.current) {
-        lastDetectionTime = now;
-
+      if (videoRef.current) {
         try {
           const detections = await detectFrame(videoRef.current);
+
+          // CRITICAL: Skip state updates when throttled (null = no new data)
+          if (detections === null) {
+            animationFrameId = requestAnimationFrame(runDetection);
+            return;
+          }
 
           console.log('🎯 Detections received:', {
             count: detections.length,
@@ -281,7 +280,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
           
           <div className="text-white text-xs uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full">
             {cameraState === 'loading' && 'Loading...'}
-            {cameraState === 'searching' && 'Looking for G...'}
+            {cameraState === 'searching' && 'Scanning...'}
             {cameraState === 'detected' && 'G detected - tap to capture'}
             {cameraState === 'capturing' && 'Capturing...'}
           </div>
