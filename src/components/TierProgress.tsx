@@ -17,7 +17,7 @@ const TierProgress: React.FC<TierProgressProps> = ({ tier, emoji, progress, onTa
     >
       <div className="flex items-center flex-shrink-0">
         <span className="text-base mr-2 leading-none">{emoji}</span>
-        <span className="text-[#E8E8DD] text-sm font-medium">{tier}</span>
+        <span className="text-[#E8E8DD] text-sm font-playfair font-semibold">{tier}</span>
       </div>
 
       <div className="flex-grow bg-[#2A2A2A] h-2 rounded-sm overflow-hidden">

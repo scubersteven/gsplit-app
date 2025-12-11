@@ -9,7 +9,7 @@ export interface TierInfo {
 
 export const TIERS: TierInfo[] = [
   { name: 'Tourist', minPoints: 0, maxPoints: 999, color: '#FFF8E7', icon: '📸', tagline: "Still learning where the G is" },
-  { name: 'Apprentice', minPoints: 1000, maxPoints: 4999, color: '#FFF8E7', icon: '🪄', tagline: "The line's starting to make sense" },
+  { name: 'Apprentice', minPoints: 1000, maxPoints: 4999, color: '#FFF8E7', icon: '☘️', tagline: "The line's starting to make sense" },
   { name: 'Local', minPoints: 5000, maxPoints: 14999, color: '#FFF8E7', icon: '🪑', tagline: "You drink with intent" },
   { name: 'Craftsman', minPoints: 15000, maxPoints: 29999, color: '#FFF8E7', icon: '⚒️', tagline: "The foam fears you" },
   { name: 'Master', minPoints: 30000, maxPoints: 49999, color: '#FFF8E7', icon: '🎯', tagline: "Precision is routine" },

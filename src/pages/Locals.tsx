@@ -137,11 +137,11 @@ const Locals: React.FC = () => {
   return (
     <div className="pb-32 px-4 pt-10 md:pt-20 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2">
+      <div className="mb-8">
+        <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2 text-center">
           The Local Hunt
         </h1>
-        <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide">Find where the black stuff flows best.</p>
+        <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide text-center">Find where the black stuff flows best.</p>
 
         {/* Google Places Search Bar */}
         <div className="mb-8">
@@ -161,7 +161,7 @@ const Locals: React.FC = () => {
         </div>
 
         {/* List - Increased vertical gap */}
-        <div className="space-y-6">
+        <div className="space-y-6 text-left">
           {loading || loadingNearby ? (
             <div className="text-center py-10">
               <p className="text-[#9CA3AF] text-sm">

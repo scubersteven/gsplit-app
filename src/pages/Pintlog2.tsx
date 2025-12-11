@@ -148,7 +148,7 @@ const Index = () => {
           {/* ROW 2: Stats Line */}
           <div className="mt-2">
             <p className="text-sm text-foreground/60">
-              {stats.totalPints} pints | {stats.averageScore.toFixed(1)}% avg | {stats.bestScore.toFixed(1)}% best
+              {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • {stats.bestScore.toFixed(1)}% best
             </p>
           </div>
 
