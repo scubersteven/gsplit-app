@@ -141,7 +141,7 @@ const Index = () => {
       <header className="bg-background px-4 md:px-8 py-10 md:py-20">
         <div className="max-w-[900px] mx-auto">
           {/* ROW 1: Title */}
-          <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white">
+          <h1 className="font-playfair text-4xl md:text-6xl font-bold text-white">
             My Pints
           </h1>
 

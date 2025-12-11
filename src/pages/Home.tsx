@@ -111,7 +111,7 @@ const Home = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20">
+    <div className="container mx-auto px-4 py-10 md:py-20">
       {/* Hero Upload Zone */}
       <div className="max-w-3xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">

@@ -135,10 +135,10 @@ const Locals: React.FC = () => {
   }, [sortedPubs, selectedPlace]);
 
   return (
-    <div className="pb-32 px-4 animate-in fade-in duration-500">
+    <div className="pb-32 px-4 pt-10 md:pt-20 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="mb-8 pt-8">
-        <h1 className="text-4xl font-playfair font-bold text-white mb-2">
+      <div className="mb-8">
+        <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2">
           The Local Hunt
         </h1>
         <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide">Find where the black stuff flows best.</p>
