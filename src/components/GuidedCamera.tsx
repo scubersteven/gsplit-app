@@ -80,34 +80,51 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             return;
           }
 
-          console.log('🎯 Detections received:', {
-            count: detections.length,
-            allClasses: detections.map(d => `${d.class} (${(d.confidence * 100).toFixed(1)}%)`),
-            timestamp: new Date().toISOString()
-          });
+          // Calculate scale factor for bbox coordinate conversion
+          // Detections are on 640px resized image, but video is full resolution
+          const scaleFactor = videoRef.current.videoWidth / 640;
+
+          // Log all detections to see what model returns
+          console.log('🎯 ALL DETECTIONS:', detections.map(d => ({
+            class: d.class,
+            confidence: (d.confidence * 100).toFixed(1) + '%',
+            bbox: d.bbox
+          })));
 
           // Find G-logo detection (visual feedback only)
           const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.4);
 
-          console.log('🔍 G-logo search result:', {
-            found: !!gLogo,
-            confidence: gLogo ? (gLogo.confidence * 100).toFixed(1) + '%' : 'N/A',
-            bbox: gLogo?.bbox,
-            cameraState
-          });
+          // Declare outside if block to be accessible to drawOverlay
+          let scaledBbox: [number, number, number, number] | null = null;
 
           if (gLogo) {
+            // Scale bbox coordinates from 640px to full video resolution
+            scaledBbox = [
+              gLogo.bbox[0] * scaleFactor,
+              gLogo.bbox[1] * scaleFactor,
+              gLogo.bbox[2] * scaleFactor,
+              gLogo.bbox[3] * scaleFactor
+            ];
+
+            console.log('✅ G-logo detected:', {
+              confidence: (gLogo.confidence * 100).toFixed(1) + '%',
+              originalBbox: gLogo.bbox,
+              scaledBbox: scaledBbox,
+              scaleFactor: scaleFactor
+            });
+
             // Show detection ring
-            setDetectionBox(gLogo.bbox);
+            setDetectionBox(scaledBbox);
             setCameraState('detected');
           } else {
+            console.log('⏳ Searching for G-logo... (none above 40% confidence)');
             // No G-logo detected
             setDetectionBox(null);
             setCameraState('searching');
           }
 
-          // Draw overlay
-          drawOverlay(gLogo ? gLogo.bbox : null);
+          // Draw overlay (scaledBbox is null if no detection)
+          drawOverlay(scaledBbox);
         } catch (error) {
           console.error('Detection error:', error);
         }
