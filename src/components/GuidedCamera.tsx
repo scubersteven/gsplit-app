@@ -27,6 +27,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   const stableFramesRef = useRef<number>(0);
   const [stableFrameCount, setStableFrameCount] = useState<number>(0); // For UI rendering
   const FRAMES_TO_SNAP = 10; // ~1 second at 10 FPS
+  const [debugText, setDebugText] = useState<string>('Starting...');
 
   // Initialize camera
   useEffect(() => {
@@ -93,6 +94,9 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
           // Multi-class auto-snap logic
           const pint = detections.find(d => d.class === 'pint' && d.confidence > 0.4);
           const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.4);
+
+          // Update debug overlay
+          setDebugText(`pint: ${pint ? 'YES' : 'NO'} | g: ${gLogo ? (gLogo.confidence * 100).toFixed(0) + '%' : 'NO'} | frames: ${stableFramesRef.current}`);
 
           // Guidance logic with auto-snap
           if (!pint) {
@@ -260,6 +264,11 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
       
       {/* UI Overlay */}
       <div className="absolute inset-0 pointer-events-none">
+        {/* Debug Overlay */}
+        <div className="absolute top-20 left-0 right-0 text-center text-xs text-white bg-black/70 py-1 z-50">
+          {debugText}
+        </div>
+
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center">
           <button
