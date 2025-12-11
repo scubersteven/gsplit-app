@@ -3,11 +3,11 @@ import { X, User } from 'lucide-react';
 import PlacesAutocomplete from './PlacesAutocomplete';
 
 interface PlaceData {
-  place_id: string;
+  place_id?: string;  // Optional - only present when Google Places selection made
   name: string;
-  address: string;
-  lat: number;
-  lng: number;
+  address?: string;
+  lat?: number;
+  lng?: number;
 }
 
 interface PubSelectModalProps {
@@ -22,7 +22,8 @@ const PubSelectModal: React.FC<PubSelectModalProps> = ({ isOpen, onClose, onSave
 
   if (!isOpen) return null;
 
-  const isSaveDisabled = !selectedPlace;
+  // Enable save if there's a name (either Google Places selection or free text)
+  const isSaveDisabled = !selectedPlace || !selectedPlace.name.trim();
 
   const handleSave = () => {
     if (!isSaveDisabled && selectedPlace) {

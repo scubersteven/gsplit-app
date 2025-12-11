@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/select";
 
 interface PlaceData {
-  place_id: string;
+  place_id?: string;  // Optional - only present when Google Places selection made
   name: string;
-  address: string;
-  lat: number;
-  lng: number;
+  address?: string;
+  lat?: number;
+  lng?: number;
 }
 
 // Fallback roast generation (client-side, if API fails)
@@ -212,30 +212,36 @@ const PintSurvey = () => {
           localStorage.setItem('anonymous_id', anonymousId);
         }
 
-        // POST rating to backend
-        const apiResponse = await fetch(
-          `https://g-split-judge-production.up.railway.app/api/pubs/${selectedPlace.place_id}/ratings`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              overall_rating: overallRating,
-              taste: taste,
-              temperature: temperature,
-              head: head,
-              price: price ? parseFloat(price) : null,
-              roast: roast,
-              anonymous_id: anonymousId,
-              pub_name: selectedPlace.name,
-              pub_address: selectedPlace.address,
-              pub_lat: selectedPlace.lat,
-              pub_lng: selectedPlace.lng,
-            })
-          }
-        );
+        // Only POST to backend if this is a real Google Places pub (has place_id)
+        // Skip API call for custom/free text pub names
+        if (selectedPlace.place_id) {
+          // POST rating to backend
+          const apiResponse = await fetch(
+            `https://g-split-judge-production.up.railway.app/api/pubs/${selectedPlace.place_id}/ratings`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                overall_rating: overallRating,
+                taste: taste,
+                temperature: temperature,
+                head: head,
+                price: price ? parseFloat(price) : null,
+                roast: roast,
+                anonymous_id: anonymousId,
+                pub_name: selectedPlace.name,
+                pub_address: selectedPlace.address,
+                pub_lat: selectedPlace.lat,
+                pub_lng: selectedPlace.lng,
+              })
+            }
+          );
 
-        if (apiResponse.ok) {
-          console.log("✅ Rating synced to backend");
+          if (apiResponse.ok) {
+            console.log("✅ Rating synced to backend");
+          }
+        } else {
+          console.log("ℹ️ Skipping backend sync - custom pub name (no place_id)");
         }
       } catch (error) {
         console.error('Failed to sync rating to backend:', error);

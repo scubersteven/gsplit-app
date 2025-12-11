@@ -4,11 +4,11 @@ import { useJsApiLoader } from '@react-google-maps/api';
 const libraries: ("places")[] = ["places"];
 
 interface PlaceData {
-  place_id: string;
+  place_id?: string;  // Optional - only present when Google Places selection made
   name: string;
-  address: string;
-  lat: number;
-  lng: number;
+  address?: string;
+  lat?: number;
+  lng?: number;
 }
 
 interface PlacesAutocompleteProps {
@@ -71,9 +71,10 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
     const newValue = e.target.value;
     setInputValue(newValue);
 
-    // Clear selection if user modifies the input
+    // Pass minimal PlaceData with just the name (for free text entry)
+    // This allows users to submit custom pub names without selecting from Google Places
     if (newValue !== value) {
-      onChange(null);
+      onChange(newValue ? { name: newValue } : null);
     }
   };
 

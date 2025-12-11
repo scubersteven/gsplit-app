@@ -8,11 +8,11 @@ import { requestUserLocation, calculateDistance } from '@/utils/geolocation';
 import { fetchNearbyPlaces } from '../utils/googlePlaces';
 
 interface PlaceData {
-  place_id: string;
+  place_id?: string;  // Optional - only present when Google Places selection made
   name: string;
-  address: string;
-  lat: number;
-  lng: number;
+  address?: string;
+  lat?: number;
+  lng?: number;
 }
 
 const Locals: React.FC = () => {

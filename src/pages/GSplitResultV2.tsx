@@ -154,29 +154,35 @@ const GSplitResultV2 = () => {
             if (selectedPubStr) {
               const selectedPub = JSON.parse(selectedPubStr);
 
-              // POST score to backend
-              const apiResponse = await fetch(
-                `https://g-split-judge-production.up.railway.app/api/pubs/${selectedPub.place_id}/scores`,
-                {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    score: score,
-                    username: username || null,
-                    anonymous_id: anonymousId,
-                    split_detected: splitDetected,
-                    feedback: feedback,
-                    ranking: `Top ${mockPercentile}% this week`,
-                    pub_name: selectedPub.name,
-                    pub_address: selectedPub.address,
-                    pub_lat: selectedPub.lat,
-                    pub_lng: selectedPub.lng,
-                  })
-                }
-              );
+              // Only POST to backend if this is a real Google Places pub (has place_id)
+              // Skip API call for custom/free text pub names
+              if (selectedPub.place_id) {
+                // POST score to backend
+                const apiResponse = await fetch(
+                  `https://g-split-judge-production.up.railway.app/api/pubs/${selectedPub.place_id}/scores`,
+                  {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      score: score,
+                      username: username || null,
+                      anonymous_id: anonymousId,
+                      split_detected: splitDetected,
+                      feedback: feedback,
+                      ranking: `Top ${mockPercentile}% this week`,
+                      pub_name: selectedPub.name,
+                      pub_address: selectedPub.address,
+                      pub_lat: selectedPub.lat,
+                      pub_lng: selectedPub.lng,
+                    })
+                  }
+                );
 
-              if (apiResponse.ok) {
-                console.log("✅ [DEBUG] Score synced to backend");
+                if (apiResponse.ok) {
+                  console.log("✅ [DEBUG] Score synced to backend");
+                }
+              } else {
+                console.log("ℹ️ [DEBUG] Skipping backend sync - custom pub name (no place_id)");
               }
             }
           } catch (error) {
