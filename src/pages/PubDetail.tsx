@@ -92,54 +92,57 @@ const PubDetail: React.FC = () => {
 
   return (
     <div className="pb-32 pt-2 px-4 animate-in slide-in-from-right-4 duration-300">
-      {/* Navigation */}
-      <button 
-        onClick={() => navigate('/locals')}
-        className="flex items-center text-[#9CA3AF] hover:text-[#DDC9B4] transition-colors mb-6 group"
-      >
-        <ChevronLeft size={20} className="mr-1 group-hover:-translate-x-1 transition-transform" />
-        <span className="font-medium">Back</span>
-      </button>
+      {/* Content wrapper for desktop max-width */}
+      <div className="md:max-w-3xl md:mx-auto">
+        {/* Navigation */}
+        <button
+          onClick={() => navigate('/locals')}
+          className="flex items-center text-[#9CA3AF] hover:text-[#DDC9B4] transition-colors mb-6 group"
+        >
+          <ChevronLeft size={20} className="mr-1 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Back</span>
+        </button>
 
-      {/* Pub Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-playfair font-bold text-white mb-2 leading-tight">
-          {pub.name}
-        </h1>
-        <p className="text-[#9CA3AF] text-sm">
-          {pub.address}
-        </p>
+        {/* Pub Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-playfair font-bold text-white mb-2 leading-tight">
+            {pub.name}
+          </h1>
+          <p className="text-[#9CA3AF] text-sm">
+            {pub.address}
+          </p>
+        </div>
+
+        {/* Main Content Sections */}
+        <PubLeaderboard
+          entries={pub.leaderboard}
+          pub={{
+            place_id: pub.place_id,
+            name: pub.name,
+            address: pub.address,
+            lat: pub.lat,
+            lng: pub.lng
+          }}
+          onSplitClick={handleSplitClick}
+        />
+
+        <div className="w-full h-px bg-[#2a2a2a] my-8" />
+
+        <PubQuality
+          rating={pub.qualityRating}
+          count={pub.pintsLogged}
+          stats={pub.stats}
+          pub={{
+            place_id: pub.place_id,
+            name: pub.name,
+            address: pub.address,
+            lat: pub.lat,
+            lng: pub.lng
+          }}
+          onRateClick={handleRateClick}
+        />
       </div>
 
-      {/* Main Content Sections */}
-      <PubLeaderboard
-        entries={pub.leaderboard}
-        pub={{
-          place_id: pub.place_id,
-          name: pub.name,
-          address: pub.address,
-          lat: pub.lat,
-          lng: pub.lng
-        }}
-        onSplitClick={handleSplitClick}
-      />
-
-      <div className="w-full h-px bg-[#2a2a2a] my-8" />
-
-      <PubQuality
-        rating={pub.qualityRating}
-        count={pub.pintsLogged}
-        stats={pub.stats}
-        pub={{
-          place_id: pub.place_id,
-          name: pub.name,
-          address: pub.address,
-          lat: pub.lat,
-          lng: pub.lng
-        }}
-        onRateClick={handleRateClick}
-      />
-      
     </div>
   );
 };

@@ -143,47 +143,50 @@ const Locals: React.FC = () => {
         </h1>
         <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide text-center">Find where the black stuff flows best.</p>
 
-        {/* Google Places Search Bar */}
-        <div className="mb-8">
-          <PlacesAutocomplete
-            value={selectedPlace?.name || ''}
-            onChange={handlePlaceSelect}
-            placeholder="Search pubs"
-          />
-        </div>
-
-        {/* Section Label */}
-        <div className="flex items-center justify-between mb-6 px-1 mt-6">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-[#525252] font-bold">
-            ROUND THE CORNER
+        {/* Content wrapper for desktop max-width */}
+        <div className="md:max-w-3xl md:mx-auto">
+          {/* Google Places Search Bar */}
+          <div className="mb-8">
+            <PlacesAutocomplete
+              value={selectedPlace?.name || ''}
+              onChange={handlePlaceSelect}
+              placeholder="Search pubs"
+            />
           </div>
-          <span className="text-[10px] text-[#525252] font-mono opacity-50">{filteredPubs.length} Nearby</span>
-        </div>
 
-        {/* List - Increased vertical gap */}
-        <div className="space-y-6 text-left">
-          {loading || loadingNearby ? (
-            <div className="text-center py-10">
-              <p className="text-[#9CA3AF] text-sm">
-                {loadingNearby ? 'Finding nearby pubs...' : 'Loading...'}
-              </p>
+          {/* Section Label */}
+          <div className="flex items-center justify-between mb-6 px-1 mt-6">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#525252] font-bold">
+              ROUND THE CORNER
             </div>
-          ) : filteredPubs.length > 0 ? (
-            filteredPubs.map(pub => (
-              <PubCard key={pub.place_id} pub={pub} />
-            ))
-          ) : (
-             <div className="text-center py-20 px-4">
-               <p className="text-[#9CA3AF] font-serif italic text-xl mb-2">Dry as a bone.</p>
-               <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your search.</p>
-               <button
-                 onClick={() => setSelectedPlace(null)}
-                 className="mt-6 text-[#DDC9B4] text-sm hover:underline"
-               >
-                 Clear search
-               </button>
-             </div>
-          )}
+            <span className="text-[10px] text-[#525252] font-mono opacity-50">{filteredPubs.length} Nearby</span>
+          </div>
+
+          {/* List - Increased vertical gap */}
+          <div className="space-y-6 text-left">
+            {loading || loadingNearby ? (
+              <div className="text-center py-10">
+                <p className="text-[#9CA3AF] text-sm">
+                  {loadingNearby ? 'Finding nearby pubs...' : 'Loading...'}
+                </p>
+              </div>
+            ) : filteredPubs.length > 0 ? (
+              filteredPubs.map(pub => (
+                <PubCard key={pub.place_id} pub={pub} />
+              ))
+            ) : (
+               <div className="text-center py-20 px-4">
+                 <p className="text-[#9CA3AF] font-serif italic text-xl mb-2">Dry as a bone.</p>
+                 <p className="text-[#525252] text-xs uppercase tracking-wide">No pubs match your search.</p>
+                 <button
+                   onClick={() => setSelectedPlace(null)}
+                   className="mt-6 text-[#DDC9B4] text-sm hover:underline"
+                 >
+                   Clear search
+                 </button>
+               </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

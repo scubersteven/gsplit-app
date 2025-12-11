@@ -113,7 +113,7 @@ const Home = () => {
   return (
     <div className="container mx-auto px-4 py-10 md:py-20">
       {/* Hero Upload Zone */}
-      <div className="max-w-3xl mx-auto mb-8">
+      <div className="max-w-2xl mx-auto mb-8">
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2 tracking-wide">
             The Stout Standard
@@ -218,7 +218,7 @@ const Home = () => {
       </div>
 
       {/* Secondary Feature */}
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         <Link to="/survey">
           <div className="group bg-card border-2 border-border hover:border-gold p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer">
             <div className="mb-4">

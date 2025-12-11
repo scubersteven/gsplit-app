@@ -138,7 +138,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-background px-4 md:px-8 py-6 md:py-12">
-        <div className="max-w-[900px] mx-auto text-center">
+        <div className="max-w-3xl mx-auto text-center">
           {/* ROW 1: Title */}
           <h1 className="font-playfair text-4xl md:text-6xl font-bold text-white">
             My Pints
@@ -203,7 +203,7 @@ const Index = () => {
         className="bg-background px-4 md:px-8 pt-2 pb-8 min-h-[60vh] overflow-y-auto touch-pan-y"
         style={{ overscrollBehavior: "none" }}
       >
-        <div className="max-w-[900px] mx-auto relative">
+        <div className="max-w-3xl mx-auto relative">
           {/* Loading State */}
           {isLoading ? (
             <div className="text-center py-20">
