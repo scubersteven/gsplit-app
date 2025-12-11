@@ -4,14 +4,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRoboflowDetection } from '../hooks/useRoboflowDetection';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface GuidedCameraProps {
-  onCapture: (imageBlob: Blob) => void;
   onClose?: () => void;
 }
 
-type CameraState = 'loading' | 'no-g' | 'locked' | 'capturing' | 'captured';
-const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
+type CameraState = 'loading' | 'no-g' | 'locked' | 'capturing' | 'frozen' | 'analyzing';
+const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,6 +24,9 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   });
 
   const [cameraState, setCameraState] = useState<CameraState>('loading');
+  const navigate = useNavigate();
+  const [frozenFrameUrl, setFrozenFrameUrl] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Initialize camera
   useEffect(() => {
@@ -52,6 +56,9 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
     startCamera();
 
     return () => {
+      // Abort any pending API calls
+      abortControllerRef.current?.abort();
+
       // Cleanup camera
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
@@ -62,7 +69,8 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
 
   // Real-time detection loop (visual feedback only)
   useEffect(() => {
-    if (cameraState === 'loading' || cameraState === 'locked' || cameraState === 'capturing') {
+    // Exit early if not in scanning state - prevents unnecessary requestAnimationFrame calls
+    if (cameraState !== 'no-g') {
       return;
     }
 
@@ -102,10 +110,10 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
               navigator.vibrate(100);
             }
 
-            // Wait 300ms then snap
+            // Wait 200ms then snap
             setTimeout(() => {
-              capturePhoto();
-            }, 300);
+              captureAndAnalyze();
+            }, 200);
 
             return;
           }
@@ -127,39 +135,131 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
     };
   }, [cameraState, detectFrame]);
 
-  // Capture photo
-  const capturePhoto = async () => {
+  // Capture photo and analyze
+  const captureAndAnalyze = async () => {
     if (!videoRef.current || !canvasRef.current) return;
-    
+
     setCameraState('capturing');
-    
-    // Heavy success haptic
+
+    // Haptic + sound
     haptic([100, 50, 100]);
-    
-    // Play shutter sound
     playSound('shutter');
-    
-    // Capture to canvas
+
+    // Capture frame
     const canvas = canvasRef.current;
     const video = videoRef.current;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
+
     const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(video, 0, 0);
-      
-      // Flash effect (handled by CSS animation)
-      setTimeout(() => {
-        setCameraState('captured');
-      }, 200);
-      
-      // Convert to blob and send
-      canvas.toBlob((blob) => {
-        if (blob) {
-          onCapture(blob);
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+
+    // Stop camera stream immediately
+    if (video.srcObject) {
+      const stream = video.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
+    }
+
+    // Create frozen frame data URL
+    const frozenDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    setFrozenFrameUrl(frozenDataUrl);
+
+    // Show frozen frame with flash
+    setCameraState('frozen');
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Start API call with scan animation
+    setCameraState('analyzing');
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        handleError('Failed to capture image');
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+        formData.append('image', file);
+
+        // Create AbortController for cleanup on unmount
+        abortControllerRef.current = new AbortController();
+
+        const response = await fetch(
+          'https://g-split-judge-production.up.railway.app/analyze-split',
+          {
+            method: 'POST',
+            body: formData,
+            signal: abortControllerRef.current.signal
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
         }
-      }, 'image/jpeg', 0.95);
+
+        const result = await response.json();
+
+        if (result.error) {
+          handleError(result.error);
+          return;
+        }
+
+        // Navigate to results
+        // IMPORTANT: Use closure variable frozenDataUrl, NOT state (frozenFrameUrl)
+        // State might not be updated yet due to async setState
+        navigate('/split-result-v2', {
+          state: {
+            score: result.score,
+            image: frozenDataUrl,
+            distance: result.distance_from_g_line_mm,
+            feedback: result.feedback,
+            splitDetected: result.g_line_detected
+          }
+        });
+
+      } catch (error) {
+        // Ignore AbortError (happens on unmount/cancel)
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('API call aborted');
+          return;
+        }
+        console.error('Analysis error:', error);
+        handleError('Failed to analyze image. Please try again.');
+      }
+    }, 'image/jpeg', 0.95);
+  };
+
+  const handleError = (message: string) => {
+    toast.error(message);
+    setCameraState('no-g');
+    setFrozenFrameUrl(null);
+    restartCamera();
+  };
+
+  const restartCamera = async () => {
+    setCameraState('loading');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        },
+        audio: false
+      });
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          setCameraState('no-g');
+        };
+      }
+    } catch (error) {
+      console.error('Camera restart failed:', error);
+      toast.error('Camera access denied');
     }
   };
 
@@ -215,14 +315,24 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
-      {/* Video preview */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      {/* Video preview or frozen frame */}
+      {(cameraState === 'loading' || cameraState === 'no-g' || cameraState === 'locked') ? (
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        frozenFrameUrl && (
+          <img
+            src={frozenFrameUrl}
+            alt="Captured frame"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )
+      )}
       
       {/* Hidden capture canvas */}
       <canvas
@@ -242,7 +352,8 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
         <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center">
           <button
             onClick={onClose}
-            className="pointer-events-auto text-white text-sm uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full"
+            disabled={cameraState === 'capturing' || cameraState === 'frozen' || cameraState === 'analyzing'}
+            className="pointer-events-auto text-white text-sm uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
@@ -252,7 +363,8 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             {cameraState === 'no-g' && 'SCANNING...'}
             {cameraState === 'locked' && 'LOCKED'}
             {cameraState === 'capturing' && 'CAPTURING...'}
-            {cameraState === 'captured' && 'CAPTURED'}
+            {cameraState === 'frozen' && 'PROCESSING...'}
+            {cameraState === 'analyzing' && 'ANALYZING...'}
           </div>
         </div>
         
@@ -302,9 +414,39 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
           )}
         </AnimatePresence>
 
+        {/* Scan animation overlay - uses EXISTING tailwind animation */}
+        <AnimatePresence>
+          {(cameraState === 'frozen' || cameraState === 'analyzing') && (
+            <motion.div
+              key="scan-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-background/80 flex items-center justify-center z-50"
+            >
+              {/* Container for scan line */}
+              <div className="relative w-full h-full">
+                {/* Scan line - EXISTING animation from tailwind.config.ts */}
+                <div className="absolute w-full h-1 bg-success shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-scan" />
+              </div>
+
+              {/* Status text */}
+              <div className="absolute text-center z-10">
+                <div className="text-lg font-medium text-foreground mb-2">
+                  {cameraState === 'frozen' ? 'Processing...' : 'Analyzing Split...'}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Calculating precision
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Manual Capture Button - De-emphasized */}
         <motion.button
-          onClick={capturePhoto}
+          onClick={captureAndAnalyze}
+          disabled={cameraState !== 'no-g' && cameraState !== 'locked'}
           className="absolute bottom-10 pointer-events-auto"
           style={{
             left: '50%',
@@ -314,7 +456,8 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             backgroundColor: '#00FF87',
             border: '3px solid white',
             boxShadow: '0 4px 15px rgba(0, 255, 135, 0.3)',
-            opacity: 0.7,
+            opacity: (cameraState === 'no-g' || cameraState === 'locked') ? 0.7 : 0.3,
+            cursor: (cameraState === 'no-g' || cameraState === 'locked') ? 'pointer' : 'not-allowed',
           }}
           initial={{ x: '-50%' }}
           whileTap={{ scale: 0.9, x: '-50%' }}

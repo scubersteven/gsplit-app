@@ -31,21 +31,6 @@ const GSplit = () => {
     }
   };
 
-  const handleCameraCapture = (blob: Blob) => {
-    // Convert Blob to File for API upload
-    const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
-    setSelectedFile(file);
-
-    // Create preview for display
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setSelectedImage(reader.result as string);
-    };
-    reader.readAsDataURL(blob);
-
-    // Close camera
-    setShowCamera(false);
-  };
 
   // Check if location modal should be shown on mount
   useEffect(() => {
@@ -244,7 +229,6 @@ const GSplit = () => {
       {/* GuidedCamera Full Screen Modal */}
       {showCamera && (
         <GuidedCamera
-          onCapture={handleCameraCapture}
           onClose={() => setShowCamera(false)}
         />
       )}
