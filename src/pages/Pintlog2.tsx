@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PintCard from "@/components/PintCard";
-import TierProgress from "@/components/TierProgress";
 import { MasteryLevelsModal } from "@/components/MasteryLevelsModal";
 import PintReceiptModal from "@/components/PintReceiptModal";
 import PintCardModal from "@/components/PintCardModal";
@@ -148,21 +147,11 @@ const Index = () => {
           {/* ROW 2: Stats Line */}
           <div className="mt-2">
             <p className="text-sm text-foreground/60">
-              {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • {stats.bestScore.toFixed(1)}% best
+              {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • <span onClick={() => setIsMasteryModalOpen(true)} className="cursor-pointer hover:text-[#F7D447] transition-colors">{currentTier.icon} {currentTier.name}</span>
             </p>
           </div>
 
-          {/* ROW 3: Tier Progress Bar */}
-          <div className="mt-4 mb-4">
-            <TierProgress
-              tier={currentTier.name}
-              emoji={currentTier.icon}
-              progress={progress.percentage}
-              onTap={() => setIsMasteryModalOpen(true)}
-            />
-          </div>
-
-          {/* ROW 4: Filter Tabs */}
+          {/* ROW 3: Filter Tabs */}
           <div className="grid grid-cols-4 gap-2 mt-4">
             <button
               onClick={() => setActiveFilter("all")}
