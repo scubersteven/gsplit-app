@@ -137,7 +137,7 @@ const Locals: React.FC = () => {
   return (
     <div className="pb-32 px-4 pt-10 md:pt-20 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="mb-8">
+      <div className="mb-8 text-center">
         <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2">
           The Local Hunt
         </h1>

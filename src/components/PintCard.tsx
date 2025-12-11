@@ -118,12 +118,9 @@ const PintCard = ({
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           {/* Top Section - Score, Feedback, Metadata */}
           <div>
-            {/* Header Row: Score */}
-            <div className="flex items-start gap-3">
-              {/* Score */}
-              <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
-                {isPersonalBest && "🏆 "}{score}%
-              </div>
+            {/* Score */}
+            <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
+              {isPersonalBest && "🏆 "}{score}%
             </div>
 
             {/* Feedback Quote */}

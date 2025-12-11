@@ -139,7 +139,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-background px-4 md:px-8 py-10 md:py-20">
-        <div className="max-w-[900px] mx-auto">
+        <div className="max-w-[900px] mx-auto text-center">
           {/* ROW 1: Title */}
           <h1 className="font-playfair text-4xl md:text-6xl font-bold text-white">
             My Pints
@@ -163,7 +163,7 @@ const Index = () => {
           </div>
 
           {/* ROW 4: Filter Tabs */}
-          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 mt-4">
+          <div className="grid grid-cols-4 gap-2 mt-4">
             <button
               onClick={() => setActiveFilter("all")}
               className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
@@ -211,7 +211,7 @@ const Index = () => {
       {/* Pint Cards Section */}
       <main
         ref={mainRef}
-        className="bg-background px-4 md:px-8 py-4 md:py-8 min-h-[60vh] overflow-y-auto touch-pan-y"
+        className="bg-background px-4 md:px-8 pt-4 pb-8 min-h-[60vh] overflow-y-auto touch-pan-y"
         style={{ overscrollBehavior: "none" }}
       >
         <div className="max-w-[900px] mx-auto relative">
