@@ -39,7 +39,15 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({
       // Initialize autocomplete with bar/restaurant focus
       autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, {
         types: ['bar', 'restaurant', 'night_club', 'cafe'],
-        fields: ['place_id', 'name', 'formatted_address', 'geometry']
+        fields: ['place_id', 'name', 'formatted_address', 'geometry'],
+        // Enable global search - remove location bias
+        bounds: {
+          north: 85,
+          south: -85,
+          east: 180,
+          west: -180
+        },
+        strictBounds: false
       });
 
       // Listen for place selection
