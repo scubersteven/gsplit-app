@@ -10,7 +10,7 @@ interface GuidedCameraProps {
   onClose?: () => void;
 }
 
-type CameraState = 'loading' | 'no-g' | 'stabilizing' | 'capturing' | 'captured';
+type CameraState = 'loading' | 'no-g' | 'capturing' | 'captured';
 const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,10 +23,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   });
 
   const [cameraState, setCameraState] = useState<CameraState>('loading');
-  const [guidanceText, setGuidanceText] = useState<string>('SCANNING...');
-  const stableFramesRef = useRef<number>(0);
-  const [stableFrameCount, setStableFrameCount] = useState<number>(0); // For UI rendering
-  const FRAMES_TO_SNAP = 10; // ~1 second at 10 FPS
 
   // Initialize camera
   useEffect(() => {
@@ -90,38 +86,18 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             bbox: d.bbox
           })));
 
-          // G-logo only detection logic
-          const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.4);
+          // G-logo only detection logic - instant snap at 60%+
+          const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.6);
 
-          // Tech scanner guidance logic with auto-snap
           if (!gLogo) {
-            // No G detected - scanning
-            setGuidanceText("SCANNING...");
             setCameraState('no-g');
-            stableFramesRef.current = 0;
-            setStableFrameCount(0);
             console.log('🔍 Scanning for G...');
-          } else if (gLogo.confidence < 0.6) {
-            // G visible but confidence too low - locking
-            setGuidanceText("LOCKING...");
-            setCameraState('stabilizing');
-            stableFramesRef.current = 0;
-            setStableFrameCount(0);
-            console.log(`🎯 Locking on G: ${(gLogo.confidence * 100).toFixed(1)}%`);
           } else {
-            // HIGH CONFIDENCE G DETECTED (>60%) - locked
-            stableFramesRef.current += 1;
-            setStableFrameCount(stableFramesRef.current);
-            setGuidanceText("LOCKED");
-            setCameraState('stabilizing');
-
-            console.log(`✅ Locked frame ${stableFramesRef.current}/${FRAMES_TO_SNAP} - G: ${(gLogo.confidence * 100).toFixed(1)}%`);
-
-            if (stableFramesRef.current >= FRAMES_TO_SNAP) {
-              console.log('📸 AUTO-SNAP TRIGGERED!');
-              capturePhoto();
-              return; // Stop detection loop
-            }
+            // G LOCKED - INSTANT SNAP
+            console.log(`📸 G locked at ${(gLogo.confidence * 100).toFixed(0)}% - SNAP`);
+            setCameraState('capturing');
+            capturePhoto();
+            return;
           }
 
           // Simplified overlay - only pint guide (no ring)
@@ -264,7 +240,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
           <div className="text-white text-xs uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full font-mono">
             {cameraState === 'loading' && 'INITIALIZING...'}
             {cameraState === 'no-g' && 'SCANNING...'}
-            {cameraState === 'stabilizing' && guidanceText}
             {cameraState === 'capturing' && 'CAPTURING...'}
             {cameraState === 'captured' && 'CAPTURED'}
           </div>
@@ -283,32 +258,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
               <p className="text-white text-sm uppercase tracking-widest font-mono opacity-70">
                 Scanning for G...
               </p>
-            </motion.div>
-          )}
-
-          {cameraState === 'stabilizing' && (
-            <motion.div
-              key="stabilizing"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <div className="text-center px-8">
-                {/* Progress dots indicator */}
-                <div className="flex gap-2 justify-center">
-                  {Array.from({ length: FRAMES_TO_SNAP }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                        i < stableFrameCount
-                          ? 'bg-[#00FF87] scale-125'
-                          : 'bg-white opacity-30'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
