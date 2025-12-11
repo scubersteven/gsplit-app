@@ -10,7 +10,7 @@ interface GuidedCameraProps {
   onClose?: () => void;
 }
 
-type CameraState = 'loading' | 'no-pint' | 'no-g' | 'stabilizing' | 'capturing' | 'captured';
+type CameraState = 'loading' | 'no-g' | 'stabilizing' | 'capturing' | 'captured';
 const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,7 +23,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   });
 
   const [cameraState, setCameraState] = useState<CameraState>('loading');
-  const [guidanceText, setGuidanceText] = useState<string>('Show your pint');
+  const [guidanceText, setGuidanceText] = useState<string>('SCANNING...');
   const stableFramesRef = useRef<number>(0);
   const [stableFrameCount, setStableFrameCount] = useState<number>(0); // For UI rendering
   const FRAMES_TO_SNAP = 10; // ~1 second at 10 FPS
@@ -45,7 +45,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.onloadedmetadata = () => {
-            setCameraState('no-pint');
+            setCameraState('no-g');
           };
         }
       } catch (error) {
@@ -91,43 +91,35 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             bbox: d.bbox
           })));
 
-          // Multi-class auto-snap logic
-          const pint = detections.find(d => d.class === 'pint' && d.confidence > 0.4);
+          // G-logo only detection logic
           const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.4);
 
           // Update debug overlay
-          setDebugText(`pint: ${pint ? 'YES' : 'NO'} | g: ${gLogo ? (gLogo.confidence * 100).toFixed(0) + '%' : 'NO'} | frames: ${stableFramesRef.current}`);
+          setDebugText(`g: ${gLogo ? (gLogo.confidence * 100).toFixed(0) + '%' : 'NO'} | frames: ${stableFramesRef.current}`);
 
-          // Guidance logic with auto-snap
-          if (!pint) {
-            // No pint in frame
-            setGuidanceText("Show your pint");
-            setCameraState('no-pint');
-            stableFramesRef.current = 0;
-            setStableFrameCount(0);
-            console.log('⏳ No pint detected');
-          } else if (!gLogo) {
-            // Pint visible but G not visible
-            setGuidanceText("Can't see the G");
+          // Tech scanner guidance logic with auto-snap
+          if (!gLogo) {
+            // No G detected - scanning
+            setGuidanceText("SCANNING...");
             setCameraState('no-g');
             stableFramesRef.current = 0;
             setStableFrameCount(0);
-            console.log('⚠️ Pint detected but no G logo');
+            console.log('🔍 Scanning for G...');
           } else if (gLogo.confidence < 0.6) {
-            // G visible but confidence too low
-            setGuidanceText("Hold steady...");
+            // G visible but confidence too low - locking
+            setGuidanceText("LOCKING...");
             setCameraState('stabilizing');
             stableFramesRef.current = 0;
             setStableFrameCount(0);
-            console.log(`📊 G detected but confidence too low: ${(gLogo.confidence * 100).toFixed(1)}%`);
+            console.log(`🎯 Locking on G: ${(gLogo.confidence * 100).toFixed(1)}%`);
           } else {
-            // HIGH CONFIDENCE G DETECTED (>60%)
+            // HIGH CONFIDENCE G DETECTED (>60%) - locked
             stableFramesRef.current += 1;
             setStableFrameCount(stableFramesRef.current);
-            setGuidanceText("Hold steady...");
+            setGuidanceText("LOCKED");
             setCameraState('stabilizing');
 
-            console.log(`✅ Stable frame ${stableFramesRef.current}/${FRAMES_TO_SNAP} - G confidence: ${(gLogo.confidence * 100).toFixed(1)}%`);
+            console.log(`✅ Locked frame ${stableFramesRef.current}/${FRAMES_TO_SNAP} - G: ${(gLogo.confidence * 100).toFixed(1)}%`);
 
             if (stableFramesRef.current >= FRAMES_TO_SNAP) {
               console.log('📸 AUTO-SNAP TRIGGERED!');
@@ -278,39 +270,28 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             Cancel
           </button>
           
-          <div className="text-white text-xs uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full">
-            {cameraState === 'loading' && 'Loading...'}
-            {cameraState === 'capturing' && 'Capturing...'}
-            {cameraState === 'captured' && 'Captured!'}
-            {(cameraState === 'no-pint' || cameraState === 'no-g' || cameraState === 'stabilizing') && guidanceText}
+          <div className="text-white text-xs uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full font-mono">
+            {cameraState === 'loading' && 'INITIALIZING...'}
+            {cameraState === 'no-g' && 'SCANNING...'}
+            {cameraState === 'stabilizing' && guidanceText}
+            {cameraState === 'capturing' && 'CAPTURING...'}
+            {cameraState === 'captured' && 'CAPTURED'}
           </div>
         </div>
         
-        {/* Center instruction text */}
+        {/* Center instruction text - minimal tech scanner style */}
         <AnimatePresence mode="wait">
-          {(cameraState === 'no-pint' || cameraState === 'no-g') && (
+          {cameraState === 'no-g' && (
             <motion.div
-              key={cameraState}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              key="no-g"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <div className="text-center px-8">
-                <p className="text-white text-2xl font-bold uppercase tracking-wider mb-2">
-                  {guidanceText}
-                </p>
-                {cameraState === 'no-pint' && (
-                  <p className="text-white text-sm opacity-60">
-                    Position your pint in the frame
-                  </p>
-                )}
-                {cameraState === 'no-g' && (
-                  <p className="text-white text-sm opacity-60">
-                    Rotate the glass to show the harp logo
-                  </p>
-                )}
-              </div>
+              <p className="text-white text-sm uppercase tracking-widest font-mono opacity-70">
+                Scanning for G...
+              </p>
             </motion.div>
           )}
 
@@ -323,9 +304,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
               className="absolute inset-0 flex items-center justify-center"
             >
               <div className="text-center px-8">
-                <p className="text-white text-2xl font-bold uppercase tracking-wider mb-4">
-                  {guidanceText}
-                </p>
                 {/* Progress dots indicator */}
                 <div className="flex gap-2 justify-center">
                   {Array.from({ length: FRAMES_TO_SNAP }).map((_, i) => (
