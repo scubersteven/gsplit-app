@@ -138,7 +138,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-background px-4 md:px-8 py-10 md:py-20">
+      <header className="bg-background px-4 md:px-8 py-6 md:py-12">
         <div className="max-w-[900px] mx-auto text-center">
           {/* ROW 1: Title */}
           <h1 className="font-playfair text-4xl md:text-6xl font-bold text-white">
@@ -148,7 +148,7 @@ const Index = () => {
           {/* ROW 2: Stats Line */}
           <div className="mt-2">
             <p className="text-sm text-foreground/60">
-              {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • {stats.bestScore.toFixed(1)}% best
+              {stats.totalPints} pints | {stats.averageScore.toFixed(1)}% avg | {stats.bestScore.toFixed(1)}% best
             </p>
           </div>
 
@@ -166,7 +166,7 @@ const Index = () => {
           <div className="grid grid-cols-4 gap-2 mt-4">
             <button
               onClick={() => setActiveFilter("all")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-1.5 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "all"
                   ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -176,7 +176,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("excellent")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-1.5 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "excellent"
                   ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -186,7 +186,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("good")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-1.5 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "good"
                   ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -196,7 +196,7 @@ const Index = () => {
             </button>
             <button
               onClick={() => setActiveFilter("poor")}
-              className={`font-inter text-sm font-semibold px-4 py-2 rounded-sm whitespace-nowrap transition-all ${
+              className={`font-inter text-sm font-semibold px-4 py-1.5 rounded-sm whitespace-nowrap transition-all ${
                 activeFilter === "poor"
                   ? "bg-[#F7D447]/20 text-[#F7D447] border border-[#F7D447]"
                   : "bg-transparent text-white/60 hover:text-white border border-white/10"
@@ -211,7 +211,7 @@ const Index = () => {
       {/* Pint Cards Section */}
       <main
         ref={mainRef}
-        className="bg-background px-4 md:px-8 pt-4 pb-8 min-h-[60vh] overflow-y-auto touch-pan-y"
+        className="bg-background px-4 md:px-8 pt-2 pb-8 min-h-[60vh] overflow-y-auto touch-pan-y"
         style={{ overscrollBehavior: "none" }}
       >
         <div className="max-w-[900px] mx-auto relative">
