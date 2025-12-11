@@ -10,20 +10,23 @@ interface GuidedCameraProps {
   onClose?: () => void;
 }
 
-type CameraState = 'loading' | 'searching' | 'detected' | 'capturing' | 'captured';
+type CameraState = 'loading' | 'no-pint' | 'no-g' | 'stabilizing' | 'capturing' | 'captured';
 const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   const { detectFrame, isProcessing } = useRoboflowDetection({
     apiKey: 'bYmwUIskucEFjoL01NF5', // Your Roboflow API key
     model: 'guinness-g-split-etp2p',  // Your Model 1 project name
     version: '7'  // Your model version (adjust if different)
   });
-  
+
   const [cameraState, setCameraState] = useState<CameraState>('loading');
-  const [detectionBox, setDetectionBox] = useState<[number, number, number, number] | null>(null);
+  const [guidanceText, setGuidanceText] = useState<string>('Show your pint');
+  const stableFramesRef = useRef<number>(0);
+  const [stableFrameCount, setStableFrameCount] = useState<number>(0); // For UI rendering
+  const FRAMES_TO_SNAP = 10; // ~1 second at 10 FPS
 
   // Initialize camera
   useEffect(() => {
@@ -41,7 +44,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.onloadedmetadata = () => {
-            setCameraState('searching');
+            setCameraState('no-pint');
           };
         }
       } catch (error) {
@@ -80,10 +83,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             return;
           }
 
-          // Calculate scale factor for bbox coordinate conversion
-          // Detections are on 640px resized image, but video is full resolution
-          const scaleFactor = videoRef.current.videoWidth / 640;
-
           // Log all detections to see what model returns
           console.log('🎯 ALL DETECTIONS:', detections.map(d => ({
             class: d.class,
@@ -91,40 +90,50 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
             bbox: d.bbox
           })));
 
-          // Find G-logo detection (visual feedback only)
+          // Multi-class auto-snap logic
+          const pint = detections.find(d => d.class === 'pint' && d.confidence > 0.4);
           const gLogo = detections.find(d => d.class === 'g-logo' && d.confidence > 0.4);
 
-          // Declare outside if block to be accessible to drawOverlay
-          let scaledBbox: [number, number, number, number] | null = null;
-
-          if (gLogo) {
-            // Scale bbox coordinates from 640px to full video resolution
-            scaledBbox = [
-              gLogo.bbox[0] * scaleFactor,
-              gLogo.bbox[1] * scaleFactor,
-              gLogo.bbox[2] * scaleFactor,
-              gLogo.bbox[3] * scaleFactor
-            ];
-
-            console.log('✅ G-logo detected:', {
-              confidence: (gLogo.confidence * 100).toFixed(1) + '%',
-              originalBbox: gLogo.bbox,
-              scaledBbox: scaledBbox,
-              scaleFactor: scaleFactor
-            });
-
-            // Show detection ring
-            setDetectionBox(scaledBbox);
-            setCameraState('detected');
+          // Guidance logic with auto-snap
+          if (!pint) {
+            // No pint in frame
+            setGuidanceText("Show your pint");
+            setCameraState('no-pint');
+            stableFramesRef.current = 0;
+            setStableFrameCount(0);
+            console.log('⏳ No pint detected');
+          } else if (!gLogo) {
+            // Pint visible but G not visible
+            setGuidanceText("Can't see the G");
+            setCameraState('no-g');
+            stableFramesRef.current = 0;
+            setStableFrameCount(0);
+            console.log('⚠️ Pint detected but no G logo');
+          } else if (gLogo.confidence < 0.6) {
+            // G visible but confidence too low
+            setGuidanceText("Hold steady...");
+            setCameraState('stabilizing');
+            stableFramesRef.current = 0;
+            setStableFrameCount(0);
+            console.log(`📊 G detected but confidence too low: ${(gLogo.confidence * 100).toFixed(1)}%`);
           } else {
-            console.log('⏳ Searching for G-logo... (none above 40% confidence)');
-            // No G-logo detected
-            setDetectionBox(null);
-            setCameraState('searching');
+            // HIGH CONFIDENCE G DETECTED (>60%)
+            stableFramesRef.current += 1;
+            setStableFrameCount(stableFramesRef.current);
+            setGuidanceText("Hold steady...");
+            setCameraState('stabilizing');
+
+            console.log(`✅ Stable frame ${stableFramesRef.current}/${FRAMES_TO_SNAP} - G confidence: ${(gLogo.confidence * 100).toFixed(1)}%`);
+
+            if (stableFramesRef.current >= FRAMES_TO_SNAP) {
+              console.log('📸 AUTO-SNAP TRIGGERED!');
+              capturePhoto();
+              return; // Stop detection loop
+            }
           }
 
-          // Draw overlay (scaledBbox is null if no detection)
-          drawOverlay(scaledBbox);
+          // Simplified overlay - only pint guide (no ring)
+          drawOverlay(null);
         } catch (error) {
           console.error('Detection error:', error);
         }
@@ -176,71 +185,36 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
     }
   };
 
-  // Draw overlay on canvas
+  // Draw overlay on canvas (pint guide only - no ring)
   const drawOverlay = (bbox: [number, number, number, number] | null) => {
     const canvas = overlayCanvasRef.current;
     const video = videoRef.current;
-    
+
     if (!canvas || !video) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     // Match video dimensions
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
+
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw pint guide outline
+
+    // Draw pint guide outline ONLY (no ring)
     const guideWidth = canvas.width * 0.5;
     const guideHeight = canvas.height * 0.65;
     const guideX = (canvas.width - guideWidth) / 2;
     const guideY = (canvas.height - guideHeight) / 2;
-    
+
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 2;
     ctx.setLineDash([10, 10]);
     ctx.strokeRect(guideX, guideY, guideWidth, guideHeight);
     ctx.setLineDash([]);
-    
-    // Draw detection ring if G-logo found
-    if (bbox) {
-      const [x, y, w, h] = bbox;
-      const centerX = x + w / 2;
-      const centerY = y + h / 2;
-      const baseRadius = Math.max(w, h) / 2 + 30;
 
-      // Pulse animation when detected
-      const pulseAmount = cameraState === 'detected'
-        ? Math.sin(Date.now() / 500) * 5 + 5 // Pulse between +0 and +10 pixels
-        : 0;
-      const radius = baseRadius + pulseAmount;
-
-      // Ring color - bright green when detected
-      const baseOpacity = cameraState === 'detected'
-        ? 0.6 + Math.sin(Date.now() / 500) * 0.2 // Pulse opacity between 0.4 and 0.8
-        : 0.6;
-      const color = `rgba(0, 255, 135, ${baseOpacity})`;
-
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 5;
-
-      // Draw main circle
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      // Draw outer glow circle when detected
-      if (cameraState === 'detected') {
-        ctx.strokeStyle = `rgba(0, 255, 135, ${baseOpacity * 0.3})`;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius + 10, 0, 2 * Math.PI);
-        ctx.stroke();
-      }
-    }
+    // NOTE: bbox parameter ignored - no ring drawing
   };
 
   // Helper: Play sound
@@ -297,29 +271,65 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
           
           <div className="text-white text-xs uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full">
             {cameraState === 'loading' && 'Loading...'}
-            {cameraState === 'searching' && 'Scanning...'}
-            {cameraState === 'detected' && 'G detected - tap to capture'}
             {cameraState === 'capturing' && 'Capturing...'}
+            {cameraState === 'captured' && 'Captured!'}
+            {(cameraState === 'no-pint' || cameraState === 'no-g' || cameraState === 'stabilizing') && guidanceText}
           </div>
         </div>
         
         {/* Center instruction text */}
         <AnimatePresence mode="wait">
-          {cameraState === 'searching' && (
+          {(cameraState === 'no-pint' || cameraState === 'no-g') && (
             <motion.div
-              key="searching"
+              key={cameraState}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               className="absolute inset-0 flex items-center justify-center"
             >
               <div className="text-center px-8">
-                <p className="text-white text-lg uppercase tracking-wider mb-2">
-                  Center the G in the frame
+                <p className="text-white text-2xl font-bold uppercase tracking-wider mb-2">
+                  {guidanceText}
                 </p>
-                <p className="text-white text-sm opacity-60">
-                  Position your pint so the Guinness harp is visible
+                {cameraState === 'no-pint' && (
+                  <p className="text-white text-sm opacity-60">
+                    Position your pint in the frame
+                  </p>
+                )}
+                {cameraState === 'no-g' && (
+                  <p className="text-white text-sm opacity-60">
+                    Rotate the glass to show the harp logo
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {cameraState === 'stabilizing' && (
+            <motion.div
+              key="stabilizing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <div className="text-center px-8">
+                <p className="text-white text-2xl font-bold uppercase tracking-wider mb-4">
+                  {guidanceText}
                 </p>
+                {/* Progress dots indicator */}
+                <div className="flex gap-2 justify-center">
+                  {Array.from({ length: FRAMES_TO_SNAP }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        i < stableFrameCount
+                          ? 'bg-[#00FF87] scale-125'
+                          : 'bg-white opacity-30'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </motion.div>
           )}
@@ -338,38 +348,27 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onCapture, onClose }) => {
           )}
         </AnimatePresence>
 
-        {/* Manual Capture Button */}
+        {/* Manual Capture Button - De-emphasized */}
         <motion.button
           onClick={capturePhoto}
           className="absolute bottom-10 pointer-events-auto"
           style={{
             left: '50%',
-            width: '80px',
-            height: '80px',
+            width: '60px',
+            height: '60px',
             borderRadius: '50%',
             backgroundColor: '#00FF87',
-            border: '4px solid white',
-            boxShadow: '0 4px 20px rgba(0, 255, 135, 0.5)',
+            border: '3px solid white',
+            boxShadow: '0 4px 15px rgba(0, 255, 135, 0.3)',
+            opacity: 0.7,
           }}
           initial={{ x: '-50%' }}
           whileTap={{ scale: 0.9, x: '-50%' }}
-          animate={
-            cameraState === 'detected'
-              ? {
-                  x: '-50%',
-                  boxShadow: [
-                    '0 4px 20px rgba(0, 255, 135, 0.5)',
-                    '0 4px 30px rgba(0, 255, 135, 0.8)',
-                    '0 4px 20px rgba(0, 255, 135, 0.5)',
-                  ],
-                }
-              : { x: '-50%' }
-          }
-          transition={{ duration: 1.5, repeat: Infinity }}
+          whileHover={{ opacity: 1 }}
         >
           <svg
-            width="40"
-            height="40"
+            width="28"
+            height="28"
             viewBox="0 0 24 24"
             fill="none"
             stroke="white"
