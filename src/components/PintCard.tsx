@@ -72,7 +72,7 @@ const PintCard = ({
   return (
     <div
       onClick={onClick}
-      className="relative group bg-card border border-[#2A2A2A] rounded-xl p-5 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-[#F7D447] cursor-pointer"
+      className="relative group bg-card border border-[#2A2A2A] rounded-xl p-3 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-[#F7D447] cursor-pointer"
     >
       {/* Star Rating Badge OR Unrated Badge - absolute top right */}
       {overallRating ? (
@@ -88,16 +88,16 @@ const PintCard = ({
             e.stopPropagation();
             handleCompleteRating();
           }}
-          className="absolute top-3 right-3 flex-shrink-0 text-xs text-[#9CA3AF] cursor-pointer hover:text-[#F7D447] transition-colors"
+          className="absolute top-3 right-3 flex-shrink-0 text-[13px] text-[#D4AF37] cursor-pointer hover:underline transition-all"
         >
-          Unrated
+          Rate →
         </div>
       )}
 
       <div className="flex gap-4">
         {/* Photo Section */}
         <div className="flex-shrink-0 self-stretch">
-          <div className="w-[100px] md:w-[140px] h-full rounded-lg overflow-hidden border border-[#2A2A2A]">
+          <div className="w-[100px] md:w-[140px] min-h-[120px] max-h-[160px] md:max-h-[180px] rounded-lg overflow-hidden border border-[#2A2A2A]">
             {!imageError ? (
               <img
                 src={image}
@@ -124,7 +124,7 @@ const PintCard = ({
             </div>
 
             {/* Feedback Quote */}
-            <p className="mt-2 font-serif text-base md:text-lg italic text-foreground">
+            <p className="mt-1 font-serif text-base md:text-lg italic text-foreground line-clamp-2">
               "{feedback}"
             </p>
 

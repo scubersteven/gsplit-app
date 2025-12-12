@@ -213,7 +213,7 @@ const Index = () => {
           ) : (
             <>
               {filteredPints.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredPints.map((pint) => (
                 <PintCard
                   key={pint.id}
