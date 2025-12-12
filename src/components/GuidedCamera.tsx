@@ -411,7 +411,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
                 <img
                   src={frozenFrameUrl}
                   alt="Your pint"
-                  className="w-full h-auto max-h-[400px] object-contain"
+                  className="w-full h-auto"
                 />
                 {/* Scan Animation Overlay */}
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
