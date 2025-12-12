@@ -394,7 +394,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
         {/* Contained layout with scan animation - matches GSplit.tsx */}
         {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
           <div className="fixed inset-0 z-50 bg-background overflow-auto">
-            <div className="container mx-auto px-4 py-8 max-w-3xl">
+            <div className="container mx-auto px-4 pt-8 pb-16 max-w-3xl">
 
               {/* Header - visual anchor */}
               <div className="mb-8 text-center">
@@ -406,12 +406,12 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
                 </p>
               </div>
 
-              {/* Image Container - SMALLER: max-w-sm instead of max-w-md */}
-              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-sm mx-auto">
+              {/* Image Container - SMALLER: max-w-xs instead of max-w-sm */}
+              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-xs mx-auto">
                 <img
                   src={frozenFrameUrl}
                   alt="Your pint"
-                  className="w-full h-auto"
+                  className="w-full h-auto max-h-[400px] object-contain"
                 />
                 {/* Scan Animation Overlay */}
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
