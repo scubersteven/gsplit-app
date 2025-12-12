@@ -129,7 +129,7 @@ const PintCard = ({
             </p>
 
             {/* Metadata */}
-            <div className="font-inter text-sm font-semibold text-foreground/60 pl-1">
+            <div className="font-inter text-sm font-normal text-foreground/50 pl-1">
               {location && location.length > 2 ? (
                 <>{location} • {formatDate(date)}</>
               ) : (
