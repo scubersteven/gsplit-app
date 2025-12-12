@@ -339,7 +339,7 @@ const PintSurvey = () => {
                         className="fixed inset-0 z-40"
                         onClick={() => setActiveTooltip(null)}
                       />
-                      <div className="absolute left-0 top-6 z-50 bg-[#0A0A0A] text-[#FFF8E7] text-xs max-w-[250px] rounded-lg p-3 shadow-lg">
+                      <div className="absolute left-0 top-8 z-50 bg-[#0A0A0A] border border-[#333] text-[#E8E8DD] text-xs leading-relaxed w-[280px] rounded-lg p-3 shadow-xl">
                         Creamy white foam, ~2cm thick, domed above the rim. No bubbles - bubbles mean dirty glass. Should last til the last sip.
                       </div>
                     </>
@@ -395,7 +395,7 @@ const PintSurvey = () => {
                         className="fixed inset-0 z-40"
                         onClick={() => setActiveTooltip(null)}
                       />
-                      <div className="absolute left-0 top-6 z-50 bg-[#0A0A0A] text-[#FFF8E7] text-xs max-w-[250px] rounded-lg p-3 shadow-lg">
+                      <div className="absolute left-0 top-8 z-50 bg-[#0A0A0A] border border-[#333] text-[#E8E8DD] text-xs leading-relaxed w-[280px] rounded-lg p-3 shadow-xl">
                         The creamy rings left on the glass after each sip. Good lacing = clean glass, fresh lines. No rings = dirty glass, the pub doesn't care.
                       </div>
                     </>
