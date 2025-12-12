@@ -115,14 +115,14 @@ const PintCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 min-w-0 flex flex-col justify-start gap-1">
-          {/* Top Section - Score, Feedback, Metadata */}
-          <div>
-            {/* Score */}
-            <div className={`score-display font-display font-extrabold text-3xl md:text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
-              {isPersonalBest && "🏆 "}{score}%
-            </div>
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
+          {/* Score */}
+          <div className={`score-display font-display font-extrabold text-4xl md:text-5xl leading-none tracking-tight ${getScoreColor(score)}`}>
+            {isPersonalBest && "🏆 "}{score}%
+          </div>
 
+          {/* Feedback + Date Group */}
+          <div className="flex flex-col gap-0.5">
             {/* Feedback Quote */}
             <p className="font-serif text-base md:text-lg italic text-foreground line-clamp-2">
               "{feedback}"
