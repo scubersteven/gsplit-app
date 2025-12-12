@@ -394,10 +394,11 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
         {/* Contained layout with scan animation - matches GSplit.tsx */}
         {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
           <div className="fixed inset-0 z-50 bg-background overflow-auto">
-            <div className="container mx-auto px-4 pt-8 pb-20 max-w-3xl">
+            {/* Flexbox centering container */}
+            <div className="min-h-full flex flex-col items-center justify-center px-4 py-8">
 
               {/* Header - visual anchor */}
-              <div className="mb-8 text-center">
+              <div className="mb-6 text-center">
                 <h1 className="text-4xl font-playfair font-bold text-white mb-2 tracking-tight">
                   The Stout Standard
                 </h1>
@@ -406,12 +407,12 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
                 </p>
               </div>
 
-              {/* Image Container - SMALLER: max-w-xs instead of max-w-sm */}
-              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-xs mx-auto">
+              {/* Image Container */}
+              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-xs mx-auto mb-8">
                 <img
                   src={frozenFrameUrl}
                   alt="Your pint"
-                  className="w-full h-auto max-h-[55vh]"
+                  className="w-full h-auto max-h-[50vh]"
                 />
                 {/* Scan Animation Overlay */}
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
