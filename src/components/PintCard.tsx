@@ -72,7 +72,7 @@ const PintCard = ({
   return (
     <div
       onClick={onClick}
-      className="relative group bg-card border border-[#2A2A2A] rounded-xl p-3 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-[#F7D447] cursor-pointer"
+      className="relative group bg-card border border-[#2A2A2A] rounded-xl p-2.5 shadow-[0_4px_6px_rgba(0,0,0,0.3)] transition-all hover:border-[#F7D447] cursor-pointer"
     >
       {/* Star Rating Badge OR Unrated Badge - absolute top right */}
       {overallRating ? (
@@ -97,7 +97,7 @@ const PintCard = ({
       <div className="flex gap-4">
         {/* Photo Section */}
         <div className="flex-shrink-0 self-stretch">
-          <div className="w-[100px] md:w-[140px] min-h-[120px] max-h-[160px] md:max-h-[180px] rounded-lg overflow-hidden border border-[#2A2A2A]">
+          <div className="w-[80px] md:w-[120px] h-[120px] md:h-[140px] rounded-lg overflow-hidden border border-[#2A2A2A]">
             {!imageError ? (
               <img
                 src={image}
@@ -115,21 +115,21 @@ const PintCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between">
+        <div className="flex-1 min-w-0 flex flex-col justify-start gap-1">
           {/* Top Section - Score, Feedback, Metadata */}
           <div>
             {/* Score */}
-            <div className={`score-display font-display font-extrabold text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
+            <div className={`score-display font-display font-extrabold text-2xl md:text-3xl leading-none tracking-tight ${getScoreColor(score)}`}>
               {isPersonalBest && "🏆 "}{score}%
             </div>
 
             {/* Feedback Quote */}
-            <p className="mt-1 font-serif text-base md:text-lg italic text-foreground line-clamp-2">
+            <p className="font-serif text-base md:text-lg italic text-foreground line-clamp-2">
               "{feedback}"
             </p>
 
             {/* Metadata */}
-            <div className="mt-2 font-inter text-xs font-semibold text-foreground/60">
+            <div className="font-inter text-xs font-semibold text-foreground/60">
               {location && location.length > 2 ? (
                 <>{location} • {formatDate(date)}</>
               ) : (

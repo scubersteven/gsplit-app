@@ -140,7 +140,7 @@ const Index = () => {
       <header className="bg-background px-4 md:px-8 py-6 md:py-12">
         <div className="max-w-3xl mx-auto text-center">
           {/* ROW 1: Title */}
-          <h1 className="font-playfair text-4xl md:text-6xl font-bold text-white">
+          <h1 className="font-playfair text-5xl md:text-7xl font-extrabold text-white">
             My Pints
           </h1>
 
@@ -152,7 +152,7 @@ const Index = () => {
           </div>
 
           {/* ROW 3: Filter Tabs */}
-          <div className="grid grid-cols-4 gap-2 mt-4">
+          <div className="grid grid-cols-4 gap-2 mt-6">
             <button
               onClick={() => setActiveFilter("all")}
               className={`font-inter text-sm font-semibold px-4 py-1.5 rounded-sm whitespace-nowrap transition-all ${
@@ -213,7 +213,7 @@ const Index = () => {
           ) : (
             <>
               {filteredPints.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {filteredPints.map((pint) => (
                 <PintCard
                   key={pint.id}
