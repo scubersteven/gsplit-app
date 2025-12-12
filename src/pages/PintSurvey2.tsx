@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import { toast } from "sonner";
 import RatingSlider from "@/components/RatingSlider";
+import InteractiveStarRating from "@/components/InteractiveStarRating";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PlacesAutocomplete from "@/components/PlacesAutocomplete";
@@ -82,6 +83,8 @@ const PintSurvey = () => {
   const [taste, setTaste] = useState(3.0);
   const [temperature, setTemperature] = useState(3.0);
   const [head, setHead] = useState(3.0);
+  const [lacing, setLacing] = useState(3.0);
+  const [activeTooltip, setActiveTooltip] = useState<'head' | 'lacing' | null>(null);
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("$");
   const [selectedPlace, setSelectedPlace] = useState<PlaceData | null>(null);
@@ -121,6 +124,7 @@ const PintSurvey = () => {
           taste,
           temperature,
           head,
+          lacing,
           pub: selectedPlace?.name || '',
         }),
       });
@@ -143,7 +147,7 @@ const PintSurvey = () => {
       return;
     }
 
-    const overallRating = Math.round(((taste + temperature + head) / 3) * 10) / 10;
+    const overallRating = Math.round(((taste + temperature + head + lacing) / 4) * 10) / 10;
 
     // DETECTION: Check if G-Split flow or Survey-only
     // If pintLogId exists, it's updating an existing pint (G-Split)
@@ -166,6 +170,7 @@ const PintSurvey = () => {
               taste,
               temperature,
               creaminess: head,
+              lacing,
               price: price ? parseFloat(price) : null,
               location: selectedPlace.name,
               place_id: selectedPlace.place_id,
@@ -196,6 +201,7 @@ const PintSurvey = () => {
             taste,
             temperature,
             creaminess: head,
+            lacing,
             price: price ? parseFloat(price) : null,
             roast,
           });
@@ -226,6 +232,7 @@ const PintSurvey = () => {
                 taste: taste,
                 temperature: temperature,
                 head: head,
+                lacing: lacing,
                 price: price ? parseFloat(price) : null,
                 roast: roast,
                 anonymous_id: anonymousId,
@@ -317,14 +324,45 @@ const PintSurvey = () => {
         <div className="md:bg-card md:border md:border-border md:rounded-xl md:p-6">
           {/* Rating Sliders */}
           <div className="space-y-10">
-            <RatingSlider
-              label="Taste"
-              lowLabel="Drain Pour"
-              highLabel="Liquid Gold"
-              value={taste}
-              onChange={setTaste}
-            />
+            {/* HEAD with tooltip - inlined structure */}
+            <div className="border-l-2 border-gold pl-4 pr-2">
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-lg font-playfair font-bold text-foreground">Head</h3>
+                <button
+                  onClick={() => setActiveTooltip(activeTooltip === 'head' ? null : 'head')}
+                  className="relative"
+                >
+                  <Info className="w-3.5 h-3.5 text-foreground/60 hover:text-foreground transition-colors" />
+                  {activeTooltip === 'head' && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setActiveTooltip(null)}
+                      />
+                      <div className="absolute left-0 top-6 z-50 bg-[#0A0A0A] text-[#FFF8E7] text-xs max-w-[250px] rounded-lg p-3 shadow-lg">
+                        Creamy white foam, ~2cm thick, domed above the rim. No bubbles - bubbles mean dirty glass. Should last til the last sip.
+                      </div>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                <InteractiveStarRating value={head} onChange={setHead} />
+                <span className="text-xl font-bold text-foreground min-w-[40px]">
+                  {head.toFixed(1)}
+                </span>
+              </div>
+              <div className="flex justify-between mt-3">
+                <span className="text-xs font-medium italic text-foreground/85">
+                  Bald as a Coot
+                </span>
+                <span className="text-xs font-medium italic text-foreground/85">
+                  Cloud Nine
+                </span>
+              </div>
+            </div>
 
+            {/* TEMPERATURE - keep using RatingSlider */}
             <RatingSlider
               label="Temperature"
               lowLabel="Lukewarm Swill"
@@ -333,13 +371,52 @@ const PintSurvey = () => {
               onChange={setTemperature}
             />
 
+            {/* TASTE - keep using RatingSlider */}
             <RatingSlider
-              label="Head"
-              lowLabel="Bald as a Coot"
-              highLabel="Cloud Nine"
-              value={head}
-              onChange={setHead}
+              label="Taste"
+              lowLabel="Drain Pour"
+              highLabel="Liquid Gold"
+              value={taste}
+              onChange={setTaste}
             />
+
+            {/* LACING with tooltip - inlined structure */}
+            <div className="border-l-2 border-gold pl-4 pr-2">
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-lg font-playfair font-bold text-foreground">Lacing</h3>
+                <button
+                  onClick={() => setActiveTooltip(activeTooltip === 'lacing' ? null : 'lacing')}
+                  className="relative"
+                >
+                  <Info className="w-3.5 h-3.5 text-foreground/60 hover:text-foreground transition-colors" />
+                  {activeTooltip === 'lacing' && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setActiveTooltip(null)}
+                      />
+                      <div className="absolute left-0 top-6 z-50 bg-[#0A0A0A] text-[#FFF8E7] text-xs max-w-[250px] rounded-lg p-3 shadow-lg">
+                        The creamy rings left on the glass after each sip. Good lacing = clean glass, fresh lines. No rings = dirty glass, the pub doesn't care.
+                      </div>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                <InteractiveStarRating value={lacing} onChange={setLacing} />
+                <span className="text-xl font-bold text-foreground min-w-[40px]">
+                  {lacing.toFixed(1)}
+                </span>
+              </div>
+              <div className="flex justify-between mt-3">
+                <span className="text-xs font-medium italic text-foreground/85">
+                  Bare Glass
+                </span>
+                <span className="text-xs font-medium italic text-foreground/85">
+                  Perfect Rings
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Price Input */}
