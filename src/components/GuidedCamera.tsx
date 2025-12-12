@@ -396,17 +396,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
           <div className="fixed inset-0 z-50 bg-background overflow-auto">
             <div className="px-4 py-6">
 
-              {/* Header - tight */}
-              <div className="mb-4 text-center">
-                <h1 className="text-3xl font-playfair font-bold text-white mb-1 tracking-tight">
-                  The Stout Standard
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  The digital barman never lies
-                </p>
-              </div>
-
-              {/* Image Container - no height constraint, natural size */}
+              {/* Image Container - no header, just the pint */}
               <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-sm mx-auto">
                 <img
                   src={frozenFrameUrl}
