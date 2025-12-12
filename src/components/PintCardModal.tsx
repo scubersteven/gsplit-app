@@ -121,7 +121,7 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
         {/* Score */}
         <div className="mb-1.5">
           <span
-            className="font-serif font-bold leading-none tracking-tighter"
+            className="font-display font-bold leading-none tracking-tighter"
             style={{ fontSize: '56px', color: scoreColor }}
           >
             {pintData.score}%
