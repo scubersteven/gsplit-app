@@ -393,32 +393,42 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
 
         {/* Contained layout with scan animation - matches GSplit.tsx */}
         {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
-          <div className="fixed inset-0 z-50 bg-background">
+          <div className="fixed inset-0 z-50 bg-background overflow-auto">
             <div className="container mx-auto px-4 py-8 max-w-3xl">
-              <div className="space-y-6 animate-fade-in">
-                {/* Image Container - EXACT match to GSplit.tsx upload preview */}
-                <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-md mx-auto">
-                  <img
-                    src={frozenFrameUrl}
-                    alt="Your pint"
-                    className="w-full h-auto"
-                  />
-                  {/* Scan Animation Overlay - EXACT match to GSplit.tsx */}
-                  <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-                    <div className="relative w-full h-full">
-                      <div className="absolute w-full h-1 bg-success shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-scan" />
+
+              {/* Header - visual anchor */}
+              <div className="mb-8 text-center">
+                <h1 className="text-4xl font-playfair font-bold text-white mb-2 tracking-tight">
+                  The Stout Standard
+                </h1>
+                <p className="text-base text-muted-foreground">
+                  The digital barman never lies
+                </p>
+              </div>
+
+              {/* Image Container - SMALLER: max-w-sm instead of max-w-md */}
+              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-sm mx-auto">
+                <img
+                  src={frozenFrameUrl}
+                  alt="Your pint"
+                  className="w-full h-auto"
+                />
+                {/* Scan Animation Overlay */}
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                  <div className="relative w-full h-full">
+                    <div className="absolute w-full h-1 bg-success shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-scan" />
+                  </div>
+                  <div className="absolute text-center">
+                    <div className="text-lg font-medium text-foreground mb-2">
+                      Analyzing Split...
                     </div>
-                    <div className="absolute text-center">
-                      <div className="text-lg font-medium text-foreground mb-2">
-                        Analyzing Split...
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Calculating precision
-                      </div>
+                    <div className="text-sm text-muted-foreground">
+                      Calculating precision
                     </div>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         )}
