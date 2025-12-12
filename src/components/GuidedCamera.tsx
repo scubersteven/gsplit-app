@@ -394,7 +394,7 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
         {/* Contained layout with scan animation - matches GSplit.tsx */}
         {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
           <div className="fixed inset-0 z-50 bg-background overflow-auto">
-            <div className="container mx-auto px-4 pt-8 pb-16 max-w-3xl">
+            <div className="container mx-auto px-4 pt-8 pb-12 max-w-3xl">
 
               {/* Header - visual anchor */}
               <div className="mb-8 text-center">
