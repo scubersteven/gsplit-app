@@ -119,7 +119,7 @@ const PintCard = ({
           {/* Top Section - Score, Feedback, Metadata */}
           <div>
             {/* Score */}
-            <div className={`score-display font-display font-extrabold text-2xl md:text-3xl leading-none tracking-tight ${getScoreColor(score)}`}>
+            <div className={`score-display font-display font-extrabold text-3xl md:text-4xl leading-none tracking-tight ${getScoreColor(score)}`}>
               {isPersonalBest && "🏆 "}{score}%
             </div>
 
@@ -129,7 +129,7 @@ const PintCard = ({
             </p>
 
             {/* Metadata */}
-            <div className="font-inter text-xs font-semibold text-foreground/60">
+            <div className="font-inter text-sm font-semibold text-foreground/60">
               {location && location.length > 2 ? (
                 <>{location} • {formatDate(date)}</>
               ) : (
