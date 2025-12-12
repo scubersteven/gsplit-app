@@ -391,13 +391,14 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
           )}
         </AnimatePresence>
 
-        {/* Contained layout with scan animation - natural scroll */}
+        {/* Contained layout with scan animation - hidden scrollbar, flexbox centering */}
         {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
-          <div className="fixed inset-0 z-50 bg-background overflow-auto">
-            <div className="px-4 py-6">
+          <div className="fixed inset-0 z-50 bg-background overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <style>{`::-webkit-scrollbar { display: none; }`}</style>
+            <div className="px-4 pt-10 pb-8 flex justify-center">
 
-              {/* Image Container - no header, just the pint */}
-              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-sm mx-auto">
+              {/* Image Container */}
+              <div className="relative rounded-lg overflow-hidden border border-border bg-card w-full max-w-sm">
                 <img
                   src={frozenFrameUrl}
                   alt="Your pint"
