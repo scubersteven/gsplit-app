@@ -56,7 +56,7 @@ All colors MUST be HSL.
 
     --cream: 32 35% 88%; /* Guinness head cream */
     --cream-dark: 32 30% 78%; /* Darker cream for hover states */
-    --gold: 43 95% 58%;
+    --gold: 48 92% 62%;
     --guinness-black: 0 0% 5%; /* Pure stout black */
     
     /* Header colors - the creamy head */
@@ -135,8 +135,8 @@ All colors MUST be HSL.
 
     --cream: 32 35% 88%;
     --cream-dark: 32 30% 78%;
-    --gold: 43 95% 58%;
-    
+    --gold: 48 92% 62%;
+
     --header-bg: 32 35% 88%;
     --header-fg: 0 0% 10%;
     
