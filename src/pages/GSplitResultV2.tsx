@@ -8,15 +8,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import { addPoints, updateStreak } from "@/lib/gamification";
 import { compressImage } from "@/utils/imageCompression";
 import { savePint } from "@/utils/db";
-
-/**
- * Get score color
- */
-const getScoreColor = (score: number): string => {
-  if (score >= 80) return "#10B981"; // Bright green
-  if (score >= 60) return "#F59E0B"; // Orange
-  return "#EF4444"; // Red
-};
+import { getScoreColor } from "@/utils/scoreColors";
 
 const GSplitResultV2 = () => {
   const location = useLocation();

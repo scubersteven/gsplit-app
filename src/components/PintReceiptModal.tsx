@@ -6,6 +6,7 @@ import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DisplayStars from "@/components/DisplayStars";
 import gsplitLogo from "@/assets/g-split-logo.png";
+import { getScoreColorClass } from "@/utils/scoreColors";
 
 interface ReceiptData {
   splitScore?: number | null;
@@ -33,12 +34,6 @@ const PintReceiptModal = ({
 
   // Determine display mode
   const isGSplitMode = !isSurveyOnly && splitImage && splitImage.length > 0;
-
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-[#10B981]";
-    if (score >= 60) return "text-[#F59E0B]";
-    return "text-[#EF4444]";
-  };
 
   const handleShare = () => {
     console.log("Share clicked - placeholder");
@@ -84,7 +79,7 @@ const PintReceiptModal = ({
             {isGSplitMode && splitScore && (
               <div className="text-center">
                 <span
-                  className={`score-display font-display text-8xl font-black tracking-tight ${getScoreColor(splitScore)}`}
+                  className={`score-display font-display text-8xl font-black tracking-tight ${getScoreColorClass(splitScore)}`}
                 >
                   {splitScore.toFixed(1)}%
                 </span>

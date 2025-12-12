@@ -3,6 +3,8 @@
  * Instagram Story dimensions: 1080x1920
  */
 
+import { getScoreColor } from './scoreColors';
+
 export interface PintShareData {
   pintImage: string;
   score: number;
@@ -11,16 +13,6 @@ export interface PintShareData {
   location: string;
   date: string;
 }
-
-/**
- * Get score color based on thresholds
- * 80%+ = green (excellent), 60-79% = amber (good), <60% = red (poor)
- */
-const getScoreColor = (score: number): string => {
-  if (score >= 80) return '#10B981'; // text-score-excellent
-  if (score >= 60) return '#f59e0b'; // text-score-good
-  return '#ef4444'; // text-score-poor
-};
 
 /**
  * Draw star rating (filled, half, empty stars)

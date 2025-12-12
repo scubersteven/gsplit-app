@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { generateShareImageV2, shareToInstagramV2 } from "@/utils/shareImageV2";
+import { getScoreColor } from "@/utils/scoreColors";
 
 interface PintCardModalProps {
   open: boolean;
@@ -34,11 +35,6 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   if (!open || !pintData) return null;
-
-  // Color Logic
-  let scoreColor = '#F59E0B'; // Gold
-  if (pintData.score < 60) scoreColor = '#EF4444'; // Red
-  else if (pintData.score >= 85) scoreColor = '#10B981'; // Green
 
   // Context Logic
   const dateOnly = formatDateOnly(pintData.date);
@@ -122,7 +118,7 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
         <div className="mb-1.5">
           <span
             className="font-display font-bold leading-none tracking-tighter"
-            style={{ fontSize: '56px', color: scoreColor }}
+            style={{ fontSize: '56px', color: getScoreColor(pintData.score) }}
           >
             {pintData.score}%
           </span>

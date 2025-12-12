@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getScoreColorClass } from "@/utils/scoreColors";
 
 interface PintCardProps {
   id: number;
@@ -39,12 +40,6 @@ const PintCard = ({
         splitImage: image,
       },
     });
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-score-excellent";
-    if (score >= 60) return "text-score-good";
-    return "text-score-poor";
   };
 
   const formatDate = (dateString: string) => {
@@ -117,7 +112,7 @@ const PintCard = ({
         {/* Content Section */}
         <div className="flex-1 min-w-0 flex flex-col justify-start">
           {/* Score */}
-          <div className={`score-display font-display font-extrabold text-4xl md:text-5xl leading-none tracking-tight ${getScoreColor(score)}`}>
+          <div className={`score-display font-display font-extrabold text-4xl md:text-5xl leading-none tracking-tight ${getScoreColorClass(score)}`}>
             {isPersonalBest && "🏆 "}{score}%
           </div>
 
