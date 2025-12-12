@@ -130,14 +130,14 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
 
         {/* Feedback Quote */}
         <div className="mb-2.5 text-center w-full px-1">
-          <p className="font-serif italic text-[16px] text-[#E8E8DD] leading-tight line-clamp-2">
+          <p className="font-display italic text-[16px] text-[#E8E8DD] leading-tight line-clamp-2">
             "{pintData.feedback}"
           </p>
         </div>
 
         {/* Context (Location + Date) */}
         <div className="mb-4 text-center">
-          <p className="font-sans text-[13px] font-medium text-[#9CA3AF] tracking-wide">
+          <p className="font-inter text-[13px] font-medium text-[#9CA3AF] tracking-wide">
             {contextText}
           </p>
         </div>
@@ -148,7 +148,7 @@ const PintCardModal = ({ open, onOpenChange, pintData, onDelete }: PintCardModal
           <button
             onClick={handleShare}
             disabled={isGeneratingImage}
-            className="w-full bg-[#2A2A2A] hover:bg-[#333333] border border-[#444] text-[#F5F5F0] font-bold py-3 rounded-lg text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#2A2A2A] hover:bg-[#333333] border border-[#444] text-[#F5F5F0] font-inter font-semibold py-3 rounded-lg text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGeneratingImage ? "Generating..." : "Share"}
           </button>

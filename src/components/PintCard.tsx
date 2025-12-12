@@ -124,7 +124,7 @@ const PintCard = ({
           {/* Feedback + Date Group */}
           <div className="flex flex-col gap-0.5 mt-3">
             {/* Feedback Quote */}
-            <p className="font-serif text-base md:text-lg italic text-foreground line-clamp-2">
+            <p className="font-display text-base md:text-lg italic text-foreground line-clamp-2">
               "{feedback}"
             </p>
 

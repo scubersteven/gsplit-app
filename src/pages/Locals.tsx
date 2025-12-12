@@ -167,7 +167,7 @@ const Locals: React.FC = () => {
         <h1 className="text-4xl md:text-6xl font-playfair font-bold text-white mb-2 text-center">
           The Local Hunt
         </h1>
-        <p className="text-[#E8E8DD] text-sm mb-6 font-light tracking-wide text-center">Find where the black stuff flows best.</p>
+        <p className="text-[#E8E8DD] text-sm mb-6 font-inter font-light tracking-wide text-center">Find where the black stuff flows best.</p>
 
         {/* Content wrapper for desktop max-width */}
         <div className="md:max-w-3xl md:mx-auto">

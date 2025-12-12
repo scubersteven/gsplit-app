@@ -146,7 +146,7 @@ const Index = () => {
 
           {/* ROW 2: Stats Line */}
           <div className="mt-2">
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm font-inter text-foreground/60">
               {stats.totalPints} pints • {stats.averageScore.toFixed(1)}% avg • <span onClick={() => setIsMasteryModalOpen(true)} className="cursor-pointer hover:text-[#F7D447] transition-colors">{currentTier.icon} {currentTier.name}</span>
             </p>
           </div>

@@ -289,7 +289,7 @@ const GSplitResultV2 = () => {
         {/* Feedback Quote */}
         {feedback && (
           <div className="text-center mb-4 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
-            <p className="text-[#E8E8DD] text-lg font-serif italic">
+            <p className="text-[#E8E8DD] text-lg font-display italic">
               "{feedback}"
             </p>
           </div>
@@ -297,7 +297,7 @@ const GSplitResultV2 = () => {
 
         {/* Context Line: Streak + Location + Rank - ALL IN ONE LINE */}
         <div className="text-center mb-6 animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
-          <span className="text-[#E8E8DD]/70 text-sm font-body">
+          <span className="text-[#E8E8DD]/70 text-sm font-inter">
             🔥 {currentStreak} {currentStreak === 1 ? 'day' : 'days'}
             {userPubName && (
               <> • 📍 {userPubName}</>
@@ -319,7 +319,7 @@ const GSplitResultV2 = () => {
         <Button
           onClick={handleInstagramShare}
           disabled={isGeneratingImage}
-          className="w-full h-12 text-base font-body font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] rounded mb-3 animate-fade-in"
+          className="w-full h-12 text-base font-inter font-semibold bg-[#10B981] hover:bg-[#10B981]/90 text-[#0A0A0A] rounded mb-3 animate-fade-in"
           style={{ animationDelay: '1s', animationFillMode: 'both' }}
         >
           {isGeneratingImage ? "Generating..." : "📸 Share to Instagram"}

@@ -101,7 +101,7 @@ const PintReceiptModal = ({
 
             {/* Roast */}
             {roast && (
-              <p className="text-center italic text-foreground/85 text-base">
+              <p className="text-center font-display italic text-foreground/85 text-base">
                 "{roast}"
               </p>
             )}
@@ -109,7 +109,7 @@ const PintReceiptModal = ({
             {/* Pub Location */}
             <div className="flex items-center justify-center gap-2 text-foreground">
               <MapPin size={18} />
-              <span className="text-base">{pub}</span>
+              <span className="font-inter text-base">{pub}</span>
             </div>
 
             {/* Share Button - ONLY show for G-Split mode (shareable score + image) */}
@@ -117,7 +117,7 @@ const PintReceiptModal = ({
               <div className="flex justify-center pt-1">
                 <Button
                   onClick={handleShare}
-                  className="w-full h-11 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-semibold text-sm"
+                  className="w-full h-11 bg-[#FFF8E7] text-[#0A0A0A] hover:bg-[#FFF8E7]/90 font-inter font-semibold text-sm"
                 >
                   Share
                 </Button>
