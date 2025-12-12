@@ -88,7 +88,7 @@ const PintCard = ({
             e.stopPropagation();
             handleCompleteRating();
           }}
-          className="absolute top-3 right-3 flex-shrink-0 text-[13px] text-[#D4AF37] cursor-pointer hover:underline transition-all"
+          className="absolute top-3 right-3 flex-shrink-0 text-[13px] text-cream cursor-pointer hover:underline transition-all"
         >
           Rate →
         </div>
