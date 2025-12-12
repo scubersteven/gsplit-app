@@ -315,8 +315,8 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
-      {/* Video preview or frozen frame */}
-      {(cameraState === 'loading' || cameraState === 'no-g' || cameraState === 'locked') ? (
+      {/* Video preview */}
+      {(cameraState === 'loading' || cameraState === 'no-g' || cameraState === 'locked' || cameraState === 'capturing') && (
         <video
           ref={videoRef}
           autoPlay
@@ -324,14 +324,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
           muted
           className="absolute inset-0 w-full h-full object-cover"
         />
-      ) : (
-        frozenFrameUrl && (
-          <img
-            src={frozenFrameUrl}
-            alt="Captured frame"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        )
       )}
       
       {/* Hidden capture canvas */}
@@ -350,22 +342,23 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
       <div className="absolute inset-0 pointer-events-none">
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center">
-          <button
-            onClick={onClose}
-            disabled={cameraState === 'capturing' || cameraState === 'frozen' || cameraState === 'analyzing'}
-            className="pointer-events-auto text-white text-sm uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Cancel
-          </button>
+          {(cameraState === 'loading' || cameraState === 'no-g' || cameraState === 'locked' || cameraState === 'capturing') && (
+            <button
+              onClick={onClose}
+              className="pointer-events-auto text-white text-sm uppercase tracking-wider bg-black bg-opacity-50 px-4 py-2 rounded-full"
+            >
+              Cancel
+            </button>
+          )}
           
-          <div className="text-white text-xs uppercase tracking-widest bg-black/50 px-4 py-2 rounded-full font-mono">
-            {cameraState === 'loading' && 'INITIALIZING...'}
-            {cameraState === 'no-g' && 'SCANNING...'}
-            {cameraState === 'locked' && 'LOCKED'}
-            {cameraState === 'capturing' && 'CAPTURING...'}
-            {cameraState === 'frozen' && 'PROCESSING...'}
-            {cameraState === 'analyzing' && 'ANALYZING...'}
-          </div>
+          {(cameraState === 'loading' || cameraState === 'no-g' || cameraState === 'locked' || cameraState === 'capturing') && (
+            <div className="text-white text-xs uppercase tracking-widest bg-black/50 px-4 py-2 rounded-full font-mono">
+              {cameraState === 'loading' && 'INITIALIZING...'}
+              {cameraState === 'no-g' && 'SCANNING...'}
+              {cameraState === 'locked' && 'LOCKED'}
+              {cameraState === 'capturing' && 'CAPTURING...'}
+            </div>
+          )}
         </div>
         
         {/* Center instruction text - minimal tech scanner style */}
@@ -385,22 +378,6 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
           )}
         </AnimatePresence>
 
-        {/* Green lock flash when G detected */}
-        <AnimatePresence>
-          {cameraState === 'locked' && (
-            <motion.div
-              key="lock-flash"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                boxShadow: 'inset 0 0 60px 20px rgba(0, 255, 135, 0.6)'
-              }}
-            />
-          )}
-        </AnimatePresence>
-
         {/* Shutter flash effect */}
         <AnimatePresence>
           {cameraState === 'capturing' && (
@@ -414,34 +391,37 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
           )}
         </AnimatePresence>
 
-        {/* Scan animation overlay - uses EXISTING tailwind animation */}
-        <AnimatePresence>
-          {(cameraState === 'frozen' || cameraState === 'analyzing') && (
-            <motion.div
-              key="scan-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/80 flex items-center justify-center z-50"
-            >
-              {/* Container for scan line */}
-              <div className="relative w-full h-full">
-                {/* Scan line - EXISTING animation from tailwind.config.ts */}
-                <div className="absolute w-full h-1 bg-success shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-scan" />
-              </div>
-
-              {/* Status text */}
-              <div className="absolute text-center z-10">
-                <div className="text-lg font-medium text-foreground mb-2">
-                  {cameraState === 'frozen' ? 'Processing...' : 'Analyzing Split...'}
+        {/* Contained layout with scan animation - matches GSplit.tsx */}
+        {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
+          <div className="fixed inset-0 z-50 bg-background">
+            <div className="container mx-auto px-4 py-8 max-w-3xl">
+              <div className="space-y-6 animate-fade-in">
+                {/* Image Container - EXACT match to GSplit.tsx upload preview */}
+                <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-md mx-auto">
+                  <img
+                    src={frozenFrameUrl}
+                    alt="Your pint"
+                    className="w-full h-auto"
+                  />
+                  {/* Scan Animation Overlay - EXACT match to GSplit.tsx */}
+                  <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                      <div className="absolute w-full h-1 bg-success shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-scan" />
+                    </div>
+                    <div className="absolute text-center">
+                      <div className="text-lg font-medium text-foreground mb-2">
+                        Analyzing Split...
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Calculating precision
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Calculating precision
-                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        )}
 
         {/* Manual Capture Button - De-emphasized */}
         <motion.button
