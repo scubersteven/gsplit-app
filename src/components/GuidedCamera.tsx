@@ -391,28 +391,27 @@ const GuidedCamera: React.FC<GuidedCameraProps> = ({ onClose }) => {
           )}
         </AnimatePresence>
 
-        {/* Contained layout with scan animation - matches GSplit.tsx */}
+        {/* Contained layout with scan animation - natural scroll */}
         {(cameraState === 'frozen' || cameraState === 'analyzing') && frozenFrameUrl && (
           <div className="fixed inset-0 z-50 bg-background overflow-auto">
-            {/* Flexbox centering container */}
-            <div className="min-h-full flex flex-col items-center justify-center px-4 py-8">
+            <div className="px-4 py-6">
 
-              {/* Header - visual anchor */}
-              <div className="mb-6 text-center">
-                <h1 className="text-4xl font-playfair font-bold text-white mb-2 tracking-tight">
+              {/* Header - tight */}
+              <div className="mb-4 text-center">
+                <h1 className="text-3xl font-playfair font-bold text-white mb-1 tracking-tight">
                   The Stout Standard
                 </h1>
-                <p className="text-base text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   The digital barman never lies
                 </p>
               </div>
 
-              {/* Image Container */}
-              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-xs mx-auto mb-8">
+              {/* Image Container - no height constraint, natural size */}
+              <div className="relative rounded-lg overflow-hidden border border-border bg-card max-w-sm mx-auto">
                 <img
                   src={frozenFrameUrl}
                   alt="Your pint"
-                  className="w-full h-auto max-h-[50vh]"
+                  className="w-full h-auto"
                 />
                 {/* Scan Animation Overlay */}
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
