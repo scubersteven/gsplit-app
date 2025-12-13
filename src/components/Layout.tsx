@@ -3,6 +3,7 @@ import { Beer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import gSplitLogo from "@/assets/g-split-logo.png";
+import { WaveDivider } from "@/components/WaveDivider";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -72,7 +73,10 @@ const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </header>
-      
+
+      {/* Wave Divider */}
+      <WaveDivider />
+
       {/* Black Stout - Main Content */}
       <main className="flex-1 bg-[hsl(var(--guinness-black))]">
         {children}
