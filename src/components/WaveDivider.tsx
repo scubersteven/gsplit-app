@@ -7,7 +7,7 @@ export function WaveDivider() {
       <img
         src="/glogopro.png"
         alt="G"
-        className="absolute z-10 w-[104px] h-[122px] top-[47px] left-[14px] md:w-[140px] md:h-[164px] md:top-[60px] md:left-[40px]"
+        className="absolute z-10 w-[69px] h-[81px] top-[75px] left-[11px] md:w-[90px] md:h-[105px] md:top-[80px] md:left-[40px]"
       />
 
       {/* Mobile wave */}
