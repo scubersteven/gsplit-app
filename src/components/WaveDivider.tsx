@@ -1,14 +1,60 @@
 import React from 'react';
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export function WaveDivider() {
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <div className="relative w-full">
-      {/* G Logo - positioned on wave */}
-      <img
-        src="/glogopro.png"
-        alt="G"
-        className="absolute z-10 w-[69px] h-[81px] top-[75px] left-[11px] md:w-[90px] md:h-[105px] md:top-[80px] md:left-[40px]"
-      />
+      {/* G Logo - clickable, links to home */}
+      <Link to="/" className="absolute z-10 w-[69px] h-[81px] top-[75px] left-[11px] md:w-[90px] md:h-[105px] md:top-[80px] md:left-[40px]">
+        <img
+          src="/glogopro.png"
+          alt="G"
+          className="w-full h-full object-contain hover:scale-110 transition-transform"
+        />
+      </Link>
+
+      {/* Navigation - positioned in top-right of cream area */}
+      <nav className="absolute z-20 top-[20px] right-[16px] md:top-[30px] md:right-[40px] flex items-center gap-2">
+        <Link to="/">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`gap-2 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--cream-dark))] ${
+              isActive("/") ? "bg-[hsl(var(--cream-dark))]" : ""
+            }`}
+          >
+            <span className="font-ui font-semibold">Split</span>
+          </Button>
+        </Link>
+
+        <Link to="/log">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`gap-2 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--cream-dark))] ${
+              isActive("/log") ? "bg-[hsl(var(--cream-dark))]" : ""
+            }`}
+          >
+            <span className="font-ui font-semibold">Pints</span>
+          </Button>
+        </Link>
+
+        <Link to="/locals">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`gap-2 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--cream-dark))] ${
+              isActive("/locals") ? "bg-[hsl(var(--cream-dark))]" : ""
+            }`}
+          >
+            <span className="font-ui font-semibold">Locals</span>
+          </Button>
+        </Link>
+      </nav>
 
       {/* Mobile wave */}
       <svg
